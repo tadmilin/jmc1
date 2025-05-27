@@ -1,0 +1,119 @@
+'use client';
+
+// Remove dynamic import of ImageSliderBlock here
+// import dynamic from 'next/dynamic'
+import React, { Fragment } from 'react'
+
+import type { Page } from '@/payload-types'
+
+// Import Block Components directly
+import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
+import { CallToActionBlock } from '@/blocks/CallToAction/Component'
+import { ContentBlock } from '@/blocks/Content/Component'
+import { FormBlock } from '@/blocks/Form/Component'
+import { GoogleMapBlock } from './GoogleMapBlock/Component'
+import { MediaBlock } from '@/blocks/MediaBlock/Component'
+import { ImageSliderBlock } from './ImageSliderBlock/Component'
+import { CategoryGridBlock } from './CategoryGridBlock/Component'
+import { ProductsBlock } from './ProductsBlock/Component'
+import { RelatedPosts } from './RelatedPosts/Component'
+import { ServiceFeaturesBlock } from './ServiceFeaturesBlock/Component'
+import { QuoteRequestFormBlockComponent } from './QuoteRequestFormBlock/Component'
+// import { CategoryListBlock } from './CategoryListBlock/Component' // Remove categoryList import
+
+// Dynamically import ImageSliderBlock (still needed if ImageSliderBlock has client-specific code)
+// const ImageSliderBlock = dynamic(() => import('./ImageSliderBlock/Component').then(mod => mod.ImageSliderBlock), { ssr: false });
+
+// Define blockComponents map here
+const blockComponents = {
+  archive: ArchiveBlock,
+  content: ContentBlock,
+  cta: CallToActionBlock,
+  formBlock: FormBlock,
+  googleMap: GoogleMapBlock,
+  mediaBlock: MediaBlock,
+  imageSlider: ImageSliderBlock,
+  categoryGrid: CategoryGridBlock,
+  productsBlock: ProductsBlock,
+  relatedPosts: RelatedPosts,
+  serviceFeatures: ServiceFeaturesBlock,
+  quoteRequestFormBlock: QuoteRequestFormBlockComponent,
+  // categoryList: CategoryListBlock, // Remove categoryList
+}
+
+// Updated props type to include colorTheme
+export const RenderBlocks: React.FC<{
+  blocks: Page['layout'][0][]
+  colorTheme?: string
+}> = (props) => {
+  const { blocks, colorTheme = 'light' } = props
+
+  const hasBlocks = blocks && Array.isArray(blocks) && blocks.length > 0
+
+  if (hasBlocks) {
+    return (
+      <Fragment>
+        {blocks.map((block, index) => {
+          const { blockType } = block
+
+          if (blockType && blockType in blockComponents) {
+            const Block = blockComponents[blockType]
+
+            if (Block) {
+              // กรณีที่ต้องส่งในรูปแบบพิเศษ (ส่งผ่าน block prop)
+              if (blockType === 'categoryGrid' || blockType === 'imageSlider' || blockType === 'googleMap' || blockType === 'serviceFeatures') {
+                return (
+                  <div key={index}>
+                    {/* @ts-expect-error there may be some mismatch between the expected types here */}
+                    <Block block={block} colorTheme={colorTheme} />
+                  </div>
+                )
+              }
+
+              // กรณี QuoteRequestFormBlock ส่งข้อมูลแบบพิเศษ
+              if (blockType === 'quoteRequestFormBlock') {
+                return (
+                  <div key={index}>
+                    {/* @ts-expect-error there may be some mismatch between the expected types here */}
+                    <Block {...block} />
+                  </div>
+                )
+              }
+              
+              // กรณี ProductsBlock ส่ง colorTheme เพิ่มเติม
+              if (blockType === 'productsBlock') {
+                return (
+                  <div key={index}>
+                    {/* @ts-expect-error there may be some mismatch between the expected types here */}
+                    <Block {...block} colorTheme={colorTheme} />
+                  </div>
+                )
+              }
+              
+              // กรณี ArchiveBlock ส่ง colorTheme เพิ่มเติม
+              if (blockType === 'archive') {
+                return (
+                  <div key={index}>
+                    {/* @ts-expect-error there may be some mismatch between the expected types here */}
+                    <Block {...block} colorTheme={colorTheme} disableInnerContainer />
+                  </div>
+                )
+              }
+              
+              // กรณีอื่นๆ ใช้การส่งแบบเดิม
+              return (
+                <div key={index}>
+                  {/* @ts-expect-error there may be some mismatch between the expected types here */}
+                  <Block {...block} disableInnerContainer />
+                </div>
+              )
+            }
+          }
+          return null
+        })}
+      </Fragment>
+    )
+  }
+
+  return null
+}

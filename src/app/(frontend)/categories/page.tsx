@@ -1,0 +1,82 @@
+import React from 'react';
+import { getPayload } from 'payload';
+import configPromise from '@payload-config';
+import Link from 'next/link';
+import { Media } from '@/components/Media';
+
+// คอมโพเนนต์สำหรับหน้าแสดงรายการหมวดหมู่ทั้งหมด
+export default async function CategoriesPage() {
+  const payload = await getPayload({ config: configPromise });
+
+  // ดึงข้อมูลหมวดหมู่ทั้งหมดเรียงตามลำดับ
+  const categoriesResponse = await payload.find({
+    collection: 'categories',
+    depth: 2, // เพิ่ม depth เพื่อให้ได้ข้อมูลรูปภาพครบถ้วน
+    sort: 'title', // เรียงตามชื่อ
+    limit: 100,
+  });
+
+  const categories = categoriesResponse.docs || [];
+
+  // ฟังก์ชันตรวจสอบรูปภาพ
+  const hasValidImage = (image: any) => {
+    return image && typeof image === 'object' && image.url;
+  };
+
+  return (
+    <div className="pt-24 pb-24">
+      <div className="container mb-16">
+        <div className="prose dark:prose-invert max-w-none">
+          <h1 className="text-3xl md:text-4xl font-bold mb-8">หมวดหมู่สินค้า</h1>
+          <p className="text-lg mb-8">เลือกดูสินค้าตามหมวดหมู่ที่ต้องการ</p>
+        </div>
+      </div>
+
+      <div className="container">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+          {categories.map((category) => (
+            <Link 
+              href={`/categories/${category.slug}`} 
+              key={category.id} 
+              className="flex flex-col items-center p-4 rounded-lg bg-white shadow-sm hover:shadow-md transition-all group"
+            >
+              <div className="relative w-full aspect-square rounded-lg overflow-hidden mb-4 bg-gray-100">
+                {hasValidImage(category.image) ? (
+                  <Media 
+                    resource={category.image} 
+                    fill 
+                    imgClassName="object-cover group-hover:scale-105 transition-transform duration-300" 
+                    size="(max-width: 768px) 100vw, 250px"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                    <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              <h2 className="text-center font-medium text-gray-800 group-hover:text-blue-600 transition-colors line-clamp-2 leading-tight">
+                {category.title}
+              </h2>
+              {category.description && (
+                <p className="text-xs text-gray-500 text-center mt-1 line-clamp-2">
+                  {category.description}
+                </p>
+              )}
+            </Link>
+          ))}
+        </div>
+
+        {categories.length === 0 && (
+          <div className="text-center py-12">
+            <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            <p className="text-gray-500">ไม่พบหมวดหมู่สินค้า</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+} 
