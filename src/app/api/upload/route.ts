@@ -3,10 +3,11 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 
 export async function POST(request: NextRequest) {
+  let payload
   try {
-    const payload = await getPayload({ config })
+    payload = await getPayload({ config })
     const formData = await request.formData()
-    
+
     const uploadedFiles: string[] = []
     const maxFiles = 3
     let fileCount = 0
@@ -18,12 +19,12 @@ export async function POST(request: NextRequest) {
           // Validate file type
           const allowedTypes = [
             'image/jpeg',
-            'image/png', 
+            'image/png',
             'image/gif',
             'image/webp',
             'application/pdf',
             'application/msword',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
           ]
 
           if (!allowedTypes.includes(value.type)) {
@@ -65,22 +66,24 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `อัปโหลดไฟล์สำเร็จ ${uploadedFiles.length} ไฟล์`,
-      fileIds: uploadedFiles,
+      files: uploadedFiles,
+      message: `Successfully uploaded ${fileCount} files`,
     })
-
   } catch (error) {
-    console.error('Error uploading files:', error)
-    return NextResponse.json(
-      { error: 'เกิดข้อผิดพลาดในการอัปโหลดไฟล์' },
-      { status: 500 }
-    )
+    console.error('Upload error:', error)
+    return NextResponse.json({ success: false, error: 'Upload failed' }, { status: 500 })
+  } finally {
+    // ปิด database connections
+    if (payload?.db?.connection) {
+      try {
+        await payload.db.connection.close()
+      } catch (closeError) {
+        console.error('Error closing connection:', closeError)
+      }
+    }
   }
 }
 
 export async function GET() {
-  return NextResponse.json(
-    { message: 'File Upload API is working' },
-    { status: 200 }
-  )
-} 
+  return NextResponse.json({ message: 'File Upload API is working' }, { status: 200 })
+}
