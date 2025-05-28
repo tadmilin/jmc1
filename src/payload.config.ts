@@ -34,10 +34,12 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
     connectOptions: {
-      maxPoolSize: 10, // จำกัด connections สูงสุด 10
-      minPoolSize: 2, // connections ขั้นต่ำ 2
-      maxIdleTimeMS: 30000, // ปิด idle connections หลัง 30 วินาที
+      maxPoolSize: 5, // ลดลงเหลือ 5 connections
+      minPoolSize: 1, // ขั้นต่ำ 1 connection
+      maxIdleTimeMS: 10000, // ปิด idle connections หลัง 10 วินาที
       serverSelectionTimeoutMS: 5000, // timeout 5 วินาที
+      socketTimeoutMS: 45000, // socket timeout 45 วินาที
+      bufferMaxEntries: 0, // ไม่ buffer commands
     },
   }),
 
