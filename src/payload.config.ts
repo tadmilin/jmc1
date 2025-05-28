@@ -39,7 +39,6 @@ export default buildConfig({
       maxIdleTimeMS: 10000, // ปิด idle connections หลัง 10 วินาที
       serverSelectionTimeoutMS: 5000, // timeout 5 วินาที
       socketTimeoutMS: 45000, // socket timeout 45 วินาที
-      bufferMaxEntries: 0, // ไม่ buffer commands
     },
   }),
 
