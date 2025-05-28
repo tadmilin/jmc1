@@ -144,7 +144,30 @@ const HeroActionSlotsRenderer: React.FC<{
             >
               {hasValidIcon && (
                 <div className="w-12 h-12 md:w-16 md:h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700 flex items-center justify-center p-1">
-                  <IconRenderer icon={slot.icon} title={slot.title} />
+                  {typeof slot.icon === 'object' && slot.icon.url ? (
+                    <Media
+                      resource={slot.icon as MediaType}
+                      className="max-w-full max-h-full object-contain"
+                      imgClassName="rounded-md w-full h-full object-contain"
+                    />
+                  ) : (
+                    // Fallback icon สำหรับ string ID หรือไม่มีรูป
+                    <div className="w-full h-full bg-gray-300 dark:bg-gray-600 rounded-md flex items-center justify-center">
+                      <svg
+                        className="w-6 h-6 text-gray-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                    </div>
+                  )}
                 </div>
               )}
               <div className="flex-grow">
@@ -178,56 +201,6 @@ const HeroActionSlotsRenderer: React.FC<{
   )
 }
 
-// Component สำหรับแสดง Icon ที่รองรับทั้ง object และ string ID
-const IconRenderer: React.FC<{ icon: MediaType | string; title: string }> = ({ icon, title }) => {
-  const { media, loading } = useMediaById(typeof icon === 'string' ? icon : null)
-
-  // ถ้าเป็น object ให้ใช้ Media component ตรงๆ
-  if (typeof icon === 'object' && icon.url) {
-    return (
-      <Media
-        resource={icon}
-        className="max-w-full max-h-full object-contain"
-        imgClassName="rounded-md w-full h-full object-contain"
-      />
-    )
-  }
-
-  // ถ้าเป็น string ID และ fetch ได้ media แล้ว
-  if (typeof icon === 'string' && media && media.url) {
-    return (
-      <Media
-        resource={media}
-        className="max-w-full max-h-full object-contain"
-        imgClassName="rounded-md w-full h-full object-contain"
-      />
-    )
-  }
-
-  // Loading state หรือ fallback
-  if (loading) {
-    return (
-      <div className="w-full h-full bg-gray-200 dark:bg-gray-600 rounded-md flex items-center justify-center animate-pulse">
-        <div className="w-6 h-6 bg-gray-300 dark:bg-gray-500 rounded"></div>
-      </div>
-    )
-  }
-
-  // Fallback icon
-  return (
-    <div className="w-full h-full bg-gray-300 dark:bg-gray-600 rounded-md flex items-center justify-center">
-      <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-        />
-      </svg>
-    </div>
-  )
-}
-
 // Interface for Social Media Button
 interface SocialMediaButton {
   id: string
@@ -235,35 +208,6 @@ interface SocialMediaButton {
   icon: MediaType | string
   url: string
   newTab?: boolean
-}
-
-// Hook สำหรับ fetch media จาก ID
-const useMediaById = (mediaId: string | null) => {
-  const [media, setMedia] = useState<MediaType | null>(null)
-  const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    if (!mediaId || typeof mediaId !== 'string') return
-
-    const fetchMedia = async () => {
-      try {
-        setLoading(true)
-        const response = await fetch(`/api/media/${mediaId}`)
-        if (response.ok) {
-          const data = await response.json()
-          setMedia(data)
-        }
-      } catch (error) {
-        console.error('Error fetching media:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchMedia()
-  }, [mediaId])
-
-  return { media, loading }
 }
 
 export const HighImpactHero: React.FC<Page['hero']> = ({
