@@ -24,22 +24,34 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
-  // CORS settings - ปรับให้ง่ายขึ้น
-  cors:
-    process.env.NODE_ENV === 'production'
-      ? ['https://jmc111.vercel.app', 'https://*.vercel.app']
-      : ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  // CORS settings - ปรับปรุงให้รองรับทั้ง development และ production
+  cors: [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://jmc111.vercel.app',
+    'https://*.vercel.app',
+    'https://vercel.app',
+    // เพิ่ม blob storage domains
+    'https://*.public.blob.vercel-storage.com',
+    'https://*.blob.vercel-storage.com',
+  ],
 
-  // CSRF settings - ปรับให้ง่ายขึ้น
-  csrf:
-    process.env.NODE_ENV === 'production'
-      ? ['https://jmc111.vercel.app', 'https://*.vercel.app']
-      : ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  // CSRF settings - ปรับปรุงให้รองรับทั้ง development และ production
+  csrf: [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://jmc111.vercel.app',
+    'https://*.vercel.app',
+    'https://vercel.app',
+    // เพิ่ม blob storage domains
+    'https://*.public.blob.vercel-storage.com',
+    'https://*.blob.vercel-storage.com',
+  ],
 
   // Secret key setting
   secret: process.env.PAYLOAD_SECRET || '8ecc0ba2b1c8c461f2daba9d',
 
-  // Adapter settings - ลดความซับซ้อน
+  // Adapter settings - ปรับปรุงการเชื่อมต่อ MongoDB
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
     connectOptions: {
@@ -52,6 +64,7 @@ export default buildConfig({
       maxPoolSize: 10,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
+      bufferCommands: false,
     },
   }),
 
@@ -88,14 +101,21 @@ export default buildConfig({
   globals: [Header, Footer, CategoryShowcase],
   plugins: [
     ...plugins,
+    // ปรับปรุงการตั้งค่า Vercel Blob Storage
     vercelBlobStorage({
       collections: {
         media: true,
       },
       token: process.env.BLOB_READ_WRITE_TOKEN || '',
+      enabled: true,
+      // เพิ่มการตั้งค่าเพิ่มเติม
+      addRandomSuffix: true,
+      cacheControlMaxAge: 31536000, // 1 year
     }),
   ],
 
   // เพิ่มการตั้งค่าสำหรับ serverURL
-  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || 'https://jmc111.vercel.app',
+  serverURL:
+    process.env.NEXT_PUBLIC_SERVER_URL ||
+    (process.env.NODE_ENV === 'production' ? 'https://jmc111.vercel.app' : 'http://localhost:3000'),
 })

@@ -9,12 +9,6 @@ import {
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
 
-import path from 'path'
-import { fileURLToPath } from 'url'
-
-const filename = fileURLToPath(import.meta.url)
-const dirname = path.dirname(filename)
-
 export const Media: CollectionConfig = {
   slug: 'media',
   access: {
@@ -27,7 +21,7 @@ export const Media: CollectionConfig = {
     {
       name: 'alt',
       type: 'text',
-      //required: true,
+      required: false,
     },
     {
       name: 'caption',
@@ -40,7 +34,8 @@ export const Media: CollectionConfig = {
     },
   ],
   upload: {
-    // staticDir: path.resolve(dirname, '../../public/media'), // ปิดการใช้งาน local storage สำหรับ production
+    // ลบ staticDir เพื่อให้ใช้ Vercel Blob Storage
+    // staticDir: path.resolve(dirname, '../../public/media'),
     adminThumbnail: 'thumbnail',
     focalPoint: true,
     imageSizes: [
