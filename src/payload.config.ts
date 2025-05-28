@@ -42,6 +42,17 @@ export default buildConfig({
   // Adapter settings - ลดความซับซ้อน
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
+    connectOptions: {
+      ssl: true,
+      tls: true,
+      tlsAllowInvalidCertificates: false,
+      tlsAllowInvalidHostnames: false,
+      retryWrites: true,
+      w: 'majority',
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    },
   }),
 
   // Set lexicalEditor as the default editor for all rich text fields
