@@ -112,6 +112,11 @@ const HeroActionSlotsRenderer: React.FC<{
   const descColor = isDarkTheme ? 'text-gray-300' : 'text-gray-700'
   const cardBorderColor = isDarkTheme ? 'border-gray-700' : 'border-gray-200'
 
+  // ฟังก์ชันสำหรับสร้าง URL รูปภาพจาก ID
+  const getImageUrl = (iconId: string) => {
+    return `/api/media/file/${iconId}`
+  }
+
   return (
     <div className="w-full pt-0 pb-2 md:pb-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
@@ -132,17 +137,62 @@ const HeroActionSlotsRenderer: React.FC<{
             : null
           console.log('🔍 Final cmsLinkProps:', cmsLinkProps)
 
+          // Handle icon - check if it's an object with URL or just a string ID
+          const hasValidIcon =
+            slot.icon &&
+            ((typeof slot.icon === 'object' && slot.icon.url) ||
+              (typeof slot.icon === 'string' && slot.icon.length > 0))
+
           const slotContent = (
             <div
               className={`flex items-center space-x-4 p-4 md:p-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${cardBgColor} border ${cardBorderColor} h-full cursor-pointer`}
             >
-              {slot.icon && typeof slot.icon === 'object' && (slot.icon as MediaType).url && (
+              {hasValidIcon && (
                 <div className="w-12 h-12 md:w-16 md:h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700 flex items-center justify-center p-1">
-                  <Media
-                    resource={slot.icon as MediaType}
-                    className="max-w-full max-h-full object-contain"
-                    imgClassName="rounded-md w-full h-full object-contain"
-                  />
+                  {typeof slot.icon === 'object' && slot.icon.url ? (
+                    <Media
+                      resource={slot.icon as MediaType}
+                      className="max-w-full max-h-full object-contain"
+                      imgClassName="rounded-md w-full h-full object-contain"
+                    />
+                  ) : typeof slot.icon === 'string' ? (
+                    <img
+                      src={getImageUrl(slot.icon)}
+                      alt={slot.title}
+                      className="rounded-md w-full h-full object-contain"
+                      onError={(e) => {
+                        // Fallback to placeholder if image fails to load
+                        const target = e.target as HTMLImageElement
+                        target.style.display = 'none'
+                        const parent = target.parentElement
+                        if (parent) {
+                          parent.innerHTML = `
+                            <div class="w-full h-full bg-gray-300 dark:bg-gray-600 rounded-md flex items-center justify-center">
+                              <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                            </div>
+                          `
+                        }
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-300 dark:bg-gray-600 rounded-md flex items-center justify-center">
+                      <svg
+                        className="w-6 h-6 text-gray-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                    </div>
+                  )}
                 </div>
               )}
               <div className="flex-grow">
@@ -274,12 +324,12 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
   // Reinstated CategoriesDropdown Component for the left sidebar
   const CategoriesDropdown = () => {
     if (!showCategoriesDropdown || isLoadingCategories || categories.length === 0) return null
-    const baseTextColor = colorTheme === 'dark' ? 'text-white' : 'text-gray-900'
+    const baseTextColor = 'text-white'
     const hoverBgColor = colorTheme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-blue-50'
     const activeBgColor = colorTheme === 'dark' ? 'bg-gray-600' : 'bg-blue-100'
     const activeTextColor = colorTheme === 'dark' ? 'text-white' : 'text-blue-700'
     const borderColor = colorTheme === 'dark' ? 'border-gray-700' : 'border-gray-200'
-    const headerTextColor = colorTheme === 'dark' ? 'text-white' : 'text-gray-900'
+    const headerTextColor = 'text-white'
     const scrollbarClasses =
       colorTheme === 'dark'
         ? '[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-600'
@@ -287,10 +337,10 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
 
     return (
       <div
-        className={`w-full max-w-sm bg-white dark:bg-gray-800 rounded-xl shadow-lg border ${borderColor} overflow-hidden`}
+        className={`w-full max-w-sm bg-gray-800 rounded-xl shadow-lg border ${borderColor} overflow-hidden`}
       >
         <div
-          className={`px-4 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 border-b ${borderColor}`}
+          className={`px-4 py-3 bg-gradient-to-r from-gray-700 to-gray-600 border-b ${borderColor}`}
         >
           <h3 className={`text-lg font-semibold ${headerTextColor} flex items-center gap-2`}>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -305,7 +355,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
           </h3>
         </div>
         <div className={`max-h-80 overflow-y-auto ${scrollbarClasses}`}>
-          <ul className="divide-y divide-gray-100 dark:divide-gray-700">
+          <ul className="divide-y divide-gray-700">
             {categories.map((category) => (
               <li key={category.id} className="group">
                 <Link
@@ -324,7 +374,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{category.title}</p>
                     {category.description && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
+                      <p className="text-xs text-gray-400 truncate mt-0.5">
                         {category.description}
                       </p>
                     )}
@@ -356,16 +406,16 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
     if (!socialMediaButtons || socialMediaButtons.length === 0) return null
 
     const isDarkTheme = colorTheme === 'dark'
-    const containerBg = isDarkTheme ? 'bg-gray-800' : 'bg-white'
+    const containerBg = 'bg-gray-800' // เปลี่ยนเป็น gray-800 เสมอ
     const borderColor = isDarkTheme ? 'border-gray-700' : 'border-gray-200'
-    const headerTextColor = isDarkTheme ? 'text-white' : 'text-gray-900'
+    const headerTextColor = 'text-white' // เปลี่ยนเป็นสีขาวเสมอ
 
     return (
       <div
         className={`w-full max-w-sm ${containerBg} rounded-xl shadow-lg border ${borderColor} overflow-hidden mt-4`}
       >
         <div
-          className={`px-4 py-3 bg-gradient-to-r from-green-50 to-blue-50 dark:from-gray-700 dark:to-gray-600 border-b ${borderColor}`}
+          className={`px-4 py-3 bg-gradient-to-r from-gray-700 to-gray-600 border-b ${borderColor}`}
         >
           <h3 className={`text-lg font-semibold ${headerTextColor} flex items-center gap-2`}>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -387,7 +437,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                 href={button.url}
                 target={button.newTab ? '_blank' : '_self'}
                 rel={button.newTab ? 'noopener noreferrer' : undefined}
-                className="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200 group"
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 group"
               >
                 {button.icon &&
                   typeof button.icon === 'object' &&
@@ -400,7 +450,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                       />
                     </div>
                   )}
-                <span className="font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                <span className="font-medium text-white group-hover:text-blue-400">
                   {button.label}
                 </span>
                 <svg
