@@ -30,6 +30,12 @@ export default buildConfig({
       ? [process.env.NEXT_PUBLIC_SERVER_URL || 'https://jmc111.vercel.app']
       : ['http://localhost:3000'],
 
+  // CSRF settings - เพิ่มเพื่อแก้ไขปัญหารูปภาพ
+  csrf:
+    process.env.NODE_ENV === 'production'
+      ? [process.env.NEXT_PUBLIC_SERVER_URL || 'https://jmc111.vercel.app']
+      : ['http://localhost:3000'],
+
   // Secret key setting
   secret: process.env.PAYLOAD_SECRET || '8ecc0ba2b1c8c461f2daba9d',
 

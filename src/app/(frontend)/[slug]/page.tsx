@@ -51,7 +51,11 @@ export default async function Page({ params: paramsPromise }: Args) {
 
   let page: RequiredDataFromCollectionSlug<'pages'> | null
 
-  page = await queryPageBySlug({ slug, depth: 2 });
+  if (slug === 'draft-preview' && draft) {
+    page = await queryPageBySlug({ slug: 'home', depth: 2 })
+  } else {
+    page = await queryPageBySlug({ slug, depth: 2 })
+  }
 
   if (!page && slug === 'home') {
     page = homeStatic
@@ -80,7 +84,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const { slug = 'home' } = await paramsPromise
   const page = await queryPageBySlug({
     slug,
-    depth: 2
+    depth: 2,
   })
 
   return generateMeta({ doc: page })
