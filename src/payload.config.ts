@@ -24,17 +24,25 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
-  // CORS settings
+  // CORS settings - เพิ่ม wildcard และ credentials
   cors:
     process.env.NODE_ENV === 'production'
-      ? [process.env.NEXT_PUBLIC_SERVER_URL || 'https://jmc111.vercel.app']
-      : ['http://localhost:3000'],
+      ? [
+          process.env.NEXT_PUBLIC_SERVER_URL || 'https://jmc111.vercel.app',
+          'https://jmc111.vercel.app',
+          'https://*.vercel.app',
+        ]
+      : ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:3001'],
 
   // CSRF settings - เพิ่มเพื่อแก้ไขปัญหารูปภาพ
   csrf:
     process.env.NODE_ENV === 'production'
-      ? [process.env.NEXT_PUBLIC_SERVER_URL || 'https://jmc111.vercel.app']
-      : ['http://localhost:3000'],
+      ? [
+          process.env.NEXT_PUBLIC_SERVER_URL || 'https://jmc111.vercel.app',
+          'https://jmc111.vercel.app',
+          'https://*.vercel.app',
+        ]
+      : ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:3001'],
 
   // Secret key setting
   secret: process.env.PAYLOAD_SECRET || '8ecc0ba2b1c8c461f2daba9d',
@@ -68,6 +76,9 @@ export default buildConfig({
     meta: {
       titleSuffix: 'จงมีชัยค้าวัสดุ',
     },
+    // เพิ่ม settings สำหรับแก้ไข authentication issues
+    autoLogin: false,
+    disable: false,
   },
 
   // Storage settings

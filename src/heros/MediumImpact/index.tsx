@@ -25,22 +25,17 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
   richText,
   colorTheme = 'light',
   layoutVariant = 'standard',
-  showDecorations = true,
-  featuredText,
   backgroundImage,
   slideImages,
   showCategoriesDropdown = true,
   categoriesLimit = 10,
-  displayFrame,
-  framedHeroContent,
-  heroActionSlots,
   socialMediaButtons,
 }) => {
   const { setHeaderTheme } = useHeaderTheme()
-  const [currentSlide, setCurrentSlide] = useState(0)
+  const [_currentSlide, setCurrentSlide] = useState(0)
   const hasSlideImages = Array.isArray(slideImages) && slideImages.length > 0
   const [categories, setCategories] = useState<Category[]>([])
-  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
+  const [_hoveredCategory, _setHoveredCategory] = useState<string | null>(null)
   const [isLoadingCategories, setIsLoadingCategories] = useState(true)
 
   useEffect(() => {
@@ -79,14 +74,14 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
   const getBgClasses = () => {
     switch (colorTheme) {
       case 'dark':
-        return 'bg-gray-900 text-white'
+        return 'bg-white text-gray-900'
       case 'lightBlue':
-        return 'bg-blue-50 text-gray-900'
+        return 'bg-white text-gray-900'
       case 'gradient':
-        return 'bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900'
+        return 'bg-white text-gray-900'
       case 'light':
       default:
-        return 'bg-gray-50 text-gray-900'
+        return 'bg-white text-gray-900'
     }
   }
 

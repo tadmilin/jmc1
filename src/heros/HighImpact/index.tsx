@@ -2,6 +2,7 @@
 import { useHeaderTheme } from '@/providers/HeaderTheme'
 import React, { useEffect, useState } from 'react'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
+import Image from 'next/image'
 
 import type {
   Page,
@@ -100,9 +101,6 @@ const HeroActionSlotsRenderer: React.FC<{
   slots: HeroActionSlot[] | null | undefined
   colorTheme?: string
 }> = ({ slots, colorTheme }) => {
-  // Debug: ดูโครงสร้างข้อมูล
-  console.log('🔍 HeroActionSlots Debug:', slots)
-
   if (!slots || slots.length === 0) return null
 
   const isDarkTheme = colorTheme === 'dark'
@@ -116,9 +114,7 @@ const HeroActionSlotsRenderer: React.FC<{
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         {slots.map((slot) => {
           // Handle the nested slotLink structure from payload
-          console.log('🔍 Processing slot:', slot.title, 'slotLink:', slot.slotLink)
           const linkData = slot.slotLink && slot.slotLink.length > 0 ? slot.slotLink[0]?.link : null
-          console.log('🔍 Extracted linkData:', linkData)
 
           const cmsLinkProps = linkData
             ? {
@@ -126,10 +122,12 @@ const HeroActionSlotsRenderer: React.FC<{
                 url: linkData.url,
                 label: linkData.label || slot.title,
                 newTab: linkData.newTab,
-                reference: linkData.reference as any, // Type assertion เพื่อแก้ไข type error
+                reference: linkData.reference as {
+                  relationTo: 'pages' | 'posts'
+                  value: string | number
+                },
               }
             : null
-          console.log('🔍 Final cmsLinkProps:', cmsLinkProps)
 
           // Handle icon - check if it's an object with URL or just a string ID
           const hasValidIcon =
@@ -144,22 +142,31 @@ const HeroActionSlotsRenderer: React.FC<{
               {hasValidIcon && (
                 <div className="w-12 h-12 md:w-16 md:h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700 flex items-center justify-center p-1">
                   {typeof slot.icon === 'object' && slot.icon.url ? (
-                    <img
-                      src={slot.icon.url}
-                      alt={slot.title}
-                      className="rounded-md w-full h-full object-contain"
-                    />
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={slot.icon.url}
+                        alt={slot.title || 'Product icon'}
+                        fill
+                        className="rounded-md object-contain"
+                        sizes="(max-width: 768px) 48px, 64px"
+                      />
+                    </div>
                   ) : typeof slot.icon === 'string' ? (
-                    <img
-                      src={`/api/media/file/${slot.icon}`}
-                      alt={slot.title}
-                      className="rounded-md w-full h-full object-contain"
-                      onError={(e) => {
-                        // Fallback to placeholder if image fails to load
-                        e.currentTarget.style.display = 'none'
-                        e.currentTarget.nextElementSibling?.classList.remove('hidden')
-                      }}
-                    />
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={`/api/media/file/${slot.icon}`}
+                        alt={slot.title || 'Product icon'}
+                        fill
+                        className="rounded-md object-contain"
+                        sizes="(max-width: 768px) 48px, 64px"
+                        onError={(e) => {
+                          // Fallback to placeholder if image fails to load
+                          e.currentTarget.style.display = 'none'
+                          const fallback = e.currentTarget.parentElement?.nextElementSibling
+                          if (fallback) fallback.classList.remove('hidden')
+                        }}
+                      />
+                    </div>
                   ) : null}
                   {/* Fallback icon */}
                   <div className="w-full h-full bg-gray-300 dark:bg-gray-600 rounded-md flex items-center justify-center hidden">
@@ -173,7 +180,7 @@ const HeroActionSlotsRenderer: React.FC<{
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2v12a2 2 0 002 2z"
                       />
                     </svg>
                   </div>
@@ -278,14 +285,14 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
   const getBgClasses = () => {
     switch (colorTheme) {
       case 'dark':
-        return 'bg-gray-900 text-white'
+        return 'bg-white text-gray-900'
       case 'lightBlue':
-        return 'bg-blue-50 text-gray-900'
+        return 'bg-white text-gray-900'
       case 'gradient':
-        return 'bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900'
+        return 'bg-white text-gray-900'
       case 'light':
       default:
-        return 'bg-gray-50 text-gray-900'
+        return 'bg-white text-gray-900'
     }
   }
 
@@ -342,11 +349,13 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                   className={`flex items-center gap-3 px-4 py-3 transition-all duration-200 ${baseTextColor} ${hoverBgColor} group-hover:pl-6`}
                 >
                   {category.image && typeof category.image === 'object' && (
-                    <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 shadow-sm">
-                      <img
+                    <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 shadow-sm relative">
+                      <Image
                         src={category.image.url || ''}
-                        alt={category.title}
-                        className="w-full h-full object-cover"
+                        alt={category.title || 'Category image'}
+                        fill
+                        className="object-cover"
+                        sizes="32px"
                       />
                     </div>
                   )}
@@ -420,11 +429,13 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                 {button.icon &&
                   typeof button.icon === 'object' &&
                   (button.icon as MediaType).url && (
-                    <div className="w-8 h-8 flex-shrink-0 rounded-lg overflow-hidden shadow-sm">
-                      <img
+                    <div className="w-8 h-8 flex-shrink-0 rounded-lg overflow-hidden shadow-sm relative">
+                      <Image
                         src={(button.icon as MediaType).url || ''}
-                        alt={button.label}
-                        className="rounded-lg w-full h-full object-contain"
+                        alt={button.label || 'Social media icon'}
+                        fill
+                        className="rounded-lg object-contain"
+                        sizes="32px"
                       />
                     </div>
                   )}

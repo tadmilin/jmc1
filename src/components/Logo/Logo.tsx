@@ -1,10 +1,8 @@
 'use client'
 
-import * as React from 'react'
-import { cn } from '@/utilities/ui'
+import React from 'react'
 import Image from 'next/image'
-import clsx from 'clsx'
-import type { Header, Media } from '@/payload-types'
+import type { Header } from '@/payload-types'
 
 // Add a type for the props that allows passing CSS classes and logo data
 interface LogoProps {
@@ -14,11 +12,11 @@ interface LogoProps {
   logoData?: Header['logo']
 }
 
-export const Logo: React.FC<LogoProps> = ({ 
-  className, 
-  loading = 'lazy', 
+export const Logo: React.FC<LogoProps> = ({
+  className,
+  loading = 'lazy',
   priority = 'low',
-  logoData 
+  logoData,
 }) => {
   // ใช้ข้อมูลจาก logoData หรือค่าเริ่มต้น
   const companyName = logoData?.companyName || 'JMC'
@@ -28,7 +26,7 @@ export const Logo: React.FC<LogoProps> = ({
   const logoImage = logoData?.logoImage
 
   return (
-    <div className={cn("flex items-center", className)}>
+    <div className={className}>
       {/* แสดงรูปโลโก้ที่อัปโหลด หรือ SVG เริ่มต้น */}
       <div className="relative w-10 h-10 md:w-12 md:h-12 mr-2">
         {logoImage && typeof logoImage === 'object' ? (
@@ -66,17 +64,12 @@ export const Logo: React.FC<LogoProps> = ({
           </svg>
         )}
       </div>
-      
+
       <div className="flex flex-col">
-        <span 
-          className="font-bold text-lg md:text-xl"
-          style={{ color: companyNameColor }}
-        >
+        <span className="font-bold text-lg md:text-xl" style={{ color: companyNameColor }}>
           {companyName}
         </span>
-        <span className="text-xs md:text-sm text-gray-600">
-          {companySubtitle}
-        </span>
+        <span className="text-xs md:text-sm text-gray-600">{companySubtitle}</span>
       </div>
     </div>
   )

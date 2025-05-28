@@ -3,25 +3,21 @@ import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
 import React from 'react'
 
-import { AdminBar } from '@/components/AdminBar'
 import { Footer } from '@/Footer/Component'
 import { Header } from '@/Header/Component'
 import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
-import { draftMode } from 'next/headers'
 
 import './globals.css'
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  const { isEnabled } = await draftMode()
-
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html className={`${GeistSans.variable} ${GeistMono.variable}`} lang="en" suppressHydrationWarning>
+    <html
+      className={`${GeistSans.variable} ${GeistMono.variable}`}
+      lang="en"
+      suppressHydrationWarning
+    >
       <head>
         <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
@@ -29,13 +25,6 @@ export default async function RootLayout({
       </head>
       <body className="flex flex-col">
         <Providers>
-          {/* AdminBar has been temporarily commented out to remove the top black bar 
-          <AdminBar
-            adminBarProps={{
-              preview: isEnabled,
-            }}
-          />
-          */}
           <Header />
           <main>{children}</main>
           <Footer />
