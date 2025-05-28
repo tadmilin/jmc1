@@ -18,7 +18,32 @@ type Args = {
 export const generateMetadata = ({ params, searchParams }: Args): Promise<Metadata> =>
   generatePageMetadata({ config, params, searchParams })
 
-const Page = ({ params, searchParams }: Args) =>
-  RootPage({ config, params, searchParams, importMap })
+const Page = ({ params, searchParams }: Args) => {
+  // เพิ่ม error boundary และ debugging
+  try {
+    return RootPage({ config, params, searchParams, importMap })
+  } catch (error) {
+    console.error('Admin page error:', error)
+    // Return a fallback UI
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>
+        <h1>Admin Panel Loading...</h1>
+        <p>กำลังโหลด Admin Panel กรุณารอสักครู่</p>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              console.log('Admin page mounted');
+              setTimeout(() => {
+                if (window.location.pathname.includes('/admin')) {
+                  window.location.reload();
+                }
+              }, 2000);
+            `,
+          }}
+        />
+      </div>
+    )
+  }
+}
 
 export default Page

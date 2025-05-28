@@ -1,31 +1,42 @@
 import canUseDOM from './canUseDOM'
 
-export const getServerSideURL = () => {
-  let url = process.env.NEXT_PUBLIC_SERVER_URL
-
-  if (!url && process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+/**
+ * Returns the server-side URL for the current environment
+ */
+export const getServerSideURL = (): string => {
+  // ใน production บน Vercel
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`
   }
 
-  if (!url) {
-    url = 'http://localhost:3000'
+  // ใช้ NEXT_PUBLIC_SERVER_URL ถ้ามี
+  if (process.env.NEXT_PUBLIC_SERVER_URL) {
+    return process.env.NEXT_PUBLIC_SERVER_URL
   }
 
-  return url
+  // ใช้ SERVER_URL ถ้ามี (backward compatibility)
+  if (process.env.SERVER_URL) {
+    return process.env.SERVER_URL
+  }
+
+  // สำหรับ development
+  if (process.env.NODE_ENV === 'development') {
+    return 'http://localhost:3000'
+  }
+
+  // fallback
+  return 'https://jmc111.vercel.app'
 }
 
-export const getClientSideURL = () => {
-  if (canUseDOM) {
-    const protocol = window.location.protocol
-    const domain = window.location.hostname
-    const port = window.location.port
-
-    return `${protocol}//${domain}${port ? `:${port}` : ''}`
+/**
+ * Returns the client-side URL for the current environment
+ */
+export const getClientSideURL = (): string => {
+  // ใน browser
+  if (typeof window !== 'undefined') {
+    return window.location.origin
   }
 
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  }
-
-  return process.env.NEXT_PUBLIC_SERVER_URL || ''
+  // fallback to server-side URL
+  return getServerSideURL()
 }

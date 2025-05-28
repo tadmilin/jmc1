@@ -25,7 +25,10 @@ const dirname = path.dirname(filename)
 
 export default buildConfig({
   // CORS settings
-  cors: process.env.NODE_ENV === 'production' ? '*' : ['http://localhost:3000'],
+  cors:
+    process.env.NODE_ENV === 'production'
+      ? [process.env.NEXT_PUBLIC_SERVER_URL || 'https://jmc111.vercel.app']
+      : ['http://localhost:3000'],
 
   // Secret key setting
   secret: process.env.PAYLOAD_SECRET || '8ecc0ba2b1c8c461f2daba9d',
@@ -34,15 +37,16 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
     connectOptions: {
-      maxPoolSize: 1, // ลดลงเหลือ 1 connection เท่านั้น
-      minPoolSize: 0, // ไม่มี minimum connections
-      maxIdleTimeMS: 3000, // ปิด idle connections หลัง 3 วินาที
-      serverSelectionTimeoutMS: 2000, // timeout 2 วินาที
-      socketTimeoutMS: 20000, // socket timeout 20 วินาที
-      connectTimeoutMS: 5000, // connection timeout 5 วินาที
-      heartbeatFrequencyMS: 30000, // heartbeat ทุก 30 วินาที
-      retryWrites: false, // ปิด retry writes
-      retryReads: false, // ปิด retry reads
+      maxPoolSize: 2, // เพิ่มเป็น 2 connections สำหรับ production
+      minPoolSize: 0,
+      maxIdleTimeMS: 5000, // เพิ่มเป็น 5 วินาที
+      serverSelectionTimeoutMS: 5000, // เพิ่มเป็น 5 วินาที
+      socketTimeoutMS: 30000, // เพิ่มเป็น 30 วินาที
+      connectTimeoutMS: 10000, // เพิ่มเป็น 10 วินาที
+      heartbeatFrequencyMS: 30000,
+      retryWrites: true, // เปิด retry writes
+      retryReads: true, // เปิด retry reads
+      bufferCommands: false, // ปิด buffer commands
     },
   }),
 
@@ -87,4 +91,7 @@ export default buildConfig({
       token: process.env.BLOB_READ_WRITE_TOKEN || '',
     }),
   ],
+
+  // เพิ่มการตั้งค่าสำหรับ serverURL
+  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || 'https://jmc111.vercel.app',
 })
