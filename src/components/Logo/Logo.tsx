@@ -26,9 +26,9 @@ export const Logo: React.FC<LogoProps> = ({
   const logoImage = logoData?.logoImage
 
   return (
-    <div className={className}>
+    <div className={`flex items-center ${className || ''}`}>
       {/* แสดงรูปโลโก้ที่อัปโหลด หรือ SVG เริ่มต้น */}
-      <div className="relative w-10 h-10 md:w-12 md:h-12 mr-2">
+      <div className="relative w-10 h-10 md:w-12 md:h-12 mr-3">
         {logoImage && typeof logoImage === 'object' ? (
           <Image
             src={logoImage.url || ''}

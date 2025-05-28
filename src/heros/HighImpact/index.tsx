@@ -1,8 +1,6 @@
 'use client'
-import { useHeaderTheme } from '@/providers/HeaderTheme'
 import React, { useEffect, useState } from 'react'
-import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
-import Image from 'next/image'
+import Link from 'next/link'
 
 import type {
   Page,
@@ -14,7 +12,9 @@ import type {
 import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
-import Link from 'next/link'
+import { useHeaderTheme } from '@/providers/HeaderTheme'
+
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 
 // Adjusted CustomLinkType to better match CMSLinkType from @/components/Link
 interface CustomLinkType {
@@ -141,49 +141,31 @@ const HeroActionSlotsRenderer: React.FC<{
             >
               {hasValidIcon && (
                 <div className="w-12 h-12 md:w-16 md:h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700 flex items-center justify-center p-1">
-                  {typeof slot.icon === 'object' && slot.icon.url ? (
+                  {typeof slot.icon === 'object' && slot.icon ? (
                     <div className="relative w-full h-full">
-                      <Image
-                        src={slot.icon.url}
-                        alt={slot.title || 'Product icon'}
-                        fill
-                        className="rounded-md object-contain"
-                        sizes="(max-width: 768px) 48px, 64px"
+                      <Media
+                        resource={slot.icon}
+                        className="w-full h-full"
+                        imgClassName="rounded-md object-contain w-full h-full"
                       />
                     </div>
-                  ) : typeof slot.icon === 'string' ? (
-                    <div className="relative w-full h-full">
-                      <Image
-                        src={`/api/media/file/${slot.icon}`}
-                        alt={slot.title || 'Product icon'}
-                        fill
-                        className="rounded-md object-contain"
-                        sizes="(max-width: 768px) 48px, 64px"
-                        onError={(e) => {
-                          // Fallback to placeholder if image fails to load
-                          e.currentTarget.style.display = 'none'
-                          const fallback = e.currentTarget.parentElement?.nextElementSibling
-                          if (fallback) fallback.classList.remove('hidden')
-                        }}
-                      />
+                  ) : (
+                    <div className="w-full h-full bg-gray-300 dark:bg-gray-600 rounded-md flex items-center justify-center">
+                      <svg
+                        className="w-6 h-6 text-gray-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
                     </div>
-                  ) : null}
-                  {/* Fallback icon */}
-                  <div className="w-full h-full bg-gray-300 dark:bg-gray-600 rounded-md flex items-center justify-center hidden">
-                    <svg
-                      className="w-6 h-6 text-gray-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                  </div>
+                  )}
                 </div>
               )}
               <div className="flex-grow">
@@ -314,18 +296,19 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
   // Reinstated CategoriesDropdown Component for the left sidebar
   const CategoriesDropdown = () => {
     if (!showCategoriesDropdown || isLoadingCategories || categories.length === 0) return null
-    const baseTextColor = 'text-white' // สีขาวเสมอ
-    const hoverBgColor = 'hover:bg-gray-700'
-    const borderColor = 'border-gray-700'
-    const headerTextColor = 'text-white' // สีขาวเสมอ
+
+    // เปลี่ยนเป็นสีขาวตามภาพที่แนบมา
+    const baseTextColor = 'text-gray-900' // ข้อความสีดำ
+    const hoverBgColor = 'hover:bg-gray-50' // hover เป็นสีเทาอ่อน
+    const borderColor = 'border-gray-200' // เส้นขอบสีเทาอ่อน
     const scrollbarClasses =
-      '[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-600'
+      '[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300'
 
     return (
       <div
-        className={`w-full max-w-sm bg-gray-800 rounded-xl shadow-lg border ${borderColor} overflow-hidden`}
+        className={`w-full max-w-sm bg-white rounded-xl shadow-lg border ${borderColor} overflow-hidden`}
       >
-        <div className={`px-4 py-3 bg-white border-b ${borderColor}`}>
+        <div className={`px-4 py-3 bg-green-50 border-b ${borderColor}`}>
           <h3 className={`text-lg font-semibold text-gray-900 flex items-center gap-2`}>
             <svg
               className="w-5 h-5 text-gray-700"
@@ -344,7 +327,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
           </h3>
         </div>
         <div className={`max-h-80 overflow-y-auto ${scrollbarClasses}`}>
-          <ul className="divide-y divide-gray-700">
+          <ul className="divide-y divide-gray-100">
             {categories.map((category) => (
               <li key={category.id} className="group">
                 <Link
@@ -353,25 +336,23 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                 >
                   {category.image && typeof category.image === 'object' && (
                     <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 shadow-sm relative">
-                      <Image
-                        src={category.image.url || ''}
-                        alt={category.title || 'Category image'}
-                        fill
-                        className="object-cover"
-                        sizes="32px"
+                      <Media
+                        resource={category.image}
+                        className="w-full h-full"
+                        imgClassName="object-cover w-full h-full"
                       />
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate text-white">{category.title}</p>
+                    <p className="text-sm font-medium truncate text-gray-900">{category.title}</p>
                     {category.description && (
-                      <p className="text-xs text-gray-300 truncate mt-0.5">
+                      <p className="text-xs text-gray-500 truncate mt-0.5">
                         {category.description}
                       </p>
                     )}
                   </div>
                   <svg
-                    className="w-4 h-4 text-gray-600 group-hover:text-blue-600 transition-colors"
+                    className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -396,15 +377,15 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
   const SocialMediaButtons = () => {
     if (!socialMediaButtons || socialMediaButtons.length === 0) return null
 
-    const containerBg = 'bg-gray-800'
-    const borderColor = 'border-gray-700'
-    const headerTextColor = 'text-white'
+    // เปลี่ยนเป็นสีขาวเหมือน CategoriesDropdown
+    const containerBg = 'bg-white'
+    const borderColor = 'border-gray-200'
 
     return (
       <div
         className={`w-full max-w-sm ${containerBg} rounded-xl shadow-lg border ${borderColor} overflow-hidden mt-4`}
       >
-        <div className={`px-4 py-3 bg-white border-b ${borderColor}`}>
+        <div className={`px-4 py-3 bg-green-50 border-b ${borderColor}`}>
           <h3 className={`text-lg font-semibold text-gray-900 flex items-center gap-2`}>
             <svg
               className="w-5 h-5 text-gray-700"
@@ -430,26 +411,22 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                 href={button.url}
                 target={button.newTab ? '_blank' : '_self'}
                 rel={button.newTab ? 'noopener noreferrer' : undefined}
-                className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-700 transition-colors duration-200 group"
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 group"
               >
-                {button.icon &&
-                  typeof button.icon === 'object' &&
-                  (button.icon as MediaType).url && (
-                    <div className="w-8 h-8 flex-shrink-0 rounded-lg overflow-hidden shadow-sm relative">
-                      <Image
-                        src={(button.icon as MediaType).url || ''}
-                        alt={button.label || 'Social media icon'}
-                        fill
-                        className="rounded-lg object-contain"
-                        sizes="32px"
-                      />
-                    </div>
-                  )}
+                {button.icon && typeof button.icon === 'object' && (
+                  <div className="w-8 h-8 flex-shrink-0 rounded-lg overflow-hidden shadow-sm relative">
+                    <Media
+                      resource={button.icon as MediaType}
+                      className="w-full h-full"
+                      imgClassName="rounded-lg object-contain w-full h-full"
+                    />
+                  </div>
+                )}
                 <span className="font-medium text-gray-900 group-hover:text-blue-600">
                   {button.label}
                 </span>
                 <svg
-                  className="w-4 h-4 text-gray-600 group-hover:text-blue-600 transition-colors ml-auto"
+                  className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors ml-auto"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"

@@ -18,27 +18,45 @@ interface HeaderClientProps {
 
 // Menu Icons
 const MenuIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+  <svg
+    aria-hidden="true"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
     <path d="M3 12h18M3 6h18M3 18h18" />
   </svg>
-);
+)
 
 const CategoryIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+  <svg
+    aria-hidden="true"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
     <rect x="3" y="3" width="7" height="7" />
     <rect x="14" y="3" width="7" height="7" />
     <rect x="14" y="14" width="7" height="7" />
     <rect x="3" y="14" width="7" height="7" />
   </svg>
-);
+)
 
 export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
   /* Storing the value in a useState to avoid hydration errors */
   const [theme, setTheme] = useState<string | null>(null)
   const { headerTheme, setHeaderTheme } = useHeaderTheme()
   const pathname = usePathname()
-  const [isLeftMobileMenuOpen, setIsLeftMobileMenuOpen] = useState(false); // Renamed for clarity
-  const [isRightMobileMenuOpen, setIsRightMobileMenuOpen] = useState(false); // State for the new right hamburger menu
+  const [isLeftMobileMenuOpen, setIsLeftMobileMenuOpen] = useState(false) // Renamed for clarity
+  const [isRightMobileMenuOpen, setIsRightMobileMenuOpen] = useState(false) // State for the new right hamburger menu
 
   // ปิดเมนูเมื่อเปลี่ยนหน้า
   useEffect(() => {
@@ -78,7 +96,10 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
   // }
 
   return (
-    <header className="sticky top-0 z-40 shadow-sm w-full bg-white" {...(theme ? { 'data-theme': theme } : {})}>
+    <header
+      className="sticky top-0 z-40 shadow-sm w-full bg-white"
+      {...(theme ? { 'data-theme': theme } : {})}
+    >
       {/* THE TOP BLUE BAR HAS BEEN REMOVED
       <div className="bg-blue-800 text-white py-2">
         <div className="container mx-auto px-4 flex justify-between items-center">
@@ -105,7 +126,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
             {/* Left Section: Hamburger (for Categories) */}
-            <div className="lg:hidden flex flex-col items-center justify-center w-14"> 
+            <div className="lg:hidden flex flex-col items-center justify-center w-14">
               <button
                 onClick={() => setIsLeftMobileMenuOpen(!isLeftMobileMenuOpen)}
                 className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 p-1.5 rounded-md transition-colors"
@@ -123,42 +144,40 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
               <Link href="/" className="block">
                 <Logo loading="eager" priority="high" logoData={data.logo} />
               </Link>
-          </div>
-          
+            </div>
+
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center justify-end flex-1">
-            <HeaderNav data={data} />
-          </div>
+              <HeaderNav data={data} />
+            </div>
 
             {/* Right Section for Mobile: Hamburger (for NavItems) */}
             <div className="lg:hidden flex flex-col items-center justify-center w-14">
-            <button
-              onClick={() => setIsRightMobileMenuOpen(!isRightMobileMenuOpen)}
+              <button
+                onClick={() => setIsRightMobileMenuOpen(!isRightMobileMenuOpen)}
                 className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 p-1.5 rounded-md transition-colors"
                 aria-label="เปิดเมนูหลัก"
-              aria-expanded={isRightMobileMenuOpen}
+                aria-expanded={isRightMobileMenuOpen}
                 title="เมนูหลัก"
-            >
+              >
                 <MenuIcon className="h-5 w-5" />
-            </button>
+              </button>
               <span className="text-xs text-gray-500 mt-0.5 leading-tight">เมนู</span>
             </div>
           </div>
         </div>
       </div>
-      
+
       {/* Left Mobile Menu (Categories) */}
       {isLeftMobileMenuOpen && (
-        <MobileCategoryMenu 
-          onClose={() => setIsLeftMobileMenuOpen(false)} 
-        />
+        <MobileCategoryMenu onClose={() => setIsLeftMobileMenuOpen(false)} />
       )}
 
       {/* Right Mobile Menu (NavItems) */}
       {isRightMobileMenuOpen && (
-        <MobileNavItemsMenu 
-          navItems={data.navItems} 
-          onClose={() => setIsRightMobileMenuOpen(false)} 
+        <MobileNavItemsMenu
+          navItems={data.navItems}
+          onClose={() => setIsRightMobileMenuOpen(false)}
         />
       )}
     </header>

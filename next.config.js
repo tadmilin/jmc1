@@ -6,6 +6,42 @@ const nextConfig = {
   experimental: {
     reactCompiler: false,
   },
+  // เพิ่มการตั้งค่าสำหรับ images
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'jmc111.vercel.app',
+        port: '',
+        pathname: '/api/media/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/api/media/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/api/media/**',
+      },
+      // เพิ่ม Vercel Blob Storage
+      {
+        protocol: 'https',
+        hostname: '*.public.blob.vercel-storage.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.blob.vercel-storage.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
   // เพิ่มการตั้งค่าสำหรับ Vercel deployment
   output: 'standalone',
   // เพิ่ม rewrites สำหรับ admin panel

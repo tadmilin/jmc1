@@ -18,50 +18,30 @@ import { Footer } from './Footer/config'
 import { Header } from './Header/config'
 import { CategoryShowcase } from './CategoryShowcase/config'
 import { plugins } from './plugins'
-import { getServerSideURL } from './utilities/getURL'
+import { getServerSideURL } from '@/utilities/getURL'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
-  // CORS settings - เพิ่ม wildcard และ credentials
+  // CORS settings - ปรับให้ง่ายขึ้น
   cors:
     process.env.NODE_ENV === 'production'
-      ? [
-          process.env.NEXT_PUBLIC_SERVER_URL || 'https://jmc111.vercel.app',
-          'https://jmc111.vercel.app',
-          'https://*.vercel.app',
-        ]
-      : ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:3001'],
+      ? ['https://jmc111.vercel.app', 'https://*.vercel.app']
+      : ['http://localhost:3000', 'http://127.0.0.1:3000'],
 
-  // CSRF settings - เพิ่มเพื่อแก้ไขปัญหารูปภาพ
+  // CSRF settings - ปรับให้ง่ายขึ้น
   csrf:
     process.env.NODE_ENV === 'production'
-      ? [
-          process.env.NEXT_PUBLIC_SERVER_URL || 'https://jmc111.vercel.app',
-          'https://jmc111.vercel.app',
-          'https://*.vercel.app',
-        ]
-      : ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:3001'],
+      ? ['https://jmc111.vercel.app', 'https://*.vercel.app']
+      : ['http://localhost:3000', 'http://127.0.0.1:3000'],
 
   // Secret key setting
   secret: process.env.PAYLOAD_SECRET || '8ecc0ba2b1c8c461f2daba9d',
 
-  // Adapter settings
+  // Adapter settings - ลดความซับซ้อน
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
-    connectOptions: {
-      maxPoolSize: 2, // เพิ่มเป็น 2 connections สำหรับ production
-      minPoolSize: 0,
-      maxIdleTimeMS: 5000, // เพิ่มเป็น 5 วินาที
-      serverSelectionTimeoutMS: 5000, // เพิ่มเป็น 5 วินาที
-      socketTimeoutMS: 30000, // เพิ่มเป็น 30 วินาที
-      connectTimeoutMS: 10000, // เพิ่มเป็น 10 วินาที
-      heartbeatFrequencyMS: 30000,
-      retryWrites: true, // เปิด retry writes
-      retryReads: true, // เปิด retry reads
-      bufferCommands: false, // ปิด buffer commands
-    },
   }),
 
   // Set lexicalEditor as the default editor for all rich text fields
@@ -70,13 +50,9 @@ export default buildConfig({
   admin: {
     // Admin UI settings
     user: Users.slug,
-    livePreview: {
-      url: getServerSideURL() || '',
-    },
     meta: {
       titleSuffix: 'จงมีชัยค้าวัสดุ',
     },
-    // เพิ่ม settings สำหรับแก้ไข authentication issues
     autoLogin: false,
     disable: false,
   },
