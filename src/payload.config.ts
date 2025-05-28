@@ -58,9 +58,6 @@ export default buildConfig({
     meta: {
       titleSuffix: 'จงมีชัยค้าวัสดุ',
     },
-    components: {
-      beforeDashboard: ['@/components/BeforeDashboard'],
-    },
   },
 
   // Storage settings
