@@ -11,11 +11,13 @@ type Props = {
   req: PayloadRequest
 }
 
-export const generatePreviewPath = ({ collection, slug }: Props) => {
+export const generatePreviewPath = ({ collection, slug, req }: Props) => {
+  const finalSlug = slug === 'draft-preview' ? 'home' : slug
+
   const encodedParams = new URLSearchParams({
-    slug,
+    slug: finalSlug,
     collection,
-    path: `${collectionPrefixMap[collection]}/${slug}`,
+    path: `${collectionPrefixMap[collection]}/${finalSlug}`,
     previewSecret: process.env.PREVIEW_SECRET || '',
   })
 

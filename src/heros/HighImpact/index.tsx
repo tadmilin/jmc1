@@ -14,7 +14,6 @@ import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 import Link from 'next/link'
-import { Media as MediaComponent } from '@/components/Media'
 
 // Adjusted CustomLinkType to better match CMSLinkType from @/components/Link
 interface CustomLinkType {
@@ -34,7 +33,7 @@ interface HeroActionSlot {
   icon: MediaType | string
   title: string
   description?: string
-  slotLink: CustomLinkType
+  slotLink: Array<{ link: CustomLinkType; id: string }>
 }
 
 // Define specific block types for FramedContentRenderer
@@ -98,7 +97,7 @@ const FramedContentRenderer: React.FC<{ blocks: SpecificHeroBlock[] | null | und
 
 // Component for Hero Action Slots (Updated Styling)
 const HeroActionSlotsRenderer: React.FC<{
-  slots: any[] | null | undefined
+  slots: HeroActionSlot[] | null | undefined
   colorTheme?: string
 }> = ({ slots, colorTheme }) => {
   // Debug: ดูโครงสร้างข้อมูล
@@ -118,7 +117,7 @@ const HeroActionSlotsRenderer: React.FC<{
         {slots.map((slot) => {
           // Handle the nested slotLink structure from payload
           console.log('🔍 Processing slot:', slot.title, 'slotLink:', slot.slotLink)
-          const linkData = slot.slotLink && slot.slotLink.length > 0 ? slot.slotLink[0].link : null
+          const linkData = slot.slotLink && slot.slotLink.length > 0 ? slot.slotLink[0]?.link : null
           console.log('🔍 Extracted linkData:', linkData)
 
           const cmsLinkProps = linkData
@@ -127,7 +126,7 @@ const HeroActionSlotsRenderer: React.FC<{
                 url: linkData.url,
                 label: linkData.label || slot.title,
                 newTab: linkData.newTab,
-                reference: linkData.reference,
+                reference: linkData.reference as any, // Type assertion เพื่อแก้ไข type error
               }
             : null
           console.log('🔍 Final cmsLinkProps:', cmsLinkProps)
@@ -145,29 +144,39 @@ const HeroActionSlotsRenderer: React.FC<{
               {hasValidIcon && (
                 <div className="w-12 h-12 md:w-16 md:h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700 flex items-center justify-center p-1">
                   {typeof slot.icon === 'object' && slot.icon.url ? (
-                    <Media
-                      resource={slot.icon as MediaType}
-                      className="max-w-full max-h-full object-contain"
-                      imgClassName="rounded-md w-full h-full object-contain"
+                    <img
+                      src={slot.icon.url}
+                      alt={slot.title}
+                      className="rounded-md w-full h-full object-contain"
                     />
-                  ) : (
-                    // Fallback icon สำหรับ string ID หรือไม่มีรูป
-                    <div className="w-full h-full bg-gray-300 dark:bg-gray-600 rounded-md flex items-center justify-center">
-                      <svg
-                        className="w-6 h-6 text-gray-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
-                    </div>
-                  )}
+                  ) : typeof slot.icon === 'string' ? (
+                    <img
+                      src={`/api/media/file/${slot.icon}`}
+                      alt={slot.title}
+                      className="rounded-md w-full h-full object-contain"
+                      onError={(e) => {
+                        // Fallback to placeholder if image fails to load
+                        e.currentTarget.style.display = 'none'
+                        e.currentTarget.nextElementSibling?.classList.remove('hidden')
+                      }}
+                    />
+                  ) : null}
+                  {/* Fallback icon */}
+                  <div className="w-full h-full bg-gray-300 dark:bg-gray-600 rounded-md flex items-center justify-center hidden">
+                    <svg
+                      className="w-6 h-6 text-gray-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </div>
                 </div>
               )}
               <div className="flex-grow">
@@ -231,7 +240,6 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
   const [currentSlide, setCurrentSlide] = useState(0)
   const hasSlideImages = Array.isArray(slideImages) && slideImages.length > 0
   const [categories, setCategories] = useState<Category[]>([])
-  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
   const [isLoadingCategories, setIsLoadingCategories] = useState(true)
 
   useEffect(() => {
@@ -299,16 +307,12 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
   // Reinstated CategoriesDropdown Component for the left sidebar
   const CategoriesDropdown = () => {
     if (!showCategoriesDropdown || isLoadingCategories || categories.length === 0) return null
-    const baseTextColor = 'text-white'
-    const hoverBgColor = colorTheme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-blue-50'
-    const activeBgColor = colorTheme === 'dark' ? 'bg-gray-600' : 'bg-blue-100'
-    const activeTextColor = colorTheme === 'dark' ? 'text-white' : 'text-blue-700'
-    const borderColor = colorTheme === 'dark' ? 'border-gray-700' : 'border-gray-200'
-    const headerTextColor = 'text-white'
+    const baseTextColor = 'text-white' // สีขาวเสมอ
+    const hoverBgColor = 'hover:bg-gray-700'
+    const borderColor = 'border-gray-700'
+    const headerTextColor = 'text-white' // สีขาวเสมอ
     const scrollbarClasses =
-      colorTheme === 'dark'
-        ? '[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-600'
-        : '[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300'
+      '[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-800 [&::-webkit-scrollbar-thumb]:bg-gray-600'
 
     return (
       <div
@@ -339,10 +343,10 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                 >
                   {category.image && typeof category.image === 'object' && (
                     <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 shadow-sm">
-                      <Media
-                        resource={category.image}
+                      <img
+                        src={category.image.url || ''}
+                        alt={category.title}
                         className="w-full h-full object-cover"
-                        imgClassName="w-full h-full object-cover"
                       />
                     </div>
                   )}
@@ -380,10 +384,9 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
   const SocialMediaButtons = () => {
     if (!socialMediaButtons || socialMediaButtons.length === 0) return null
 
-    const isDarkTheme = colorTheme === 'dark'
-    const containerBg = 'bg-gray-800' // เปลี่ยนเป็น gray-800 เสมอ
-    const borderColor = isDarkTheme ? 'border-gray-700' : 'border-gray-200'
-    const headerTextColor = 'text-white' // เปลี่ยนเป็นสีขาวเสมอ
+    const containerBg = 'bg-gray-800'
+    const borderColor = 'border-gray-700'
+    const headerTextColor = 'text-white'
 
     return (
       <div
@@ -418,10 +421,10 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                   typeof button.icon === 'object' &&
                   (button.icon as MediaType).url && (
                     <div className="w-8 h-8 flex-shrink-0 rounded-lg overflow-hidden shadow-sm">
-                      <Media
-                        resource={button.icon as MediaType}
-                        className="w-full h-full object-contain"
-                        imgClassName="rounded-lg w-full h-full object-contain"
+                      <img
+                        src={(button.icon as MediaType).url || ''}
+                        alt={button.label}
+                        className="rounded-lg w-full h-full object-contain"
                       />
                     </div>
                   )}
