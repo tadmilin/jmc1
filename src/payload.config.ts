@@ -33,6 +33,12 @@ export default buildConfig({
   // Adapter settings
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
+    connectOptions: {
+      maxPoolSize: 10, // จำกัด connections สูงสุด 10
+      minPoolSize: 2, // connections ขั้นต่ำ 2
+      maxIdleTimeMS: 30000, // ปิด idle connections หลัง 30 วินาที
+      serverSelectionTimeoutMS: 5000, // timeout 5 วินาที
+    },
   }),
 
   // Set lexicalEditor as the default editor for all rich text fields
