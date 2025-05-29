@@ -33,6 +33,7 @@ export default buildConfig({
     'https://jmc111-1isqubvbp-tadmilins-projects.vercel.app',
     'https://jmc111-kiwlfw4p-tadmilins-projects.vercel.app',
     'https://jmc111-gjxnyh7fc-tadmilins-projects.vercel.app',
+    'https://jmc111-6qOn6hdhn-tadmilins-projects.vercel.app',
     'https://*.vercel.app',
     'https://vercel.app',
     // เพิ่ม blob storage domains
@@ -49,6 +50,7 @@ export default buildConfig({
     'https://jmc111-1isqubvbp-tadmilins-projects.vercel.app',
     'https://jmc111-kiwlfw4p-tadmilins-projects.vercel.app',
     'https://jmc111-gjxnyh7fc-tadmilins-projects.vercel.app',
+    'https://jmc111-6qOn6hdhn-tadmilins-projects.vercel.app',
     'https://*.vercel.app',
     'https://vercel.app',
     // เพิ่ม blob storage domains
