@@ -29,6 +29,7 @@ export default buildConfig({
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'https://jmc111.vercel.app',
+    'https://jmc111-mv7jkkd-tadmilins-projects.vercel.app',
     'https://*.vercel.app',
     'https://vercel.app',
     // เพิ่ม blob storage domains
@@ -41,6 +42,7 @@ export default buildConfig({
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'https://jmc111.vercel.app',
+    'https://jmc111-mv7jkkd-tadmilins-projects.vercel.app',
     'https://*.vercel.app',
     'https://vercel.app',
     // เพิ่ม blob storage domains
