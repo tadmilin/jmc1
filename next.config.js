@@ -15,6 +15,19 @@ const nextConfig = {
         port: '',
         pathname: '/api/media/**',
       },
+      // เพิ่ม pattern สำหรับ Vercel preview deployments
+      {
+        protocol: 'https',
+        hostname: 'jmc111-*-tadmilins-projects.vercel.app',
+        port: '',
+        pathname: '/api/media/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*-tadmilins-projects.vercel.app',
+        port: '',
+        pathname: '/api/media/**',
+      },
       {
         protocol: 'http',
         hostname: 'localhost',
@@ -76,11 +89,33 @@ const nextConfig = {
           },
           {
             key: 'Access-Control-Allow-Methods',
-            value: 'GET, POST, PUT, DELETE, OPTIONS',
+            value: 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
           },
           {
             key: 'Access-Control-Allow-Headers',
-            value: 'Content-Type, Authorization',
+            value: 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+          },
+          {
+            key: 'Access-Control-Allow-Credentials',
+            value: 'true',
+          },
+        ],
+      },
+      // เพิ่ม headers สำหรับ admin routes
+      {
+        source: '/admin/:path*',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
           },
         ],
       },

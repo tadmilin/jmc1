@@ -31,6 +31,9 @@ export default buildConfig({
     'https://jmc111.vercel.app',
     'https://*.vercel.app',
     'https://vercel.app',
+    // เพิ่ม wildcard สำหรับ Vercel preview deployments
+    'https://jmc111-*-tadmilins-projects.vercel.app',
+    'https://*-tadmilins-projects.vercel.app',
     // เพิ่ม blob storage domains
     'https://*.public.blob.vercel-storage.com',
     'https://*.blob.vercel-storage.com',
@@ -43,6 +46,9 @@ export default buildConfig({
     'https://jmc111.vercel.app',
     'https://*.vercel.app',
     'https://vercel.app',
+    // เพิ่ม wildcard สำหรับ Vercel preview deployments
+    'https://jmc111-*-tadmilins-projects.vercel.app',
+    'https://*-tadmilins-projects.vercel.app',
     // เพิ่ม blob storage domains
     'https://*.public.blob.vercel-storage.com',
     'https://*.blob.vercel-storage.com',
