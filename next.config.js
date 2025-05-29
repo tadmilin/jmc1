@@ -16,12 +16,6 @@ const nextConfig = {
         pathname: '/api/media/**',
       },
       {
-        protocol: 'https',
-        hostname: 'jmc111-mv7jkkd-tadmilins-projects.vercel.app',
-        port: '',
-        pathname: '/api/media/**',
-      },
-      {
         protocol: 'http',
         hostname: 'localhost',
         port: '3000',
