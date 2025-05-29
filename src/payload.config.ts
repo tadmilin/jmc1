@@ -94,7 +94,7 @@ export default buildConfig({
   // Storage settings
   upload: {
     limits: {
-      fileSize: 12000000, // 12MB, written in bytes
+      fileSize: 5000000, // 5MB เพื่อให้เข้ากับ Vercel limit
     },
   },
 

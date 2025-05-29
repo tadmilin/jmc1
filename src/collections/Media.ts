@@ -4,6 +4,7 @@ import {
   FixedToolbarFeature,
   InlineToolbarFeature,
   lexicalEditor,
+  HeadingFeature,
 } from '@payloadcms/richtext-lexical'
 
 import { anyone } from '../access/anyone'
@@ -14,30 +15,46 @@ export const Media: CollectionConfig = {
   access: {
     create: authenticated,
     delete: authenticated,
-    read: anyone,
+    read: () => true,
     update: authenticated,
   },
   fields: [
     {
       name: 'alt',
       type: 'text',
-      required: false,
+      required: true,
     },
     {
       name: 'caption',
       type: 'richText',
       editor: lexicalEditor({
         features: ({ rootFeatures }) => {
-          return [...rootFeatures, FixedToolbarFeature(), InlineToolbarFeature()]
+          return [
+            ...rootFeatures,
+            FixedToolbarFeature(),
+            InlineToolbarFeature(),
+            HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+          ]
         },
       }),
     },
   ],
   upload: {
-    // ลบ staticDir เพื่อให้ใช้ Vercel Blob Storage
-    // staticDir: path.resolve(dirname, '../../public/media'),
+    mimeTypes: [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'image/svg+xml',
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ],
+    filesRequiredOnCreate: false,
     adminThumbnail: 'thumbnail',
     focalPoint: true,
+    crop: true,
     imageSizes: [
       {
         name: 'thumbnail',
@@ -54,10 +71,6 @@ export const Media: CollectionConfig = {
       {
         name: 'tablet',
         width: 1024,
-        // By specifying `undefined` or leaving a height undefined,
-        // the image will be sized to a certain width,
-        // but it will retain its original aspect ratio
-        // and calculate a height automatically.
         height: undefined,
         position: 'centre',
       },
