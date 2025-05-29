@@ -52,7 +52,6 @@ export const Media: CollectionConfig = {
     adminThumbnail: 'thumbnail',
     focalPoint: true,
     crop: true,
-    maxFileSize: 3000000,
     imageSizes: [
       {
         name: 'thumbnail',
