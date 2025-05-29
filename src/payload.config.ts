@@ -24,31 +24,29 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
-  // CORS settings - ปรับปรุงให้รองรับทั้ง development และ production
+  // CORS settings - เพิ่ม specific preview deployment URLs
   cors: [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'https://jmc111.vercel.app',
+    'https://jmc111-mepahkukj-tadmilins-projects.vercel.app',
+    'https://jmc111-1isqubvbp-tadmilins-projects.vercel.app',
     'https://*.vercel.app',
     'https://vercel.app',
-    // เพิ่ม wildcard สำหรับ Vercel preview deployments
-    'https://jmc111-*-tadmilins-projects.vercel.app',
-    'https://*-tadmilins-projects.vercel.app',
     // เพิ่ม blob storage domains
     'https://*.public.blob.vercel-storage.com',
     'https://*.blob.vercel-storage.com',
   ],
 
-  // CSRF settings - ปรับปรุงให้รองรับทั้ง development และ production
+  // CSRF settings - เพิ่ม specific preview deployment URLs
   csrf: [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'https://jmc111.vercel.app',
+    'https://jmc111-mepahkukj-tadmilins-projects.vercel.app',
+    'https://jmc111-1isqubvbp-tadmilins-projects.vercel.app',
     'https://*.vercel.app',
     'https://vercel.app',
-    // เพิ่ม wildcard สำหรับ Vercel preview deployments
-    'https://jmc111-*-tadmilins-projects.vercel.app',
-    'https://*-tadmilins-projects.vercel.app',
     // เพิ่ม blob storage domains
     'https://*.public.blob.vercel-storage.com',
     'https://*.blob.vercel-storage.com',
