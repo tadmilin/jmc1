@@ -101,16 +101,16 @@ export default buildConfig({
   globals: [Header, Footer, CategoryShowcase],
   plugins: [
     ...plugins,
-    // ปรับปรุงการตั้งค่า Vercel Blob Storage
+    // ปรับปรุงการตั้งค่า Vercel Blob Storage ตามเอกสาร
     vercelBlobStorage({
+      enabled: true, // เปิดใช้งาน plugin
       collections: {
-        media: true,
+        media: true, // ใช้กับ media collection
       },
       token: process.env.BLOB_READ_WRITE_TOKEN || '',
-      enabled: true,
-      // เพิ่มการตั้งค่าเพิ่มเติม
-      addRandomSuffix: true,
-      cacheControlMaxAge: 31536000, // 1 year
+      addRandomSuffix: false, // ไม่เพิ่ม random suffix
+      cacheControlMaxAge: 365 * 24 * 60 * 60, // 1 year cache
+      clientUploads: true, // สำคัญ: เปิดใช้ client uploads เพื่อหลีกเลี่ยงข้อจำกัด 4.5MB ของ Vercel
     }),
   ],
 

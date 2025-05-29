@@ -27,7 +27,7 @@ const nextConfig = {
         port: '3000',
         pathname: '/api/media/**',
       },
-      // เพิ่ม Vercel Blob Storage
+      // เพิ่ม Vercel Blob Storage - ปรับปรุงให้ครอบคลุมมากขึ้น
       {
         protocol: 'https',
         hostname: '*.public.blob.vercel-storage.com',
@@ -40,7 +40,18 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      // เพิ่ม pattern สำหรับ blob storage ที่เฉพาะเจาะจงมากขึ้น
+      {
+        protocol: 'https',
+        hostname: 'fzhrisgdjt706ftr.public.blob.vercel-storage.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
+    // เพิ่มการตั้งค่าเพิ่มเติมสำหรับ Vercel Blob Storage
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   // เพิ่มการตั้งค่าสำหรับ Vercel deployment
   output: 'standalone',
@@ -53,19 +64,23 @@ const nextConfig = {
       },
     ]
   },
-  // เพิ่ม headers สำหรับ CORS
+  // เพิ่มการตั้งค่าสำหรับ headers ที่รองรับ blob storage
   async headers() {
     return [
       {
-        source: '/admin/:path*',
+        source: '/api/:path*',
         headers: [
           {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
           },
           {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, POST, PUT, DELETE, OPTIONS',
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type, Authorization',
           },
         ],
       },
