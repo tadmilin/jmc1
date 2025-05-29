@@ -94,7 +94,7 @@ export default buildConfig({
   // Storage settings
   upload: {
     limits: {
-      fileSize: 5000000, // 5MB เพื่อให้เข้ากับ Vercel limit
+      fileSize: 3000000, // ลดเป็น 3MB เพื่อความเสถียรสูงสุด
     },
   },
 
@@ -118,7 +118,7 @@ export default buildConfig({
         media: true, // ใช้กับ media collection
       },
       token: process.env.BLOB_READ_WRITE_TOKEN || '',
-      addRandomSuffix: false, // ไม่เพิ่ม random suffix
+      addRandomSuffix: true, // เปลี่ยนเป็น true เพื่อหลีกเลี่ยงชื่อไฟล์ซ้ำ
       cacheControlMaxAge: 365 * 24 * 60 * 60, // 1 year cache
       clientUploads: true, // สำคัญ: เปิดใช้ client uploads เพื่อหลีกเลี่ยงข้อจำกัด 4.5MB ของ Vercel
     }),

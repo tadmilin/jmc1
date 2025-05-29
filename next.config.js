@@ -34,13 +34,7 @@ const nextConfig = {
         port: '3000',
         pathname: '/api/media/**',
       },
-      {
-        protocol: 'https',
-        hostname: 'localhost',
-        port: '3000',
-        pathname: '/api/media/**',
-      },
-      // เพิ่ม Vercel Blob Storage - ปรับปรุงให้ครอบคลุมมากขึ้น
+      // Vercel Blob Storage - รองรับทุก subdomain
       {
         protocol: 'https',
         hostname: '*.public.blob.vercel-storage.com',
@@ -53,18 +47,20 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
-      // เพิ่ม pattern สำหรับ blob storage ที่เฉพาะเจาะจงมากขึ้น
+      // รองรับ blob storage โดยตรง
       {
         protocol: 'https',
-        hostname: 'fzhrisgdjt706ftr.public.blob.vercel-storage.com',
+        hostname: 'blob.vercel-storage.com',
         port: '',
         pathname: '/**',
       },
     ],
-    // เพิ่มการตั้งค่าเพิ่มเติมสำหรับ Vercel Blob Storage
-    dangerouslyAllowSVG: true,
-    contentDispositionType: 'attachment',
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    // การตั้งค่าสำหรับประสิทธิภาพ
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    formats: ['image/webp'],
+    minimumCacheTTL: 60,
+    dangerouslyAllowSVG: false, // ปิดเพื่อความปลอดภัย
   },
   // เพิ่มการตั้งค่าสำหรับ Vercel deployment
   output: 'standalone',
