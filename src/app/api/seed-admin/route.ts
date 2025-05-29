@@ -30,8 +30,7 @@ export async function POST(request: NextRequest) {
       data: {
         email: 'admin@jmc111.com',
         password: 'admin123!',
-        firstName: 'Admin',
-        lastName: 'User',
+        name: 'Admin User',
       },
     })
 
@@ -45,7 +44,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: error.message,
+        error: (error as Error).message,
       },
       { status: 500 },
     )
