@@ -46,12 +46,19 @@ export const Media: CollectionConfig = {
       'image/png',
       'image/gif',
       'image/webp',
+      'image/svg+xml',
       'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     ],
     filesRequiredOnCreate: false,
     adminThumbnail: 'thumbnail',
     focalPoint: true,
     crop: true,
+    resizeOptions: {
+      position: 'centre',
+      background: { r: 255, g: 255, b: 255, alpha: 1 },
+    },
     imageSizes: [
       {
         name: 'thumbnail',

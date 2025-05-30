@@ -94,7 +94,7 @@ export default buildConfig({
   // Storage settings
   upload: {
     limits: {
-      fileSize: 3000000, // ลดเป็น 3MB เพื่อความเสถียรสูงสุด
+      fileSize: 10000000, // เพิ่มเป็น 10MB สำหรับความยืดหยุ่น
     },
   },
 
