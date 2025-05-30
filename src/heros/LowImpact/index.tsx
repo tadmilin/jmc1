@@ -9,34 +9,48 @@ import RichText from '@/components/RichText'
 import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 
-export const LowImpactHero: React.FC<Page['hero']> = ({ colorTheme = 'light' }) => {
+export const LowImpactHero: React.FC<Page['hero']> = ({
+  colorTheme = 'light',
+  richText,
+  links,
+  media,
+}) => {
   const { setHeaderTheme } = useHeaderTheme()
 
   useEffect(() => {
     setHeaderTheme(colorTheme === 'dark' ? 'dark' : 'light')
   }, [colorTheme, setHeaderTheme])
 
-  // สร้างคลาสสำหรับพื้นหลังตามธีมสี
-  const getBgClasses = () => {
-    switch (colorTheme) {
-      case 'dark':
-        return 'bg-white text-gray-900' // เปลี่ยนเป็นสีขาว
-      case 'lightBlue':
-        return 'bg-white text-gray-900' // เปลี่ยนเป็นสีขาว
-      case 'gradient':
-        return 'bg-white text-gray-900' // เปลี่ยนเป็นสีขาว
-      case 'light':
-      default:
-        return 'bg-white text-gray-900' // เปลี่ยนเป็นสีขาว
-    }
+  // ถ้าไม่มีเนื้อหาใดๆ ให้แสดงแค่ขนาดเล็กหรือไม่แสดงเลย
+  const hasContent = richText || (links && links.length > 0) || media
+
+  if (!hasContent) {
+    // หากไม่มีเนื้อหา ให้แสดงเพียงแค่ส่วนเล็กๆ หรือไม่แสดงเลย
+    return (
+      <div className="relative h-4 bg-transparent">
+        {/* Minimal space placeholder - แทบจะไม่เห็น */}
+      </div>
+    )
   }
 
   return (
-    <div className={`relative min-h-[40vh] flex flex-col justify-center ${getBgClasses()}`}>
-      <div className="container mx-auto px-4 py-8">
+    <div className="relative min-h-[20vh] flex flex-col justify-center bg-transparent">
+      <div className="container mx-auto px-4 py-4">
         <div className="text-center">
-          <h1 className="text-2xl md:text-3xl font-bold">Low Impact Hero</h1>
-          <p className="text-gray-600 mt-4">This is a simple hero section</p>
+          {richText && (
+            <RichText
+              className="text-lg md:text-xl text-gray-800"
+              data={richText}
+              enableGutter={false}
+            />
+          )}
+          {links && links.length > 0 && (
+            <div className="flex flex-wrap gap-4 justify-center mt-4">
+              {links.map(({ link }, i) => (
+                <CMSLink key={i} {...link} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

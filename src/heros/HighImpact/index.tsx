@@ -140,7 +140,7 @@ const HeroActionSlotsRenderer: React.FC<{
               className={`flex items-center space-x-4 p-4 md:p-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${cardBgColor} border ${cardBorderColor} h-full cursor-pointer`}
             >
               {hasValidIcon && (
-                <div className="w-12 h-12 md:w-16 md:h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700 flex items-center justify-center p-1">
+                <div className="w-12 h-12 md:w-16 md:h-16 rounded-lg overflow-hidden flex-shrink-0 bg-white border border-gray-200 flex items-center justify-center p-1">
                   {typeof slot.icon === 'object' && slot.icon ? (
                     <div className="relative w-full h-full">
                       <Media
@@ -150,7 +150,7 @@ const HeroActionSlotsRenderer: React.FC<{
                       />
                     </div>
                   ) : (
-                    <div className="w-full h-full bg-gray-300 dark:bg-gray-600 rounded-md flex items-center justify-center">
+                    <div className="w-full h-full bg-white rounded-md flex items-center justify-center">
                       <svg
                         className="w-6 h-6 text-gray-500"
                         fill="none"
