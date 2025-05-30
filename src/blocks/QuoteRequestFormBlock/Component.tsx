@@ -306,14 +306,14 @@ export const QuoteRequestFormBlockComponent: React.FC<QuoteRequestFormBlockProps
                   />
                 </svg>
               </div>
-              <h3 className="text-lg sm:text-2xl font-bold text-white">ข้อมูลการติดต่อ</h3>
+              <h3 className="text-lg sm:text-2xl font-bold text-gray-800">ข้อมูลการติดต่อ</h3>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
                 <Label
                   htmlFor="fullName"
-                  className="text-sm font-semibold text-white flex items-center"
+                  className="text-sm font-semibold text-gray-700 flex items-center"
                 >
                   <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
                   ชื่อและนามสกุล
@@ -323,7 +323,7 @@ export const QuoteRequestFormBlockComponent: React.FC<QuoteRequestFormBlockProps
                   {...register('fullName')}
                   placeholder="กรอกชื่อและนามสกุล"
                   suppressHydrationWarning
-                  className={`h-10 sm:h-12 rounded-lg sm:rounded-xl border-2 transition-all duration-200 text-black ${
+                  className={`h-10 sm:h-12 rounded-lg sm:rounded-xl border-2 transition-all duration-200 bg-white text-gray-900 ${
                     errors.fullName
                       ? 'border-red-300 focus:border-red-500 bg-red-50'
                       : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
@@ -346,7 +346,7 @@ export const QuoteRequestFormBlockComponent: React.FC<QuoteRequestFormBlockProps
               <div className="space-y-2">
                 <Label
                   htmlFor="phone"
-                  className="text-sm font-semibold text-white flex items-center"
+                  className="text-sm font-semibold text-gray-700 flex items-center"
                 >
                   <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
                   เบอร์โทรศัพท์
@@ -356,7 +356,7 @@ export const QuoteRequestFormBlockComponent: React.FC<QuoteRequestFormBlockProps
                   {...register('phone')}
                   placeholder="08x-xxx-xxxx"
                   suppressHydrationWarning
-                  className={`h-10 sm:h-12 rounded-lg sm:rounded-xl border-2 transition-all duration-200 text-black ${
+                  className={`h-10 sm:h-12 rounded-lg sm:rounded-xl border-2 transition-all duration-200 bg-white text-gray-900 ${
                     errors.phone
                       ? 'border-red-300 focus:border-red-500 bg-red-50'
                       : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
@@ -378,7 +378,10 @@ export const QuoteRequestFormBlockComponent: React.FC<QuoteRequestFormBlockProps
             </div>
 
             <div className="mt-4 sm:mt-6 space-y-2">
-              <Label htmlFor="email" className="text-sm font-semibold text-white flex items-center">
+              <Label
+                htmlFor="email"
+                className="text-sm font-semibold text-gray-700 flex items-center"
+              >
                 <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
                 อีเมล
               </Label>
@@ -388,7 +391,7 @@ export const QuoteRequestFormBlockComponent: React.FC<QuoteRequestFormBlockProps
                 {...register('email')}
                 placeholder="example@email.com"
                 suppressHydrationWarning
-                className={`h-10 sm:h-12 rounded-lg sm:rounded-xl border-2 transition-all duration-200 text-black ${
+                className={`h-10 sm:h-12 rounded-lg sm:rounded-xl border-2 transition-all duration-200 bg-white text-gray-900 ${
                   errors.email
                     ? 'border-red-300 focus:border-red-500 bg-red-50'
                     : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
@@ -427,14 +430,14 @@ export const QuoteRequestFormBlockComponent: React.FC<QuoteRequestFormBlockProps
                   />
                 </svg>
               </div>
-              <h3 className="text-lg sm:text-2xl font-bold text-white">รายละเอียดสินค้า</h3>
+              <h3 className="text-lg sm:text-2xl font-bold text-gray-800">รายละเอียดสินค้า</h3>
             </div>
 
             <div className="space-y-4 sm:space-y-6">
               <div className="space-y-2">
                 <Label
                   htmlFor="productList"
-                  className="text-sm font-semibold text-white flex items-center"
+                  className="text-sm font-semibold text-gray-700 flex items-center"
                 >
                   <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
                   รายการสินค้าและจำนวนที่ต้องการ
@@ -444,7 +447,7 @@ export const QuoteRequestFormBlockComponent: React.FC<QuoteRequestFormBlockProps
                   {...register('productList')}
                   placeholder="กรุณาระบุรายการสินค้าและจำนวนที่ต้องการ เช่น:&#10;• สินค้า A จำนวน 10 ชิ้น&#10;• สินค้า B จำนวน 5 ชิ้น&#10;• สินค้า C จำนวน 20 ชิ้น"
                   rows={5}
-                  className={`rounded-lg sm:rounded-xl border-2 transition-all duration-200 resize-none text-black ${
+                  className={`rounded-lg sm:rounded-xl border-2 transition-all duration-200 resize-none bg-white text-gray-900 ${
                     errors.productList
                       ? 'border-red-300 focus:border-red-500 bg-red-50'
                       : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
@@ -465,7 +468,7 @@ export const QuoteRequestFormBlockComponent: React.FC<QuoteRequestFormBlockProps
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="additionalNotes" className="text-sm font-semibold text-white">
+                <Label htmlFor="additionalNotes" className="text-sm font-semibold text-gray-700">
                   หมายเหตุเพิ่มเติม
                 </Label>
                 <Textarea
@@ -473,7 +476,7 @@ export const QuoteRequestFormBlockComponent: React.FC<QuoteRequestFormBlockProps
                   {...register('additionalNotes')}
                   placeholder="ข้อมูลเพิ่มเติมหรือข้อกำหนดพิเศษ (ถ้ามี)"
                   rows={3}
-                  className="rounded-lg sm:rounded-xl border-2 border-gray-200 focus:border-blue-500 hover:border-gray-300 transition-all duration-200 resize-none text-black"
+                  className="rounded-lg sm:rounded-xl border-2 border-gray-200 focus:border-blue-500 hover:border-gray-300 transition-all duration-200 resize-none bg-white text-gray-900"
                 />
               </div>
             </div>
@@ -497,7 +500,7 @@ export const QuoteRequestFormBlockComponent: React.FC<QuoteRequestFormBlockProps
                   />
                 </svg>
               </div>
-              <h3 className="text-lg sm:text-2xl font-bold text-white">ไฟล์แนบ</h3>
+              <h3 className="text-lg sm:text-2xl font-bold text-gray-800">ไฟล์แนบ</h3>
             </div>
             <FileUpload
               name="attachments"
