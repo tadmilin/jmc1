@@ -49,7 +49,7 @@ export const Card: React.FC<{
         } hover:cursor-pointer`,
         className,
       )}
-      ref={card.ref}
+      ref={card.ref as React.LegacyRef<HTMLElement>}
     >
       {/* Image Section */}
       <div className="relative w-full aspect-video overflow-hidden">
@@ -136,7 +136,11 @@ export const Card: React.FC<{
                   : 'text-gray-800 group-hover:text-blue-600'
               }`}
             >
-              <Link className="hover:no-underline" href={href} ref={link.ref}>
+              <Link
+                className="hover:no-underline"
+                href={href}
+                ref={link.ref as React.LegacyRef<HTMLAnchorElement>}
+              >
                 {titleToUse}
               </Link>
             </h3>

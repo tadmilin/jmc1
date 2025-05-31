@@ -82,14 +82,14 @@ export function ProductImageGallery({
       {variantImages && variantImages.length > 0 && (
         <div className="mt-6">
           <h4 className="text-lg font-semibold text-gray-800 mb-3">รูปภาพของขนาดที่เลือก</h4>
-          <div className="grid grid-cols-3 gap-4">
-            {variantImages.slice(0, 6).map((img, index) => (
+          <div className="grid grid-cols-2 gap-6">
+            {variantImages.slice(0, 4).map((img, index) => (
               <div
                 key={index}
                 className="aspect-square bg-white rounded-xl overflow-hidden shadow-lg border-3 border-blue-300 hover:border-blue-500 transition-colors"
               >
                 {img && (
-                  <Media resource={img} className="w-full h-full object-cover" size="300px" />
+                  <Media resource={img} className="w-full h-full object-cover" size="500px" />
                 )}
               </div>
             ))}

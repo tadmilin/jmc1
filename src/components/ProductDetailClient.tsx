@@ -121,31 +121,36 @@ export function ProductDetailClient({ product, onVariantImageChange }: ProductDe
 
       <div className="space-y-4">
         <div className="flex gap-4">
-          <button
-            disabled={isInactive || isOutOfStock}
-            className={`flex-1 py-4 px-6 rounded-lg font-semibold text-lg transition-all duration-300 ${
-              isInactive || isOutOfStock
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700 transform hover:scale-105'
-            }`}
-          >
-            {isInactive ? 'ไม่พร้อมขาย' : isOutOfStock ? 'สินค้าหมด' : 'สั่งซื้อสินค้า'}
-          </button>
+          {isInactive || isOutOfStock ? (
+            <button
+              disabled
+              className="flex-1 py-4 px-6 rounded-lg font-semibold text-lg bg-gray-300 text-gray-500 cursor-not-allowed"
+            >
+              {isInactive ? 'ไม่พร้อมขาย' : 'สินค้าหมด'}
+            </button>
+          ) : (
+            <Link
+              href="/quote-request-standalone"
+              className="flex-1 text-center py-4 px-6 rounded-lg font-semibold text-lg bg-blue-600 text-white hover:bg-blue-700 transform hover:scale-105 transition-all duration-300"
+            >
+              สั่งซื้อสินค้า
+            </Link>
+          )}
         </div>
 
         <div className="flex gap-4">
           <Link
-            href="/contact"
+            href="/contactus"
             className="flex-1 text-center py-3 px-6 border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
           >
             สอบถามข้อมูล
           </Link>
-          <Link
-            href="tel:+66123456789"
+          <a
+            href="tel:+66-2-123-4567"
             className="flex-1 text-center py-3 px-6 border-2 border-green-600 text-green-600 rounded-lg font-semibold hover:bg-green-50 transition-colors"
           >
             โทรสอบราคา
-          </Link>
+          </a>
         </div>
       </div>
 
