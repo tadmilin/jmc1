@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import type { Header } from '@/payload-types'
-import { CMSLink } from '@/components/Link' 
+import { CMSLink } from '@/components/Link'
 
 interface MobileNavItemsMenuProps {
   navItems: Header['navItems']
@@ -12,10 +12,10 @@ const XIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" {...props}>
     <path d="M6.225 4.811a.75.75 0 00-1.06 1.06L10.94 12l-5.775 6.129a.75.75 0 101.06 1.06L12 13.06l5.775 6.129a.75.75 0 101.06-1.06L13.06 12l5.775-6.129a.75.75 0 00-1.06-1.06L12 10.94 6.225 4.811z" />
   </svg>
-);
+)
 
 export const MobileNavItemsMenu: React.FC<MobileNavItemsMenuProps> = ({ navItems, onClose }) => {
-  const currentNavItems = navItems || [];
+  const currentNavItems = navItems || []
 
   // Handle keyboard events
   React.useEffect(() => {
@@ -32,15 +32,18 @@ export const MobileNavItemsMenu: React.FC<MobileNavItemsMenuProps> = ({ navItems
   }, [onClose])
 
   return (
-    <div className="fixed inset-0 z-[60] bg-black bg-opacity-50 lg:hidden animate-fadeIn" onClick={onClose}>
-      <div 
+    <div
+      className="fixed inset-0 z-[60] bg-black bg-opacity-50 lg:hidden animate-fadeIn"
+      onClick={onClose}
+    >
+      <div
         className="fixed top-0 right-0 h-full w-4/5 max-w-sm bg-white shadow-2xl p-6 transform transition-transform duration-300 ease-in-out animate-slideInRight"
-        onClick={(e) => e.stopPropagation()} 
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold text-gray-800">เมนู</h2>
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="text-gray-500 hover:text-gray-700 p-1 -mr-1 rounded-md focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
             aria-label="Close menu"
           >
@@ -48,23 +51,33 @@ export const MobileNavItemsMenu: React.FC<MobileNavItemsMenuProps> = ({ navItems
           </button>
         </div>
         <nav>
-          <ul className="space-y-2"> 
+          <ul className="space-y-2">
             {currentNavItems.map(({ link }, i) => {
               return (
                 <li key={i}>
-                  <div onClick={onClose} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onClose(); }} className="cursor-pointer">
-                    <CMSLink 
-                      {...link} 
-                      appearance="link" 
-                      className="flex items-center justify-between w-full p-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 text-lg font-medium border border-transparent hover:border-blue-200" 
+                  <div
+                    onClick={onClose}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        onClose()
+                      }
+                    }}
+                    className="cursor-pointer"
+                  >
+                    <CMSLink
+                      {...link}
+                      appearance="link"
+                      className="flex items-center justify-between w-full p-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 text-lg font-medium border border-transparent hover:border-blue-200"
                     />
                   </div>
                 </li>
-              );
+              )
             })}
           </ul>
         </nav>
       </div>
     </div>
   )
-} 
+}

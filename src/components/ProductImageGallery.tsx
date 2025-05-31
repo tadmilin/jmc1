@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { Media } from '@/components/Media'
 
 interface ProductImageGalleryProps {
@@ -22,23 +22,12 @@ export function ProductImageGallery({
   isOutOfStock = false,
   isInactive = false,
 }: ProductImageGalleryProps) {
-  const [currentImages, setCurrentImages] = useState(mainImages)
-
-  // Update current images when variant images change
-  useEffect(() => {
-    if (variantImages && variantImages.length > 0) {
-      setCurrentImages(variantImages)
-    } else {
-      setCurrentImages(mainImages)
-    }
-  }, [variantImages, mainImages])
-
   return (
     <div className="space-y-4">
-      {/* Main Image */}
+      {/* Main Image - Always show main product images */}
       <div className="relative aspect-square bg-white rounded-2xl overflow-hidden shadow-lg">
-        {currentImages && currentImages.length > 0 && currentImages[0] ? (
-          <Media resource={currentImages[0]} className="w-full h-full object-cover" size="600px" />
+        {mainImages && mainImages.length > 0 && mainImages[0] ? (
+          <Media resource={mainImages[0]} className="w-full h-full object-cover" size="600px" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-400">
             <div className="text-center">
@@ -78,10 +67,10 @@ export function ProductImageGallery({
         )}
       </div>
 
-      {/* Additional Images */}
-      {currentImages && currentImages.length > 1 && (
+      {/* Additional Main Images */}
+      {mainImages && mainImages.length > 1 && (
         <div className="grid grid-cols-4 gap-2">
-          {currentImages.slice(1, 5).map((img, index) => (
+          {mainImages.slice(1, 5).map((img, index) => (
             <div key={index} className="aspect-square bg-white rounded-lg overflow-hidden shadow">
               {img && <Media resource={img} className="w-full h-full object-cover" size="150px" />}
             </div>
@@ -89,18 +78,18 @@ export function ProductImageGallery({
         </div>
       )}
 
-      {/* Variant Images Preview - Show smaller variant images if different from main */}
-      {variantImages && variantImages.length > 0 && variantImages !== mainImages && (
-        <div className="mt-4">
-          <h4 className="text-sm font-medium text-gray-700 mb-2">รูปภาพของขนาดที่เลือก</h4>
-          <div className="grid grid-cols-6 gap-2">
+      {/* Variant Images - Show larger variant images when selected */}
+      {variantImages && variantImages.length > 0 && (
+        <div className="mt-6">
+          <h4 className="text-lg font-semibold text-gray-800 mb-3">รูปภาพของขนาดที่เลือก</h4>
+          <div className="grid grid-cols-3 gap-4">
             {variantImages.slice(0, 6).map((img, index) => (
               <div
                 key={index}
-                className="aspect-square bg-white rounded-lg overflow-hidden shadow-sm border-2 border-blue-200"
+                className="aspect-square bg-white rounded-xl overflow-hidden shadow-lg border-3 border-blue-300 hover:border-blue-500 transition-colors"
               >
                 {img && (
-                  <Media resource={img} className="w-full h-full object-cover" size="100px" />
+                  <Media resource={img} className="w-full h-full object-cover" size="300px" />
                 )}
               </div>
             ))}
