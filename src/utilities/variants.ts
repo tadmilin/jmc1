@@ -75,7 +75,7 @@ export function getActiveVariants(product: ProductWithVariants): ProductVariant[
  * Check if product has variants
  */
 export function hasVariants(product: ProductWithVariants): boolean {
-  return product.variants && product.variants.length > 0
+  return !!(product.variants && product.variants.length > 0)
 }
 
 /**
