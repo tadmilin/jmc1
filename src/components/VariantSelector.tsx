@@ -105,44 +105,7 @@ export function VariantSelector({
         </div>
       </div>
 
-      {selectedVariant && (
-        <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-          <h4 className="font-medium text-gray-900 mb-2">ข้อมูลขนาดที่เลือก</h4>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="text-gray-600">ขนาด:</span>
-              <span className="ml-2 font-medium">{selectedVariant.variantName}</span>
-            </div>
-            <div>
-              <span className="text-gray-600">ราคา:</span>
-              <span className="ml-2 font-medium">
-                {selectedVariant.variantSalePrice ? (
-                  <>
-                    <span className="text-red-600">
-                      ฿{selectedVariant.variantSalePrice.toLocaleString('th-TH')}
-                    </span>
-                    <span className="ml-2 text-gray-500 line-through text-xs">
-                      ฿{selectedVariant.variantPrice.toLocaleString('th-TH')}
-                    </span>
-                  </>
-                ) : (
-                  <span>฿{selectedVariant.variantPrice.toLocaleString('th-TH')}</span>
-                )}
-              </span>
-            </div>
-            <div>
-              <span className="text-gray-600">คงเหลือ:</span>
-              <span className="ml-2 font-medium">{selectedVariant.variantStock} ชิ้น</span>
-            </div>
-            {selectedVariant.variantSku && (
-              <div>
-                <span className="text-gray-600">รหัสสินค้า:</span>
-                <span className="ml-2 font-medium">{selectedVariant.variantSku}</span>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      
     </div>
   )
 }

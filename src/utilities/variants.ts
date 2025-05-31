@@ -162,9 +162,13 @@ export function formatPriceRange(priceRange: { min: number; max: number }): stri
 /**
  * Get variant images or fallback to product images
  */
-export function getVariantImages(product: ProductWithVariants, variant: ProductVariant): unknown[] {
+export function getVariantImages(product: ProductWithVariants, variant: ProductVariant): any[] {
   // Use variant-specific images if available
-  if (variant.variantImages && variant.variantImages.length > 0) {
+  if (
+    variant.variantImages &&
+    Array.isArray(variant.variantImages) &&
+    variant.variantImages.length > 0
+  ) {
     return variant.variantImages.map((img) => img.image)
   }
 

@@ -1,20 +1,22 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { VariantSelector } from '@/components/VariantSelector'
 import {
   hasVariants,
   getDefaultVariant,
+  getVariantImages,
   type ProductWithVariants,
   type ProductVariant,
 } from '@/utilities/variants'
 
 interface ProductDetailClientProps {
   product: ProductWithVariants
+  onVariantImageChange?: (images: any[]) => void
 }
 
-export function ProductDetailClient({ product }: ProductDetailClientProps) {
+export function ProductDetailClient({ product, onVariantImageChange }: ProductDetailClientProps) {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
     hasVariants(product) ? getDefaultVariant(product) : null,
   )
@@ -26,16 +28,34 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const currentSku = selectedVariant?.variantSku ?? product.sku
 
   const isOnSale = currentSalePrice && currentSalePrice < currentPrice
-  const discountPercent =
-    isOnSale && currentSalePrice
-      ? Math.round(((currentPrice - currentSalePrice) / currentPrice) * 100)
-      : 0
   const isOutOfStock = product.status === 'out_of_stock' || currentStock === 0
   const isInactive = product.status === 'inactive' || product.status === 'discontinued'
 
   const handleVariantChange = (variant: ProductVariant | null) => {
     setSelectedVariant(variant)
+
+    // Get variant images and send to parent
+    if (variant && onVariantImageChange) {
+      const variantImages = getVariantImages(product as any, variant)
+      onVariantImageChange(variantImages)
+    } else if (onVariantImageChange) {
+      // If no variant selected, send main product images
+      const mainImages = (product as any).images?.map((img: any) => img.image) || []
+      onVariantImageChange(mainImages)
+    }
   }
+
+  useEffect(() => {
+    if (onVariantImageChange) {
+      if (selectedVariant) {
+        const variantImages = getVariantImages(product as any, selectedVariant)
+        onVariantImageChange(variantImages)
+      } else {
+        const mainImages = (product as any).images?.map((img: any) => img.image) || []
+        onVariantImageChange(mainImages)
+      }
+    }
+  }, [selectedVariant, onVariantImageChange, product])
 
   return (
     <div className="space-y-6">
