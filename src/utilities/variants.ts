@@ -44,7 +44,7 @@ export function getDefaultVariant(product: ProductWithVariants): ProductVariant 
   }
 
   const defaultVariant = product.variants.find((variant) => variant.isDefault)
-  return defaultVariant || product.variants[0]
+  return defaultVariant || product.variants[0] || null
 }
 
 /**
