@@ -1,8 +1,7 @@
 'use client'
 import { cn } from '@/utilities/ui'
 import useClickableCard from '@/utilities/useClickableCard'
-import Link from 'next/link'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
 import type { Post } from '@/payload-types'
 
@@ -19,7 +18,8 @@ export const Card: React.FC<{
   title?: string
   colorTheme?: string
 }> = (props) => {
-  const { card, link } = useClickableCard({})
+  const { card } = useClickableCard({})
+  const [isClient, setIsClient] = useState(false)
   const {
     className,
     doc,
@@ -28,6 +28,10 @@ export const Card: React.FC<{
     title: titleFromProps,
     colorTheme = 'light',
   } = props
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const { slug, categories, meta, title } = doc || {}
   const { description, image: metaImage } = meta || {}
@@ -38,6 +42,20 @@ export const Card: React.FC<{
   const href = `/${relationTo}/${slug}`
 
   const isDarkTheme = colorTheme === 'dark'
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (isClient) {
+      window.location.href = href
+    }
+  }
+
+  const handleLinkClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (isClient) {
+      window.location.href = href
+    }
+  }
 
   return (
     <article
@@ -50,6 +68,7 @@ export const Card: React.FC<{
         className,
       )}
       ref={card.ref as React.LegacyRef<HTMLElement>}
+      onClick={handleCardClick}
     >
       {/* Image Section */}
       <div className="relative w-full aspect-video overflow-hidden">
@@ -136,13 +155,9 @@ export const Card: React.FC<{
                   : 'text-gray-800 group-hover:text-blue-600'
               }`}
             >
-              <Link
-                className="hover:no-underline"
-                href={href}
-                ref={link.ref as React.LegacyRef<HTMLAnchorElement>}
-              >
+              <button onClick={handleLinkClick} className="hover:no-underline text-left w-full">
                 {titleToUse}
-              </Link>
+              </button>
             </h3>
           </div>
         )}
@@ -161,8 +176,8 @@ export const Card: React.FC<{
 
         {/* Read More Button */}
         <div className="flex items-center justify-between">
-          <Link
-            href={href}
+          <button
+            onClick={handleLinkClick}
             className={`inline-flex items-center gap-2 text-sm font-semibold transition-all duration-300 ${
               isDarkTheme
                 ? 'text-blue-400 hover:text-blue-300'
@@ -178,7 +193,7 @@ export const Card: React.FC<{
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-          </Link>
+          </button>
         </div>
       </div>
 

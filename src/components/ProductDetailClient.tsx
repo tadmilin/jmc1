@@ -1,8 +1,9 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import Link from 'next/link'
 import { VariantSelector } from '@/components/VariantSelector'
+import { NoSSR } from '@/components/NoSSR'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import {
   hasVariants,
   getDefaultVariant,
@@ -16,10 +17,15 @@ interface ProductDetailClientProps {
   onVariantImageChange?: (images: any[]) => void
 }
 
-export function ProductDetailClient({ product, onVariantImageChange }: ProductDetailClientProps) {
+function ProductDetailContent({ product, onVariantImageChange }: ProductDetailClientProps) {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
     hasVariants(product) ? getDefaultVariant(product) : null,
   )
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   // Use selected variant data or fallback to main product data
   const currentPrice = selectedVariant?.variantPrice ?? product.price
@@ -42,6 +48,27 @@ export function ProductDetailClient({ product, onVariantImageChange }: ProductDe
       // If no variant selected, send main product images
       const mainImages = (product as any).images?.map((img: any) => img.image) || []
       onVariantImageChange(mainImages)
+    }
+  }
+
+  const handleOrderClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (isClient) {
+      window.location.href = '/quote-request-standalone'
+    }
+  }
+
+  const handleContactClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (isClient) {
+      window.location.href = '/contactus'
+    }
+  }
+
+  const handlePhoneClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (isClient) {
+      window.location.href = 'tel:+66-2-123-4567'
     }
   }
 
@@ -129,28 +156,28 @@ export function ProductDetailClient({ product, onVariantImageChange }: ProductDe
               {isInactive ? 'ไม่พร้อมขาย' : 'สินค้าหมด'}
             </button>
           ) : (
-            <Link
-              href="/quote-request-standalone"
-              className="flex-1 text-center py-4 px-6 rounded-lg font-semibold text-lg bg-blue-600 text-white hover:bg-blue-700 transform hover:scale-105 transition-all duration-300"
+            <button
+              onClick={handleOrderClick}
+              className="flex-1 py-4 px-6 rounded-lg font-semibold text-lg bg-blue-600 text-white hover:bg-blue-700 transform hover:scale-105 transition-all duration-300 cursor-pointer"
             >
               สั่งซื้อสินค้า
-            </Link>
+            </button>
           )}
         </div>
 
         <div className="flex gap-4">
-          <Link
-            href="/contactus"
-            className="flex-1 text-center py-3 px-6 border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
+          <button
+            onClick={handleContactClick}
+            className="flex-1 py-3 px-6 border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors cursor-pointer"
           >
             สอบถามข้อมูล
-          </Link>
-          <a
-            href="tel:+66-2-123-4567"
-            className="flex-1 text-center py-3 px-6 border-2 border-green-600 text-green-600 rounded-lg font-semibold hover:bg-green-50 transition-colors"
+          </button>
+          <button
+            onClick={handlePhoneClick}
+            className="flex-1 py-3 px-6 border-2 border-green-600 text-green-600 rounded-lg font-semibold hover:bg-green-50 transition-colors cursor-pointer"
           >
             โทรสอบราคา
-          </a>
+          </button>
         </div>
       </div>
 
@@ -177,6 +204,16 @@ export function ProductDetailClient({ product, onVariantImageChange }: ProductDe
         </div>
       )}
     </div>
+  )
+}
+
+export function ProductDetailClient({ product, onVariantImageChange }: ProductDetailClientProps) {
+  return (
+    <ErrorBoundary>
+      <NoSSR fallback={<div className="animate-pulse">กำลังโหลด...</div>}>
+        <ProductDetailContent product={product} onVariantImageChange={onVariantImageChange} />
+      </NoSSR>
+    </ErrorBoundary>
   )
 }
 

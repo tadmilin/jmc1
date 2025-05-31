@@ -15,15 +15,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html
       className={`${GeistSans.variable} ${GeistMono.variable}`}
-      lang="en"
+      lang="th"
       suppressHydrationWarning
     >
       <head>
         <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
-      <body className="flex flex-col">
+      <body className="flex flex-col" suppressHydrationWarning>
         <Providers>
           <Header />
           <main>{children}</main>
