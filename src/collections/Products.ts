@@ -17,7 +17,7 @@ export const Products: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'price', 'categories', 'stock', 'updatedAt'],
+    defaultColumns: ['title', 'price', 'categories', 'stock', 'variants', 'updatedAt'],
     group: 'เนื้อหา',
   },
   fields: [
@@ -111,7 +111,137 @@ export const Products: CollectionConfig = {
           },
         },
       ],
-
+    },
+    {
+      name: 'variants',
+      type: 'array',
+      label: 'ตัวเลือกย่อยของสินค้า',
+      admin: {
+        description: 'เพิ่มตัวเลือกย่อยเช่น ขนาด สี หรือประเภทต่างๆ ของสินค้า',
+        components: {
+          RowLabel: ({ data, index }) => {
+            return data?.variantName || `ตัวเลือกที่ ${String(index).padStart(2, '0')}`
+          },
+        },
+      },
+      fields: [
+        {
+          name: 'variantName',
+          type: 'text',
+          required: true,
+          label: 'ชื่อ/ขนาด/ประเภท',
+          admin: {
+            description: 'เช่น "4 หุน", "6 หุน", "สีแดง", "ขนาด L" เป็นต้น',
+          },
+        },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'variantPrice',
+              type: 'number',
+              required: true,
+              label: 'ราคา (บาท)',
+              admin: {
+                width: '50%',
+                step: 0.01,
+                description: 'ราคาเฉพาะของตัวเลือกนี้',
+              },
+            },
+            {
+              name: 'variantSalePrice',
+              type: 'number',
+              label: 'ราคาลดพิเศษ (บาท)',
+              admin: {
+                width: '50%',
+                step: 0.01,
+                description: 'ราคาลดพิเศษของตัวเลือกนี้ (ถ้ามี)',
+              },
+            },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'variantStock',
+              type: 'number',
+              defaultValue: 0,
+              label: 'จำนวนสต็อก',
+              admin: {
+                width: '50%',
+                description: 'จำนวนสินค้าคงเหลือของตัวเลือกนี้',
+              },
+            },
+            {
+              name: 'variantSku',
+              type: 'text',
+              label: 'รหัสสินค้า (SKU)',
+              admin: {
+                width: '50%',
+                description: 'รหัสสินค้าเฉพาะของตัวเลือกนี้',
+              },
+            },
+          ],
+        },
+        {
+          name: 'variantImages',
+          type: 'array',
+          label: 'รูปภาพเฉพาะตัวเลือกนี้',
+          maxRows: 5,
+          admin: {
+            description: 'รูปภาพที่แสดงเฉพาะตัวเลือกนี้ (ถ้าไม่มีจะใช้รูปหลักของสินค้า)',
+          },
+          fields: [
+            {
+              name: 'image',
+              type: 'upload',
+              relationTo: 'media',
+              required: true,
+            },
+            {
+              name: 'alt',
+              type: 'text',
+              label: 'ข้อความ Alt',
+              admin: {
+                description: 'คำอธิบายรูปภาพสำหรับ SEO และผู้พิการทางสายตา',
+              },
+            },
+          ],
+        },
+        {
+          name: 'variantStatus',
+          type: 'select',
+          label: 'สถานะตัวเลือก',
+          defaultValue: 'active',
+          options: [
+            {
+              label: 'พร้อมขาย',
+              value: 'active',
+            },
+            {
+              label: 'ไม่พร้อมขาย',
+              value: 'inactive',
+            },
+            {
+              label: 'สินค้าหมด',
+              value: 'out_of_stock',
+            },
+          ],
+          admin: {
+            description: 'สถานะของตัวเลือกนี้',
+          },
+        },
+        {
+          name: 'isDefault',
+          type: 'checkbox',
+          label: 'ตัวเลือกหลัก',
+          defaultValue: false,
+          admin: {
+            description: 'กำหนดให้ตัวเลือกนี้เป็นตัวเลือกหลักที่แสดงก่อน',
+          },
+        },
+      ],
     },
     {
       name: 'categories',
@@ -179,7 +309,6 @@ export const Products: CollectionConfig = {
           label: 'ข้อมูล',
         },
       ],
-
     },
     {
       name: 'relatedProducts',
@@ -227,6 +356,52 @@ export const Products: CollectionConfig = {
         if (typeof data.stock === 'number' && data.stock <= 0 && data.status === 'active') {
           data.status = 'out_of_stock'
         }
+
+        // Variants management
+        if (data.variants && Array.isArray(data.variants)) {
+          let hasDefaultVariant = false
+
+          // Check if any variant is set as default
+          data.variants.forEach((variant: any) => {
+            if (variant.isDefault) {
+              hasDefaultVariant = true
+            }
+
+            // Auto-set variant status based on stock
+            if (
+              typeof variant.variantStock === 'number' &&
+              variant.variantStock <= 0 &&
+              variant.variantStatus === 'active'
+            ) {
+              variant.variantStatus = 'out_of_stock'
+            }
+          })
+
+          // If no default variant is set, make the first one default
+          if (!hasDefaultVariant && data.variants.length > 0) {
+            data.variants[0].isDefault = true
+          }
+
+          // Calculate total stock from variants
+          if (data.variants.length > 0) {
+            const totalVariantStock = data.variants.reduce((total: number, variant: any) => {
+              return total + (variant.variantStock || 0)
+            }, 0)
+
+            // Update main product stock to sum of all variants
+            data.stock = totalVariantStock
+
+            // Update main product price to default variant price
+            const defaultVariant = data.variants.find((variant: any) => variant.isDefault)
+            if (defaultVariant) {
+              data.price = defaultVariant.variantPrice
+              if (defaultVariant.variantSalePrice) {
+                data.salePrice = defaultVariant.variantSalePrice
+              }
+            }
+          }
+        }
+
         return data
       },
     ],
@@ -234,4 +409,4 @@ export const Products: CollectionConfig = {
   versions: {
     drafts: true,
   },
-} 
+}

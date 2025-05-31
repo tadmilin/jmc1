@@ -179,7 +179,7 @@ export interface Category {
  */
 export interface Media {
   id: string;
-  alt?: string | null;
+  alt: string;
   caption?: {
     root: {
       type: string;
@@ -1037,6 +1037,55 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
+  /**
+   * เพิ่มตัวเลือกย่อยเช่น ขนาด สี หรือประเภทต่างๆ ของสินค้า
+   */
+  variants?:
+    | {
+        /**
+         * เช่น "4 หุน", "6 หุน", "สีแดง", "ขนาด L" เป็นต้น
+         */
+        variantName: string;
+        /**
+         * ราคาเฉพาะของตัวเลือกนี้
+         */
+        variantPrice: number;
+        /**
+         * ราคาลดพิเศษของตัวเลือกนี้ (ถ้ามี)
+         */
+        variantSalePrice?: number | null;
+        /**
+         * จำนวนสินค้าคงเหลือของตัวเลือกนี้
+         */
+        variantStock?: number | null;
+        /**
+         * รหัสสินค้าเฉพาะของตัวเลือกนี้
+         */
+        variantSku?: string | null;
+        /**
+         * รูปภาพที่แสดงเฉพาะตัวเลือกนี้ (ถ้าไม่มีจะใช้รูปหลักของสินค้า)
+         */
+        variantImages?:
+          | {
+              image: string | Media;
+              /**
+               * คำอธิบายรูปภาพสำหรับ SEO และผู้พิการทางสายตา
+               */
+              alt?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        /**
+         * สถานะของตัวเลือกนี้
+         */
+        variantStatus?: ('active' | 'inactive' | 'out_of_stock') | null;
+        /**
+         * กำหนดให้ตัวเลือกนี้เป็นตัวเลือกหลักที่แสดงก่อน
+         */
+        isDefault?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
   categories: (string | Category)[];
   /**
    * แสดงในหน้าแรกและหมวดสินค้าแนะนำ
@@ -1816,6 +1865,25 @@ export interface ProductsSelect<T extends boolean = true> {
     | {
         image?: T;
         alt?: T;
+        id?: T;
+      };
+  variants?:
+    | T
+    | {
+        variantName?: T;
+        variantPrice?: T;
+        variantSalePrice?: T;
+        variantStock?: T;
+        variantSku?: T;
+        variantImages?:
+          | T
+          | {
+              image?: T;
+              alt?: T;
+              id?: T;
+            };
+        variantStatus?: T;
+        isDefault?: T;
         id?: T;
       };
   categories?: T;
