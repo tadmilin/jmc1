@@ -6,7 +6,11 @@ export interface ProductVariant {
   variantStock: number
   variantSku?: string
   variantImages?: Array<{
-    image: any
+    image: {
+      url?: string
+      alt?: string
+      [key: string]: unknown
+    }
     alt?: string
   }>
   variantStatus: 'active' | 'inactive' | 'out_of_stock'
@@ -20,7 +24,15 @@ export interface ProductWithVariants {
   salePrice?: number
   stock: number
   variants?: ProductVariant[]
-  [key: string]: any
+  images?: Array<{
+    image: {
+      url?: string
+      alt?: string
+      [key: string]: unknown
+    }
+    alt?: string
+  }>
+  [key: string]: unknown
 }
 
 /**
@@ -147,7 +159,7 @@ export function formatPriceRange(priceRange: { min: number; max: number }): stri
 /**
  * Get variant images or fallback to product images
  */
-export function getVariantImages(product: ProductWithVariants, variant: ProductVariant): any[] {
+export function getVariantImages(product: ProductWithVariants, variant: ProductVariant): unknown[] {
   // Use variant-specific images if available
   if (variant.variantImages && variant.variantImages.length > 0) {
     return variant.variantImages.map((img) => img.image)
@@ -155,7 +167,7 @@ export function getVariantImages(product: ProductWithVariants, variant: ProductV
 
   // Fallback to product images
   if (product.images && Array.isArray(product.images)) {
-    return product.images.map((img: any) => img.image)
+    return product.images.map((img) => img.image)
   }
 
   return []

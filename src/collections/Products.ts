@@ -1,8 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import React from 'react'
 
-import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
 import { authenticatedOrPublished } from '../access/authenticatedOrPublished'
 import { slugField } from '@/fields/slug'
@@ -118,11 +116,6 @@ export const Products: CollectionConfig = {
       label: 'ตัวเลือกย่อยของสินค้า',
       admin: {
         description: 'เพิ่มตัวเลือกย่อยเช่น ขนาด สี หรือประเภทต่างๆ ของสินค้า',
-        components: {
-          RowLabel: ({ data, index }) => {
-            return data?.variantName || `ตัวเลือกที่ ${String(index).padStart(2, '0')}`
-          },
-        },
       },
       fields: [
         {
@@ -362,20 +355,22 @@ export const Products: CollectionConfig = {
           let hasDefaultVariant = false
 
           // Check if any variant is set as default
-          data.variants.forEach((variant: any) => {
-            if (variant.isDefault) {
-              hasDefaultVariant = true
-            }
+          data.variants.forEach(
+            (variant: { isDefault?: boolean; variantStock?: number; variantStatus?: string }) => {
+              if (variant.isDefault) {
+                hasDefaultVariant = true
+              }
 
-            // Auto-set variant status based on stock
-            if (
-              typeof variant.variantStock === 'number' &&
-              variant.variantStock <= 0 &&
-              variant.variantStatus === 'active'
-            ) {
-              variant.variantStatus = 'out_of_stock'
-            }
-          })
+              // Auto-set variant status based on stock
+              if (
+                typeof variant.variantStock === 'number' &&
+                variant.variantStock <= 0 &&
+                variant.variantStatus === 'active'
+              ) {
+                variant.variantStatus = 'out_of_stock'
+              }
+            },
+          )
 
           // If no default variant is set, make the first one default
           if (!hasDefaultVariant && data.variants.length > 0) {
@@ -384,15 +379,29 @@ export const Products: CollectionConfig = {
 
           // Calculate total stock from variants
           if (data.variants.length > 0) {
-            const totalVariantStock = data.variants.reduce((total: number, variant: any) => {
-              return total + (variant.variantStock || 0)
-            }, 0)
+            const totalVariantStock = data.variants.reduce(
+              (
+                total: number,
+                variant: {
+                  variantStock?: number
+                },
+              ) => {
+                return total + (variant.variantStock || 0)
+              },
+              0,
+            )
 
             // Update main product stock to sum of all variants
             data.stock = totalVariantStock
 
             // Update main product price to default variant price
-            const defaultVariant = data.variants.find((variant: any) => variant.isDefault)
+            const defaultVariant = data.variants.find(
+              (variant: {
+                isDefault?: boolean
+                variantPrice?: number
+                variantSalePrice?: number
+              }) => variant.isDefault,
+            )
             if (defaultVariant) {
               data.price = defaultVariant.variantPrice
               if (defaultVariant.variantSalePrice) {
