@@ -1,42 +1,45 @@
-import React from 'react';
-import { notFound } from 'next/navigation';
-import { getPayload } from 'payload';
-import configPromise from '@payload-config';
-import Link from 'next/link';
-import { Media } from '@/components/Media';
-import RichText from '@/components/RichText';
+import React from 'react'
+import { notFound } from 'next/navigation'
+import { getPayload } from 'payload'
+import configPromise from '@payload-config'
+import Link from 'next/link'
+import { Media } from '@/components/Media'
 import type { Metadata } from 'next'
 import { ProductCard, type ProductCardData } from '@/components/ProductCard'
+import { ProductDetailClient } from '@/components/ProductDetailClient'
 import type { Product } from '@/payload-types'
 
 interface ProductPageProps {
   params: Promise<{
-    slug: string;
-  }>;
+    slug: string
+  }>
 }
 
 async function getProduct(slug: string): Promise<Product | null> {
-  const payload = await getPayload({ config: configPromise });
-  
+  const payload = await getPayload({ config: configPromise })
+
   const result = await payload.find({
     collection: 'products',
     depth: 2,
     where: {
       slug: {
-        equals: slug
-      }
+        equals: slug,
+      },
     },
     limit: 1,
-  });
+  })
 
-  return result.docs[0] || null;
+  return result.docs[0] || null
 }
 
-async function getRelatedProducts(productId: string, categories: any[]): Promise<ProductCardData[]> {
-  const payload = await getPayload({ config: configPromise });
-  
-  const categoryIds = categories.map(cat => typeof cat === 'string' ? cat : cat.id);
-  
+async function getRelatedProducts(
+  productId: string,
+  categories: any[],
+): Promise<ProductCardData[]> {
+  const payload = await getPayload({ config: configPromise })
+
+  const categoryIds = categories.map((cat) => (typeof cat === 'string' ? cat : cat.id))
+
   const result = await payload.find({
     collection: 'products',
     depth: 2,
@@ -44,58 +47,62 @@ async function getRelatedProducts(productId: string, categories: any[]): Promise
       and: [
         {
           id: {
-            not_equals: productId
-          }
+            not_equals: productId,
+          },
         },
         {
           status: {
-            equals: 'active'
-          }
+            equals: 'active',
+          },
         },
         {
           categories: {
-            in: categoryIds
-          }
-        }
-      ]
+            in: categoryIds,
+          },
+        },
+      ],
     },
     limit: 4,
     sort: '-publishedAt',
-  });
+  })
 
-  return result.docs as ProductCardData[];
+  return result.docs as ProductCardData[]
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const product = await getProduct(slug);
+  const { slug } = await params
+  const product = await getProduct(slug)
 
   if (!product) {
     return {
       title: 'ไม่พบสินค้า',
-    };
+    }
   }
 
   return {
     title: `${product.title} | JMC`,
     description: product.shortDescription || product.title,
-  };
+  }
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const { slug } = await params;
-  const product = await getProduct(slug);
+  const { slug } = await params
+  const product = await getProduct(slug)
 
   if (!product) {
-    notFound();
+    notFound()
   }
 
-  const relatedProducts = await getRelatedProducts(product.id, product.categories || []);
+  const relatedProducts = await getRelatedProducts(product.id, product.categories || [])
 
-  const isOnSale = product.salePrice && product.salePrice < product.price;
-  const discountPercent = isOnSale && product.salePrice ? Math.round(((product.price - product.salePrice) / product.price) * 100) : 0;
-  const isOutOfStock = product.status === 'out_of_stock' || product.stock === 0;
-  const isInactive = product.status === 'inactive' || product.status === 'discontinued';
+  // Keep minimal calculations for image badges only
+  const isOnSale = product.salePrice && product.salePrice < product.price
+  const discountPercent =
+    isOnSale && product.salePrice
+      ? Math.round(((product.price - product.salePrice) / product.price) * 100)
+      : 0
+  const isOutOfStock = product.status === 'out_of_stock' || product.stock === 0
+  const isInactive = product.status === 'inactive' || product.status === 'discontinued'
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -131,8 +138,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-400">
                   <div className="text-center">
-                    <svg className="w-24 h-24 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    <svg
+                      className="w-24 h-24 mx-auto mb-4 opacity-50"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1}
+                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                      />
                     </svg>
                     <p className="text-lg">ไม่มีรูปภาพ</p>
                   </div>
@@ -161,7 +178,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
             {product.images && product.images.length > 1 && (
               <div className="grid grid-cols-4 gap-2">
                 {product.images.slice(1, 5).map((img, index) => (
-                  <div key={index} className="aspect-square bg-white rounded-lg overflow-hidden shadow">
+                  <div
+                    key={index}
+                    className="aspect-square bg-white rounded-lg overflow-hidden shadow"
+                  >
                     {img?.image && (
                       <Media
                         resource={img.image}
@@ -176,103 +196,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
 
           {/* Product Info */}
-          <div className="space-y-6">
-            {/* Categories */}
-            {product.categories && product.categories.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {product.categories.map((category, index) => {
-                  if (typeof category === 'object') {
-                    return (
-                      <span
-                        key={index}
-                        className="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm font-medium"
-                      >
-                        {category.title}
-                      </span>
-                    );
-                  }
-                  return null;
-                })}
-              </div>
-            )}
-
-            {/* Title */}
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
-              {product.title}
-            </h1>
-
-            {/* Price */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-4">
-                {isOnSale ? (
-                  <>
-                    <span className="text-3xl font-bold text-red-600">
-                      ฿{product.salePrice?.toLocaleString()}
-                    </span>
-                    <span className="text-xl text-gray-400 line-through">
-                      ฿{product.price.toLocaleString()}
-                    </span>
-                  </>
-                ) : (
-                  <span className="text-3xl font-bold text-gray-800">
-                    ฿{product.price.toLocaleString()}
-                  </span>
-                )}
-              </div>
-              
-              {/* Stock Info */}
-              {product.stock !== undefined && product.stock !== null && product.stock > 0 && product.stock <= 10 && (
-                <p className="text-orange-500 font-medium">
-                  เหลือเพียง {product.stock} ชิ้น
-                </p>
-              )}
-            </div>
-
-            {/* Short Description */}
-            {product.shortDescription && (
-              <p className="text-lg text-gray-600 leading-relaxed">
-                {product.shortDescription}
-              </p>
-            )}
-
-            {/* SKU */}
-            {product.sku && (
-              <p className="text-sm text-gray-500">
-                รหัสสินค้า: {product.sku}
-              </p>
-            )}
-
-            {/* Action Buttons */}
-            <div className="space-y-4">
-              <div className="flex gap-4">
-                <button
-                  disabled={isInactive || isOutOfStock}
-                  className={`flex-1 py-4 px-6 rounded-lg font-semibold text-lg transition-all duration-300 ${
-                    isInactive || isOutOfStock
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-blue-600 text-white hover:bg-blue-700 transform hover:scale-105'
-                  }`}
-                >
-                  {isInactive ? 'ไม่พร้อมขาย' : isOutOfStock ? 'สินค้าหมด' : 'สั่งซื้อสินค้า'}
-                </button>
-              </div>
-
-              <div className="flex gap-4">
-                <Link
-                  href="/contact"
-                  className="flex-1 text-center py-3 px-6 border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
-                >
-                  สอบถามข้อมูล
-                </Link>
-                <Link
-                  href="tel:+66123456789"
-                  className="flex-1 text-center py-3 px-6 border-2 border-green-600 text-green-600 rounded-lg font-semibold hover:bg-green-50 transition-colors"
-                >
-                  โทรสอบถาม
-                </Link>
-              </div>
-            </div>
-          </div>
+          <ProductDetailClient product={product as any} />
         </div>
 
         {/* Product Specifications */}
@@ -318,5 +242,5 @@ export default async function ProductPage({ params }: ProductPageProps) {
         )}
       </div>
     </div>
-  );
-} 
+  )
+}

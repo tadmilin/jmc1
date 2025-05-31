@@ -1,29 +1,32 @@
 export interface ProductVariant {
-  id?: string
+  id?: string | null
   variantName: string
   variantPrice: number
-  variantSalePrice?: number
-  variantStock: number
-  variantSku?: string
+  variantSalePrice?: number | null
+  variantStock?: number | null
+  variantSku?: string | null
   variantImages?: Array<{
-    image: {
-      url?: string
-      alt?: string
-      [key: string]: unknown
-    }
-    alt?: string
-  }>
-  variantStatus: 'active' | 'inactive' | 'out_of_stock'
-  isDefault: boolean
+    image:
+      | string
+      | {
+          url?: string
+          alt?: string
+          [key: string]: unknown
+        }
+    alt?: string | null
+    id?: string | null
+  }> | null
+  variantStatus?: 'active' | 'inactive' | 'out_of_stock' | 'draft' | null
+  isDefault?: boolean | null
 }
 
 export interface ProductWithVariants {
   id: string
   title: string
   price: number
-  salePrice?: number
-  stock: number
-  variants?: ProductVariant[]
+  salePrice?: number | null
+  stock?: number | null | undefined
+  variants?: ProductVariant[] | null
   images?: Array<{
     image: {
       url?: string
@@ -51,12 +54,12 @@ export function getDefaultVariant(product: ProductWithVariants): ProductVariant 
  * Get available variants (active and in stock)
  */
 export function getAvailableVariants(product: ProductWithVariants): ProductVariant[] {
-  if (!product.variants) {
+  if (!product.variants || !Array.isArray(product.variants)) {
     return []
   }
 
   return product.variants.filter(
-    (variant) => variant.variantStatus === 'active' && variant.variantStock > 0,
+    (variant) => variant.variantStatus === 'active' && (variant.variantStock || 0) > 0,
   )
 }
 
@@ -64,7 +67,7 @@ export function getAvailableVariants(product: ProductWithVariants): ProductVaria
  * Get all active variants
  */
 export function getActiveVariants(product: ProductWithVariants): ProductVariant[] {
-  if (!product.variants) {
+  if (!product.variants || !Array.isArray(product.variants)) {
     return []
   }
 
@@ -75,7 +78,7 @@ export function getActiveVariants(product: ProductWithVariants): ProductVariant[
  * Check if product has variants
  */
 export function hasVariants(product: ProductWithVariants): boolean {
-  return !!(product.variants && product.variants.length > 0)
+  return !!(product.variants && Array.isArray(product.variants) && product.variants.length > 0)
 }
 
 /**
@@ -85,7 +88,7 @@ export function getVariantById(
   product: ProductWithVariants,
   variantId: string,
 ): ProductVariant | null {
-  if (!product.variants) {
+  if (!product.variants || !Array.isArray(product.variants)) {
     return null
   }
 
@@ -100,7 +103,7 @@ export function getVariantById(
  * Get total stock across all variants
  */
 export function getTotalVariantStock(product: ProductWithVariants): number {
-  if (!product.variants) {
+  if (!product.variants || !Array.isArray(product.variants)) {
     return product.stock || 0
   }
 
@@ -117,7 +120,7 @@ export function getVariantPriceRange(product: ProductWithVariants): {
   max: number
   hasSalePrice: boolean
 } {
-  if (!product.variants || product.variants.length === 0) {
+  if (!product.variants || !Array.isArray(product.variants) || product.variants.length === 0) {
     return {
       min: product.price || 0,
       max: product.price || 0,

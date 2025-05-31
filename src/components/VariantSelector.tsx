@@ -48,7 +48,7 @@ export function VariantSelector({
           {activeVariants.map((variant, index) => {
             const isSelected = selectedVariant?.variantName === variant.variantName
             const isOutOfStock =
-              variant.variantStock <= 0 || variant.variantStatus === 'out_of_stock'
+              (variant.variantStock || 0) <= 0 || variant.variantStatus === 'out_of_stock'
 
             return (
               <button
