@@ -1,9 +1,8 @@
-'use client';
+'use client'
 
 import React from 'react'
 import type { Category } from '@/payload-types'
 import Image from 'next/image'
-import Link from 'next/link'
 // Remove Payload imports as data fetching is moved
 // import configPromise from '@payload-config'
 // import { getPayload } from 'payload'
@@ -35,29 +34,41 @@ const categoryListStyles = `
     font-size: 0.9em;
     font-weight: bold;
   }
-`;
+`
 
 // Update component to accept categories data as a prop
 export const CategoryListBlock: React.FC<{
-  block: any; // Use any for now since CategoryListBlockProps doesn't exist
-  categories: Category[]; // Expect categories data as a prop
+  block: any // Use any for now since CategoryListBlockProps doesn't exist
+  categories: Category[] // Expect categories data as a prop
 }> = (props) => {
-  const { block, categories } = props; // Destructure block data and categories
+  const { block, categories } = props // Destructure block data and categories
 
   // No data fetching logic needed here anymore
 
   return (
     <div className="category-list-block">
-       {/* Add style tag for the basic CSS */}
+      {/* Add style tag for the basic CSS */}
       <style dangerouslySetInnerHTML={{ __html: categoryListStyles }} />
       <h2>หมวดหมู่สินค้า</h2> {/* Add a title for the block */}
       {categories && categories.length > 0 ? (
         <div className="category-list">
           {categories.map((category) => {
             // Ensure category and image data exist and are populated
-            if (typeof category === 'object' && category !== null && typeof category.image === 'object' && category.image !== null && 'url' in category.image && category.image.url && category.slug) {
+            if (
+              typeof category === 'object' &&
+              category !== null &&
+              typeof category.image === 'object' &&
+              category.image !== null &&
+              'url' in category.image &&
+              category.image.url &&
+              category.slug
+            ) {
               return (
-                <Link href={`/categories/${category.slug}`} key={category.id} className="category-item">
+                <button
+                  onClick={() => (window.location.href = `/categories/${category.slug}`)}
+                  key={category.id}
+                  className="category-item cursor-pointer"
+                >
                   <div className="category-image-container">
                     {/* @ts-ignore */}
                     <Image
@@ -68,12 +79,12 @@ export const CategoryListBlock: React.FC<{
                     />
                   </div>
                   <p className="category-title">{category.title}</p>
-                </Link>
-              );
+                </button>
+              )
             } else {
               // Log if category or image data is invalid
-              console.warn('Invalid category or image data:', category);
-              return null;
+              console.warn('Invalid category or image data:', category)
+              return null
             }
           })}
         </div>
@@ -81,5 +92,5 @@ export const CategoryListBlock: React.FC<{
         <p>No categories found.</p>
       )}
     </div>
-  );
-}; 
+  )
+}

@@ -2,10 +2,10 @@ import React from 'react'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
-import Link from 'next/link'
 import type { Metadata } from 'next'
 import { ProductCard, type ProductCardData } from '@/components/ProductCard'
 import { ProductDetailWrapper } from '@/components/ProductDetailWrapper'
+import { NavigationButtons, FooterButtons } from '@/components/ProductPageNavigation'
 import type { Product } from '@/payload-types'
 
 interface ProductPageProps {
@@ -96,22 +96,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Breadcrumb */}
-      <div className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <nav className="flex items-center space-x-2 text-sm">
-            <Link href="/" className="text-blue-600 hover:text-blue-800">
-              หน้าแรก
-            </Link>
-            <span className="text-gray-400">/</span>
-            <Link href="/products" className="text-blue-600 hover:text-blue-800">
-              สินค้าทั้งหมด
-            </Link>
-            <span className="text-gray-400">/</span>
-            <span className="text-gray-600">{product.title}</span>
-          </nav>
-        </div>
-      </div>
+      <NavigationButtons productTitle={product.title} />
 
       {/* Product Details */}
       <div className="container mx-auto px-4 py-16">
@@ -166,23 +151,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </div>
       )}
 
-      {/* Footer Navigation - เพิ่มลิงก์กลับและขอใบเสนอราคา */}
-      <div className="container mx-auto px-4 pb-8">
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Link
-            href="/"
-            className="flex-1 sm:flex-none px-6 py-3 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 transition-colors text-center min-w-[200px]"
-          >
-            กลับหน้าหลัก
-          </Link>
-          <Link
-            href="/quote-request-standalone"
-            className="flex-1 sm:flex-none px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors text-center min-w-[200px]"
-          >
-            ขอใบเสนอราคา
-          </Link>
-        </div>
-      </div>
+      <FooterButtons />
     </div>
   )
 }

@@ -1,6 +1,5 @@
 'use client'
 import { useHeaderTheme } from '@/providers/HeaderTheme'
-import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
@@ -153,9 +152,9 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
 
             {/* Center Section: Logo */}
             <div className="flex-1 flex justify-center lg:justify-start lg:ml-0">
-              <Link href="/" className="block">
+              <button onClick={() => (window.location.href = '/')} className="block">
                 <Logo loading="eager" priority="high" logoData={data.logo} />
-              </Link>
+              </button>
             </div>
 
             {/* Desktop Navigation */}

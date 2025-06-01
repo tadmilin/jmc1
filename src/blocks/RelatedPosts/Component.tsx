@@ -1,6 +1,5 @@
 import clsx from 'clsx'
 import React from 'react'
-import Link from 'next/link'
 import RichText from '@/components/RichText'
 
 import type { Post } from '@/payload-types'

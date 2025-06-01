@@ -8,7 +8,6 @@ import type { Page, Category, Media } from '@/payload-types'
 import { CMSLink } from '@/components/Link'
 import { Media as MediaComponent } from '@/components/Media'
 import RichText from '@/components/RichText'
-import Link from 'next/link'
 
 // Interface for Social Media Button
 interface SocialMediaButton {
@@ -132,9 +131,9 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
           <ul className="divide-y divide-gray-100 dark:divide-gray-700">
             {categories.map((category) => (
               <li key={category.id} className="group">
-                <Link
-                  href={`/categories/${category.slug}`}
-                  className={`flex items-center gap-3 px-4 py-3 transition-all duration-200 ${baseTextColor} ${hoverBgColor} group-hover:pl-6`}
+                <button
+                  onClick={() => (window.location.href = `/categories/${category.slug}`)}
+                  className={`flex items-center gap-3 px-4 py-3 transition-all duration-200 ${baseTextColor} ${hoverBgColor} group-hover:pl-6 w-full text-left cursor-pointer`}
                 >
                   {category.image && typeof category.image === 'object' && (
                     <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 shadow-sm">
@@ -166,7 +165,7 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
                       d="M9 5l7 7-7 7"
                     />
                   </svg>
-                </Link>
+                </button>
               </li>
             ))}
           </ul>

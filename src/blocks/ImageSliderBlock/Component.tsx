@@ -1,78 +1,76 @@
 /* eslint-disable @next/next/no-img-element */
-'use client';
+'use client'
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { Media } from '@/components/Media';
-import type { Media as MediaType } from '@/payload-types';
+import React, { useEffect, useState } from 'react'
+import { Media } from '@/components/Media'
+import type { Media as MediaType } from '@/payload-types'
 // นำเข้า Swiper components และ modules
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Navigation, Pagination, Autoplay } from 'swiper/modules'
 
 // นำเข้า Swiper styles
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
 
 interface SlideType {
-  image: string | MediaType;
-  title: string;
-  link?: string;
-  id?: string;
+  image: string | MediaType
+  title: string
+  link?: string
+  id?: string
 }
 
 interface ImageSliderBlockProps {
-  title?: string;
-  slides: SlideType[];
-  aspectRatio?: 'auto' | '1:1' | '16:9' | '4:3' | '3:4'; // เพิ่ม 'auto'
-  backgroundColor?: string;
+  title?: string
+  slides: SlideType[]
+  aspectRatio?: 'auto' | '1:1' | '16:9' | '4:3' | '3:4' // เพิ่ม 'auto'
+  backgroundColor?: string
 }
 
 export const ImageSliderBlock: React.FC<{
-  block: ImageSliderBlockProps;
-  colorTheme?: string;
+  block: ImageSliderBlockProps
+  colorTheme?: string
 }> = ({ block, colorTheme = 'light' }) => {
-  const { title = 'แบรนด์ของเรา', slides = [], aspectRatio = 'auto' } = block || {}; // Default title and bg
-  
+  const { title = 'แบรนด์ของเรา', slides = [], aspectRatio = 'auto' } = block || {} // Default title and bg
+
   // ใช้สีพื้นหลังเดียวกับ hero
   const getBackgroundColor = () => {
     switch (colorTheme) {
       case 'dark':
-        return '#111827'; // gray-900 เดียวกับ hero dark
+        return '#111827' // gray-900 เดียวกับ hero dark
       case 'lightBlue':
-        return '#eff6ff'; // blue-50 เดียวกับ hero lightBlue
+        return '#eff6ff' // blue-50 เดียวกับ hero lightBlue
       case 'gradient':
-        return 'linear-gradient(to bottom right, #eff6ff, #e0e7ff)'; // gradient เดียวกับ hero
+        return 'linear-gradient(to bottom right, #eff6ff, #e0e7ff)' // gradient เดียวกับ hero
       case 'light':
       default:
-        return '#f9fafb'; // gray-50 เดียวกับ hero light
+        return '#f9fafb' // gray-50 เดียวกับ hero light
     }
   }
 
-  
   const backgroundColor = getBackgroundColor()
-  const [isClient, setIsClient] = useState(false);
+  const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
+    setIsClient(true)
+  }, [])
 
   const getAspectRatioStyle = () => {
     if (aspectRatio === 'auto') {
-      return { paddingTop: '0', height: '80px' }; // Reduced height for smaller logos
+      return { paddingTop: '0', height: '80px' } // Reduced height for smaller logos
     }
     switch (aspectRatio) {
       case '16:9':
-        return { paddingTop: '56.25%' };
+        return { paddingTop: '56.25%' }
       case '4:3':
-        return { paddingTop: '75%' };
+        return { paddingTop: '75%' }
       case '3:4':
-        return { paddingTop: '133.33%' };
+        return { paddingTop: '133.33%' }
       case '1:1':
       default:
-        return { paddingTop: '100%' };
+        return { paddingTop: '100%' }
     }
-  };
+  }
 
   // ปรับสีข้อความตาม colorTheme
   const getTextColors = () => {
@@ -80,20 +78,20 @@ export const ImageSliderBlock: React.FC<{
       case 'dark':
         return {
           title: '#ffffff',
-          icon: '#9ca3af'
-        };
+          icon: '#9ca3af',
+        }
       case 'lightBlue':
       case 'gradient':
       case 'light':
       default:
         return {
           title: '#1f2937', // gray-800
-          icon: '#6b7280'   // gray-500
-        };
+          icon: '#6b7280', // gray-500
+        }
     }
   }
-  
-  const textColors = getTextColors();
+
+  const textColors = getTextColors()
 
   const sliderStyles = `
     .brand-slider-container {
@@ -180,9 +178,10 @@ export const ImageSliderBlock: React.FC<{
       left: 0;
       right: 0;
       padding: 12px 15px;
-      background: ${colorTheme === 'dark' 
-        ? 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 60%, transparent 100%)'
-        : 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 60%, transparent 100%)'
+      background: ${
+        colorTheme === 'dark'
+          ? 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 60%, transparent 100%)'
+          : 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 60%, transparent 100%)'
       };
       color: white;
       text-align: center;
@@ -234,22 +233,46 @@ export const ImageSliderBlock: React.FC<{
       font-size: 16px; /* Smaller arrow icons */
       font-weight: bold;
     }
-  `;
+  `
 
   if (!isClient) {
-    return ( 
+    return (
       <div style={{ background: backgroundColor, padding: '2rem 0' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
-          <span style={{ fontSize: '1.75rem', marginRight: '0.5rem', color: textColors.icon }}>🛒</span>
-          <h2 style={{ color: textColors.title, textAlign: 'center', fontSize: '1.5rem', fontWeight: 600 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: '1.5rem',
+          }}
+        >
+          <span style={{ fontSize: '1.75rem', marginRight: '0.5rem', color: textColors.icon }}>
+            🛒
+          </span>
+          <h2
+            style={{
+              color: textColors.title,
+              textAlign: 'center',
+              fontSize: '1.5rem',
+              fontWeight: 600,
+            }}
+          >
             {title}
           </h2>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', color: textColors.icon, fontSize: '0.875rem' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            color: textColors.icon,
+            fontSize: '0.875rem',
+          }}
+        >
           Loading brands...
         </div>
       </div>
-    );
+    )
   }
 
   if (!slides || slides.length === 0) {
@@ -263,17 +286,17 @@ export const ImageSliderBlock: React.FC<{
           <p className="text-sm">ไม่พบแบรนด์สินค้า</p>
         </div>
       </div>
-    );
+    )
   }
 
   return (
     <div className="brand-slider-container">
       <style dangerouslySetInnerHTML={{ __html: sliderStyles }} />
-      
+
       <div className="brand-slider-title-container">
         <h2 className="brand-slider-title">{title}</h2>
       </div>
-      
+
       <Swiper
         className="brand-swiper-container"
         modules={[Navigation, Pagination, Autoplay]}
@@ -281,33 +304,37 @@ export const ImageSliderBlock: React.FC<{
         slidesPerView={1.9} // Show almost 2 brands with good peek of next
         centeredSlides={false} // Can be true if you want active slide centered
         navigation
-        pagination={{ 
+        pagination={{
           clickable: true,
           el: '.brand-slider-pagination',
           bulletClass: 'swiper-pagination-bullet',
-          bulletActiveClass: 'swiper-pagination-bullet-active'
+          bulletActiveClass: 'swiper-pagination-bullet-active',
         }}
         autoplay={{
           delay: 5000,
           disableOnInteraction: false,
-          pauseOnMouseEnter: true, 
+          pauseOnMouseEnter: true,
         }}
         loop={slides.length > 4} // Adjust loop condition based on slidesPerView
         grabCursor={true}
         breakpoints={{
-          640: { // sm
+          640: {
+            // sm
             slidesPerView: 2.2,
             spaceBetween: 20,
           },
-          768: { // md
+          768: {
+            // md
             slidesPerView: 3.2,
             spaceBetween: 25,
           },
-          1024: { // lg
+          1024: {
+            // lg
             slidesPerView: 4.2,
             spaceBetween: 25,
           },
-          1280: { // xl
+          1280: {
+            // xl
             slidesPerView: 5.2,
             spaceBetween: 30,
           },
@@ -316,44 +343,56 @@ export const ImageSliderBlock: React.FC<{
         {slides.map((slide, index) => (
           <SwiperSlide key={slide.id || index} className="brand-slide">
             {slide.link ? (
-              <Link href={slide.link} className="brand-slide-link" target="_blank" rel="noopener noreferrer">
+              <a
+                href={slide.link}
+                className="brand-slide-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <div className="slide-inner-content">
-                  {typeof slide.image === 'object' && slide.image !== null && 'url' in slide.image ? (
+                  {typeof slide.image === 'object' &&
+                  slide.image !== null &&
+                  'url' in slide.image ? (
                     <Media
                       resource={slide.image}
                       className="slide-image-effect" // Apply effect class to Media itself
                       // fill prop might not be needed if width/height 100% is on className
                     />
                   ) : typeof slide.image === 'string' ? (
-                    <img src={slide.image} alt={slide.title || 'Brand Logo'} className="slide-image-effect" />
+                    <img
+                      src={slide.image}
+                      alt={slide.title || 'Brand Logo'}
+                      className="slide-image-effect"
+                    />
                   ) : null}
                   <div className="slide-title-overlay">
                     <span>{slide.title}</span>
                   </div>
                 </div>
-              </Link>
+              </a>
             ) : (
-              <div className="slide-inner-content"> 
-                 {typeof slide.image === 'object' && slide.image !== null && 'url' in slide.image ? (
-                <Media
-                  resource={slide.image}
-                      className="slide-image-effect"
-                />
-                  ) : typeof slide.image === 'string' ? (
-                    <img src={slide.image} alt={slide.title || 'Brand Logo'} className="slide-image-effect" />
-                  ) : null}
+              <div className="slide-inner-content">
+                {typeof slide.image === 'object' && slide.image !== null && 'url' in slide.image ? (
+                  <Media resource={slide.image} className="slide-image-effect" />
+                ) : typeof slide.image === 'string' ? (
+                  <img
+                    src={slide.image}
+                    alt={slide.title || 'Brand Logo'}
+                    className="slide-image-effect"
+                  />
+                ) : null}
                 <div className="slide-title-overlay">
                   <span>{slide.title}</span>
+                </div>
               </div>
-          </div>
-        )}
+            )}
           </SwiperSlide>
         ))}
       </Swiper>
-      
+
       <div className="brand-slider-pagination" />
     </div>
-  );
-};
+  )
+}
 
-export default ImageSliderBlock; 
+export default ImageSliderBlock
