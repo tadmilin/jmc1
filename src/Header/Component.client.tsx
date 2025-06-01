@@ -58,6 +58,18 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
   const [isLeftMobileMenuOpen, setIsLeftMobileMenuOpen] = useState(false) // Renamed for clarity
   const [isRightMobileMenuOpen, setIsRightMobileMenuOpen] = useState(false) // State for the new right hamburger menu
 
+  // Debug information
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('HeaderClient Debug:', {
+        data,
+        navItems: data?.navItems,
+        navItemsLength: data?.navItems?.length,
+        dataKeys: Object.keys(data || {}),
+      })
+    }
+  }, [data])
+
   // ปิดเมนูเมื่อเปลี่ยนหน้า
   useEffect(() => {
     setIsLeftMobileMenuOpen(false)
@@ -149,6 +161,11 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center justify-end flex-1">
               <HeaderNav data={data} />
+
+              {/* Debug info in development */}
+              {process.env.NODE_ENV === 'development' && (
+                <div className="ml-4 text-xs text-red-500">Nav: {data?.navItems?.length || 0}</div>
+              )}
             </div>
 
             {/* Right Section for Mobile: Hamburger (for NavItems) */}

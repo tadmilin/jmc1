@@ -1,6 +1,5 @@
 'use client'
 import { cn } from '@/utilities/ui'
-import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import type { Product, Media as MediaType } from '@/payload-types'
 import { Media } from '@/components/Media'

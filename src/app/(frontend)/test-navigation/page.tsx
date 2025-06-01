@@ -1,3 +1,4 @@
+'use client'
 import React from 'react'
 import Link from 'next/link'
 
@@ -88,6 +89,15 @@ export default function TestNavigationPage() {
         <p className="text-yellow-700 mt-2">
           ทดสอบวิธีการ navigation ต่างๆ เพื่อดูว่าวิธีไหนทำงานได้ดีที่สุด
         </p>
+      </div>
+
+      <div className="mt-4">
+        <Link
+          href="/"
+          className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+        >
+          Go home
+        </Link>
       </div>
     </div>
   )
