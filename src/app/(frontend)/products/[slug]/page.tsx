@@ -120,45 +120,69 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
       {/* Product Specifications */}
       {product.specifications && product.specifications.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-16">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">รายละเอียดสินค้า</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {product.specifications.map((spec, index) => (
-              <div key={index} className="flex justify-between py-3 border-b border-gray-200">
-                <span className="font-medium text-gray-600">{spec.label}</span>
-                <span className="text-gray-800">{spec.value}</span>
-              </div>
-            ))}
+        <div className="container mx-auto px-4 mb-16">
+          <div className="bg-white rounded-2xl shadow-lg p-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">รายละเอียดสินค้า</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {product.specifications.map((spec, index) => (
+                <div key={index} className="flex justify-between py-3 border-b border-gray-200">
+                  <span className="font-medium text-gray-600">{spec.label}</span>
+                  <span className="text-gray-800">{spec.value}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
 
       {/* Product Description */}
       {product.description && (
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-16">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">รายละเอียดเพิ่มเติม</h2>
-          <div className="prose prose-lg max-w-none">
-            {/* Render rich text content here */}
-            <div dangerouslySetInnerHTML={{ __html: JSON.stringify(product.description) }} />
+        <div className="container mx-auto px-4 mb-16">
+          <div className="bg-white rounded-2xl shadow-lg p-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">รายละเอียดเพิ่มเติม</h2>
+            <div className="prose prose-lg max-w-none">
+              {/* Render rich text content here */}
+              <div dangerouslySetInnerHTML={{ __html: JSON.stringify(product.description) }} />
+            </div>
           </div>
         </div>
       )}
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-lg p-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">สินค้าที่เกี่ยวข้อง</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedProducts.map((relatedProduct, index) => (
-              <ProductCard
-                key={relatedProduct.id || index}
-                product={relatedProduct}
-                colorTheme="light"
-              />
-            ))}
+        <div className="container mx-auto px-4 pb-16">
+          <div className="bg-white rounded-2xl shadow-lg p-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">สินค้าที่เกี่ยวข้อง</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {relatedProducts.map((relatedProduct, index) => (
+                <ProductCard
+                  key={relatedProduct.id || index}
+                  product={relatedProduct}
+                  colorTheme="light"
+                />
+              ))}
+            </div>
           </div>
         </div>
       )}
+
+      {/* Footer Navigation - เพิ่มลิงก์กลับและขอใบเสนอราคา */}
+      <div className="container mx-auto px-4 pb-8">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <Link
+            href="/"
+            className="flex-1 sm:flex-none px-6 py-3 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 transition-colors text-center min-w-[200px]"
+          >
+            กลับหน้าหลัก
+          </Link>
+          <Link
+            href="/quote-request-standalone"
+            className="flex-1 sm:flex-none px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors text-center min-w-[200px]"
+          >
+            ขอใบเสนอราคา
+          </Link>
+        </div>
+      </div>
     </div>
   )
 }

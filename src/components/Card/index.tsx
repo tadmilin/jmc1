@@ -45,14 +45,14 @@ export const Card: React.FC<{
 
   const handleCardClick = (e: React.MouseEvent) => {
     e.preventDefault()
-    if (isClient) {
+    if (isClient && href) {
       window.location.href = href
     }
   }
 
   const handleLinkClick = (e: React.MouseEvent) => {
     e.preventDefault()
-    if (isClient) {
+    if (isClient && href) {
       window.location.href = href
     }
   }
