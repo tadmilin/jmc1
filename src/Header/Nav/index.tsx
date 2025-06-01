@@ -4,7 +4,7 @@ import React from 'react'
 
 import type { Header as HeaderType } from '@/payload-types'
 
-import { MenuIcon } from 'lucide-react'
+import { MenuIcon } from '@/components/ui/LucideIcons'
 
 // Helper function สำหรับ navigation
 const handleNavigation = (link: any) => {

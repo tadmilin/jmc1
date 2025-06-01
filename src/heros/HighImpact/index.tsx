@@ -8,7 +8,6 @@ import type {
   Post /*HeroBlock, Link as LinkType*/,
 } from '@/payload-types'
 
-import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 import { useHeaderTheme } from '@/providers/HeaderTheme'
@@ -21,8 +20,8 @@ interface CustomLinkType {
   label?: string | null
   url?: string | null
   reference?: {
-    relationTo: 'pages' | 'posts' | string // Allow string for flexibility from linkGroup, but CMSLink might be stricter
-    value: string | number | Page | Post | { id: string; slug?: string; [key: string]: unknown } // More aligned with CMSLinkType and common object structure
+    relationTo: 'pages' | 'posts' | string // Allow string for flexibility from linkGroup
+    value: string | number | Page | Post | { id: string; slug?: string; [key: string]: unknown } // More aligned with common object structure
   } | null
   newTab?: boolean | null
 }
@@ -95,7 +94,7 @@ const FramedContentRenderer: React.FC<{ blocks: SpecificHeroBlock[] | null | und
   )
 }
 
-// Component for Hero Action Slots (Updated Styling)
+// Component for Hero Action Slots (Updated for Fast Loading)
 const HeroActionSlotsRenderer: React.FC<{
   slots: HeroActionSlot[] | null | undefined
   colorTheme?: string
@@ -108,6 +107,36 @@ const HeroActionSlotsRenderer: React.FC<{
   const descColor = isDarkTheme ? 'text-gray-300' : 'text-gray-700'
   const cardBorderColor = isDarkTheme ? 'border-gray-700' : 'border-gray-200'
 
+  // Helper function สำหรับ navigation ที่เร็วขึ้น
+  const handleNavigation = (link: any) => {
+    if (!link) return
+
+    if (link.type === 'custom' && link.url) {
+      if (link.newTab) {
+        window.open(link.url, '_blank', 'noopener,noreferrer')
+      } else {
+        window.location.href = link.url
+      }
+    } else if (link.type === 'reference' && link.reference) {
+      const { relationTo, value } = link.reference
+      let url = ''
+
+      if (typeof value === 'string') {
+        url = `/${relationTo}/${value}`
+      } else if (typeof value === 'object' && value.slug) {
+        url = relationTo === 'pages' ? `/${value.slug}` : `/${relationTo}/${value.slug}`
+      }
+
+      if (url) {
+        if (link.newTab) {
+          window.open(url, '_blank', 'noopener,noreferrer')
+        } else {
+          window.location.href = url
+        }
+      }
+    }
+  }
+
   return (
     <div className="w-full pt-0 pb-2 md:pb-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
@@ -115,28 +144,30 @@ const HeroActionSlotsRenderer: React.FC<{
           // Handle the nested slotLink structure from payload
           const linkData = slot.slotLink && slot.slotLink.length > 0 ? slot.slotLink[0]?.link : null
 
-          const cmsLinkProps = linkData
-            ? {
-                type: linkData.type,
-                url: linkData.url,
-                label: linkData.label || slot.title,
-                newTab: linkData.newTab,
-                reference: linkData.reference as {
-                  relationTo: 'pages' | 'posts'
-                  value: string | number
-                },
-              }
-            : null
-
           // Handle icon - check if it's an object with URL or just a string ID
           const hasValidIcon =
             slot.icon &&
             ((typeof slot.icon === 'object' && slot.icon.url) ||
               (typeof slot.icon === 'string' && slot.icon.length > 0))
 
+          const isValidLink =
+            linkData &&
+            ((linkData.type === 'custom' && linkData.url) ||
+              (linkData.type === 'reference' && linkData.reference?.value))
+
           const slotContent = (
             <div
-              className={`flex items-center space-x-4 p-4 md:p-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${cardBgColor} border ${cardBorderColor} h-full cursor-pointer`}
+              className={`flex items-center space-x-4 p-4 md:p-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1 ${cardBgColor} border ${cardBorderColor} h-full ${isValidLink ? 'cursor-pointer' : ''}`}
+              onClick={() => isValidLink && handleNavigation(linkData)}
+              onKeyDown={(e) => {
+                if ((e.key === 'Enter' || e.key === ' ') && isValidLink) {
+                  e.preventDefault()
+                  handleNavigation(linkData)
+                }
+              }}
+              tabIndex={isValidLink ? 0 : -1}
+              role={isValidLink ? 'button' : 'div'}
+              aria-label={isValidLink ? `${slot.title} - ${slot.description || ''}` : undefined}
             >
               {hasValidIcon && (
                 <div className="w-12 h-12 md:w-16 md:h-16 rounded-lg overflow-hidden flex-shrink-0 bg-white border border-gray-200 flex items-center justify-center p-1">
@@ -146,6 +177,8 @@ const HeroActionSlotsRenderer: React.FC<{
                         resource={slot.icon}
                         className="w-full h-full"
                         imgClassName="rounded-md object-contain w-full h-full"
+                        priority={false}
+                        loading="lazy"
                       />
                     </div>
                   ) : (
@@ -155,6 +188,7 @@ const HeroActionSlotsRenderer: React.FC<{
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                       >
                         <path
                           strokeLinecap="round"
@@ -172,23 +206,34 @@ const HeroActionSlotsRenderer: React.FC<{
                   {slot.title}
                 </h4>
                 {slot.description && (
-                  <p className={`text-sm md:text-base ${descColor}`}>{slot.description}</p>
+                  <p className={`text-sm md:text-base ${descColor} line-clamp-2`}>
+                    {slot.description}
+                  </p>
                 )}
               </div>
+              {isValidLink && (
+                <div className="flex-shrink-0">
+                  <svg
+                    className="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              )}
             </div>
           )
 
-          const isValidLink =
-            cmsLinkProps &&
-            ((cmsLinkProps.type === 'custom' && cmsLinkProps.url) ||
-              (cmsLinkProps.type === 'reference' && cmsLinkProps.reference?.value))
-
-          return isValidLink && cmsLinkProps ? (
-            <CMSLink key={slot.id} {...cmsLinkProps} className="block h-full">
-              {slotContent}
-            </CMSLink>
-          ) : (
-            <div key={slot.id} className="h-full">
+          return (
+            <div key={slot.id} className="h-full group">
               {slotContent}
             </div>
           )
@@ -554,14 +599,49 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
               )}
               {Array.isArray(links) && links.length > 0 && (
                 <ul className="flex flex-wrap justify-center gap-4 mt-6">
-                  {links.map(({ link }, i) => (
-                    <li key={i}>
-                      <CMSLink
-                        {...link}
-                        className={`px-6 py-3 rounded-full text-white font-medium transform transition-all duration-300 hover:scale-105 hover:shadow-lg inline-block ${colorTheme === 'dark' ? 'bg-blue-600 hover:bg-blue-500' : 'bg-blue-700 hover:bg-blue-600'}`}
-                      />
-                    </li>
-                  ))}
+                  {links.map(({ link }, i) => {
+                    // Handle navigation efficiently
+                    const handleLinkClick = () => {
+                      if (!link) return
+                      if (link.type === 'custom' && link.url) {
+                        if (link.newTab) {
+                          window.open(link.url, '_blank', 'noopener,noreferrer')
+                        } else {
+                          window.location.href = link.url
+                        }
+                      } else if (link.type === 'reference' && link.reference) {
+                        const { relationTo, value } = link.reference
+                        let url = ''
+                        if (typeof value === 'string') {
+                          url = `/${relationTo}/${value}`
+                        } else if (typeof value === 'object' && value.slug) {
+                          url =
+                            relationTo === 'pages'
+                              ? `/${value.slug}`
+                              : `/${relationTo}/${value.slug}`
+                        }
+                        if (url) {
+                          if (link.newTab) {
+                            window.open(url, '_blank', 'noopener,noreferrer')
+                          } else {
+                            window.location.href = url
+                          }
+                        }
+                      }
+                    }
+
+                    return (
+                      <li key={i}>
+                        <button
+                          onClick={handleLinkClick}
+                          className={`px-6 py-3 rounded-full text-white font-medium transform transition-all duration-300 hover:scale-105 hover:shadow-lg ${colorTheme === 'dark' ? 'bg-blue-600 hover:bg-blue-500' : 'bg-blue-700 hover:bg-blue-600'} focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+                          aria-label={link?.label || 'Link button'}
+                        >
+                          {link?.label || 'Link'}
+                        </button>
+                      </li>
+                    )
+                  })}
                 </ul>
               )}
             </div>
@@ -570,81 +650,83 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
           <div
             className={`grid grid-cols-1 ${showCategoriesDropdown ? (displayFrame ? 'lg:grid-cols-[280px_1fr_320px]' : 'lg:grid-cols-[280px_1fr]') : displayFrame ? 'lg:grid-cols-[1fr_320px]' : 'lg:grid-cols-1'} gap-8 lg:gap-12 items-start`}
           >
-            {/* Categories Dropdown และ Social Media Buttons - แสดงเฉพาะ desktop */}
             {showCategoriesDropdown && (
-              <div
-                className={`w-full ${isReversed && displayFrame ? 'lg:order-2' : 'lg:order-1'} hidden lg:block`}
-              >
+              <div className="hidden lg:block">
                 <CategoriesDropdown />
                 <SocialMediaButtons />
               </div>
             )}
-
-            <div
-              className={`
-              ${showCategoriesDropdown ? (isReversed && displayFrame ? 'lg:order-1' : 'lg:order-2') : isReversed && displayFrame ? 'lg:order-2' : 'lg:order-1'}
-              flex flex-col items-center text-center lg:items-start lg:text-left w-full
-            `}
-            >
+            <div className="space-y-6">
               <MainMediaArea />
               <HeroActionSlotsRenderer
                 slots={heroActionSlots as HeroActionSlot[]}
                 colorTheme={colorTheme ?? 'light'}
               />
-
-              {/* Social Media Buttons ใน mobile - แสดงหลัง HeroActionSlots */}
-              <div className="w-full lg:hidden px-4 md:px-0 mt-2">
-                <SocialMediaButtons />
-              </div>
-
-              <div className="w-full px-4 md:px-0 mt-2">
+              <div className="space-y-4">
                 {richText && (
                   <RichText
-                    className={`text-3xl md:text-4xl lg:text-5xl font-bold leading-tight bg-gradient-to-r ${colorTheme === 'dark' ? 'from-blue-300 to-indigo-300' : 'from-blue-600 to-indigo-600'} bg-clip-text text-transparent`}
+                    className={`text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r ${colorTheme === 'dark' ? 'from-blue-300 to-indigo-300' : 'from-blue-600 to-indigo-600'} bg-clip-text text-transparent`}
                     data={richText}
                     enableGutter={false}
                   />
                 )}
-              </div>
-              {Array.isArray(links) && links.length > 0 && (
-                <ul className="flex flex-wrap gap-3 pt-2 justify-center lg:justify-start px-4 md:px-0 mt-2">
-                  {links.map(({ link }, i) => (
-                    <li key={i}>
-                      <CMSLink
-                        {...link}
-                        className={`px-5 py-2.5 rounded-md text-sm font-medium transition-all duration-300 hover:shadow-lg ${colorTheme === 'dark' ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-blue-700 hover:bg-blue-600 text-white'}`}
-                      />
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+                {Array.isArray(links) && links.length > 0 && (
+                  <ul className="flex flex-wrap justify-center gap-4 mt-6">
+                    {links.map(({ link }, i) => {
+                      // Handle navigation efficiently
+                      const handleLinkClick = () => {
+                        if (!link) return
+                        if (link.type === 'custom' && link.url) {
+                          if (link.newTab) {
+                            window.open(link.url, '_blank', 'noopener,noreferrer')
+                          } else {
+                            window.location.href = link.url
+                          }
+                        } else if (link.type === 'reference' && link.reference) {
+                          const { relationTo, value } = link.reference
+                          let url = ''
+                          if (typeof value === 'string') {
+                            url = `/${relationTo}/${value}`
+                          } else if (typeof value === 'object' && value.slug) {
+                            url =
+                              relationTo === 'pages'
+                                ? `/${value.slug}`
+                                : `/${relationTo}/${value.slug}`
+                          }
+                          if (url) {
+                            if (link.newTab) {
+                              window.open(url, '_blank', 'noopener,noreferrer')
+                            } else {
+                              window.location.href = url
+                            }
+                          }
+                        }
+                      }
 
+                      return (
+                        <li key={i}>
+                          <button
+                            onClick={handleLinkClick}
+                            className={`px-6 py-3 rounded-full text-white font-medium transform transition-all duration-300 hover:scale-105 hover:shadow-lg ${colorTheme === 'dark' ? 'bg-blue-600 hover:bg-blue-500' : 'bg-blue-700 hover:bg-blue-600'} focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+                            aria-label={link?.label || 'Link button'}
+                          >
+                            {link?.label || 'Link'}
+                          </button>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                )}
+              </div>
+            </div>
             {displayFrame && (
-              <div
-                className={`${isReversed ? (showCategoriesDropdown ? 'lg:order-1' : 'lg:order-1') : showCategoriesDropdown ? 'lg:order-3' : 'lg:order-2'} w-full self-start lg:max-h-[calc(80vh)] min-h-[300px]`}
-              >
+              <div className="hidden lg:block">
                 <FramedContentRenderer blocks={framedHeroContent as SpecificHeroBlock[]} />
               </div>
             )}
           </div>
         )}
       </div>
-      <style jsx global>{`
-        .styled-scrollbar::-webkit-scrollbar {
-          width: 8px;
-        }
-        .styled-scrollbar::-webkit-scrollbar-track {
-        }
-        .styled-scrollbar::-webkit-scrollbar-thumb {
-          border-radius: 10px;
-          border: 2px solid transparent;
-          background-clip: content-box;
-        }
-        .categories-menu {
-          z-index: 40;
-        }
-      `}</style>
     </div>
   )
 }

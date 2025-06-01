@@ -10,7 +10,32 @@ const config = {
     './src/**/*.{ts,tsx}',
   ],
   darkMode: ['selector', '[data-theme="dark"]'],
-  plugins: [tailwindcssAnimate, typography],
+  plugins: [
+    tailwindcssAnimate,
+    typography,
+    function ({ addUtilities }) {
+      addUtilities({
+        '.line-clamp-1': {
+          overflow: 'hidden',
+          display: '-webkit-box',
+          '-webkit-box-orient': 'vertical',
+          '-webkit-line-clamp': '1',
+        },
+        '.line-clamp-2': {
+          overflow: 'hidden',
+          display: '-webkit-box',
+          '-webkit-box-orient': 'vertical',
+          '-webkit-line-clamp': '2',
+        },
+        '.line-clamp-3': {
+          overflow: 'hidden',
+          display: '-webkit-box',
+          '-webkit-box-orient': 'vertical',
+          '-webkit-line-clamp': '3',
+        },
+      })
+    },
+  ],
   prefix: '',
   safelist: [
     'lg:col-span-4',
@@ -25,6 +50,9 @@ const config = {
     'bg-success/30',
     'border-warning',
     'bg-warning/30',
+    'line-clamp-1',
+    'line-clamp-2',
+    'line-clamp-3',
   ],
   theme: {
     container: {

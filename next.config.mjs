@@ -6,6 +6,12 @@ const nextConfig = {
   experimental: {
     reactCompiler: false,
   },
+  // เพิ่ม serverExternalPackages สำหรับ Payload (แก้ไขจาก serverComponentsExternalPackages)
+  serverExternalPackages: ['payload', 'mongodb'],
+  // การ optimize สำหรับ production
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
   // เพิ่มการตั้งค่าสำหรับ images
   images: {
     remotePatterns: [
@@ -117,8 +123,8 @@ const nextConfig = {
       },
     ]
   },
-  // เพิ่มการตั้งค่า webpack
-  webpack: (config, { isServer }) => {
+  // เพิ่มการตั้งค่า webpack สำหรับ optimization
+  webpack: (config, { isServer, dev }) => {
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
@@ -127,8 +133,20 @@ const nextConfig = {
         os: false,
       }
     }
+
     return config
   },
 }
 
-export default withPayload(nextConfig)
+// Bundle analyzer setup
+let config = withPayload(nextConfig)
+
+if (process.env.ANALYZE === 'true') {
+  const { default: bundleAnalyzer } = await import('@next/bundle-analyzer')
+  const withBundleAnalyzer = bundleAnalyzer({
+    enabled: true,
+  })
+  config = withBundleAnalyzer(config)
+}
+
+export default config

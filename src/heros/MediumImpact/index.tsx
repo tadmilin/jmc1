@@ -108,6 +108,13 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
     const borderColor = colorTheme === 'dark' ? 'border-gray-700' : 'border-gray-200'
     const headerTextColor = colorTheme === 'dark' ? 'text-white' : 'text-gray-900'
 
+    // Fast navigation handler
+    const handleCategoryClick = (slug: string | null | undefined) => {
+      if (slug) {
+        window.location.href = `/categories/${slug}`
+      }
+    }
+
     return (
       <div
         className={`w-full max-w-sm bg-white dark:bg-gray-800 rounded-xl shadow-lg border ${borderColor} overflow-hidden`}
@@ -116,7 +123,13 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
           className={`px-4 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 border-b ${borderColor}`}
         >
           <h3 className={`text-lg font-semibold ${headerTextColor} flex items-center gap-2`}>
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -132,8 +145,9 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
             {categories.map((category) => (
               <li key={category.id} className="group">
                 <button
-                  onClick={() => (window.location.href = `/categories/${category.slug}`)}
-                  className={`flex items-center gap-3 px-4 py-3 transition-all duration-200 ${baseTextColor} ${hoverBgColor} group-hover:pl-6 w-full text-left cursor-pointer`}
+                  onClick={() => handleCategoryClick(category.slug)}
+                  className={`flex items-center gap-3 px-4 py-3 transition-all duration-200 ${baseTextColor} ${hoverBgColor} group-hover:pl-6 w-full text-left cursor-pointer focus:outline-none focus:bg-blue-50 dark:focus:bg-gray-700`}
+                  aria-label={`ไปยังหมวดหมู่ ${category.title}`}
                 >
                   {category.image && typeof category.image === 'object' && (
                     <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 shadow-sm">
@@ -141,13 +155,15 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
                         resource={category.image}
                         className="w-full h-full object-cover"
                         imgClassName="w-full h-full object-cover"
+                        loading="lazy"
+                        priority={false}
                       />
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{category.title}</p>
                     {category.description && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mt-0.5">
                         {category.description}
                       </p>
                     )}
@@ -157,6 +173,7 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap="round"
@@ -174,7 +191,7 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
     )
   }
 
-  // Social Media Buttons Component
+  // Social Media Buttons Component with Fast Navigation
   const SocialMediaButtons = () => {
     if (!socialMediaButtons || socialMediaButtons.length === 0) return null
 
@@ -182,6 +199,15 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
     const containerBg = isDarkTheme ? 'bg-gray-800' : 'bg-white'
     const borderColor = isDarkTheme ? 'border-gray-700' : 'border-gray-200'
     const headerTextColor = isDarkTheme ? 'text-white' : 'text-gray-900'
+
+    // Fast navigation handler
+    const handleSocialClick = (url: string, newTab?: boolean) => {
+      if (newTab) {
+        window.open(url, '_blank', 'noopener,noreferrer')
+      } else {
+        window.location.href = url
+      }
+    }
 
     return (
       <div
@@ -191,7 +217,13 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
           className={`px-4 py-3 bg-gradient-to-r from-green-50 to-blue-50 dark:from-gray-700 dark:to-gray-600 border-b ${borderColor}`}
         >
           <h3 className={`text-lg font-semibold ${headerTextColor} flex items-center gap-2`}>
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -205,12 +237,11 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
         <div className="p-4">
           <div className="space-y-3">
             {(socialMediaButtons as SocialMediaButton[]).map((button) => (
-              <a
+              <button
                 key={button.id}
-                href={button.url}
-                target={button.newTab ? '_blank' : '_self'}
-                rel={button.newTab ? 'noopener noreferrer' : undefined}
-                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors duration-200 border border-gray-200 hover:border-blue-300 group"
+                onClick={() => handleSocialClick(button.url, button.newTab)}
+                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200 border border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-400 group w-full text-left focus:outline-none focus:bg-blue-50 dark:focus:bg-gray-700"
+                aria-label={`ติดต่อผ่าน ${button.label}`}
               >
                 {button.icon && typeof button.icon === 'object' && (button.icon as Media).url && (
                   <div className="w-6 h-6 flex-shrink-0">
@@ -218,13 +249,29 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
                       resource={button.icon as Media}
                       className="w-full h-full object-contain"
                       imgClassName="rounded-sm w-full h-full object-contain"
+                      loading="lazy"
+                      priority={false}
                     />
                   </div>
                 )}
-                <span className="font-medium text-gray-700 group-hover:text-blue-600">
+                <span className="font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
                   {button.label}
                 </span>
-              </a>
+                <svg
+                  className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors ml-auto"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  />
+                </svg>
+              </button>
             ))}
           </div>
         </div>

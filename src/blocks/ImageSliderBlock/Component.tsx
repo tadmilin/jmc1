@@ -2,13 +2,13 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { cn } from '@/utilities/ui'
 import { Media } from '@/components/Media'
 import type { Media as MediaType } from '@/payload-types'
-// นำเข้า Swiper components และ modules
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination, Autoplay } from 'swiper/modules'
 
-// นำเข้า Swiper styles
+// Import Swiper styles
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
