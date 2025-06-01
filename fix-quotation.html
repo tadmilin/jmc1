@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แก้ไขหน้า Quotation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .button {
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            display: block;
+            margin: 20px auto;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+        .success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4caf50;
+        }
+        .error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid #f44336;
+        }
+        .loading {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #fff;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #feca57;
+        }
+        .step {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛠️ แก้ไขหน้า Quotation</h1>
+        
+        <div class="info">
+            <h3>📋 ปัญหาที่พบ:</h3>
+            <p>หน้า quotation ไม่แสดงฟอร์มครบถ้วน เนื่องจากยังไม่มี QuoteRequestFormBlock ใน layout</p>
+            
+            <h3>🔧 วิธีแก้ไข:</h3>
+            <div class="step">1. กดปุ่ม "แก้ไขหน้า Quotation" ด้านล่าง</div>
+            <div class="step">2. ระบบจะเพิ่ม QuoteRequestFormBlock เข้าไปในหน้า quotation</div>
+            <div class="step">3. รีเฟรชหน้า https://jmc111.vercel.app/quotation</div>
+            <div class="step">4. ฟอร์มควรแสดงครบถ้วนแล้ว</div>
+        </div>
+
+        <button class="button" onclick="fixQuotationPage()">
+            🚀 แก้ไขหน้า Quotation
+        </button>
+
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>กำลังแก้ไขหน้า quotation...</p>
+        </div>
+
+        <div id="result" class="result">
+            <h3 id="result-title"></h3>
+            <p id="result-message"></p>
+            <div id="result-details"></div>
+        </div>
+
+        <div class="info" style="margin-top: 30px;">
+            <h3>📝 ข้อมูลเทคนิค:</h3>
+            <p><strong>API Endpoint:</strong> /api/seed-quotation</p>
+            <p><strong>Block Type:</strong> quoteRequestFormBlock</p>
+            <p><strong>Page Slug:</strong> quotation</p>
+        </div>
+    </div>
+
+    <script>
+        async function fixQuotationPage() {
+            const button = document.querySelector('.button');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            const resultTitle = document.getElementById('result-title');
+            const resultMessage = document.getElementById('result-message');
+            const resultDetails = document.getElementById('result-details');
+
+            // Show loading
+            button.disabled = true;
+            loading.style.display = 'block';
+            result.style.display = 'none';
+
+            try {
+                const response = await fetch('https://jmc111.vercel.app/api/seed-quotation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                const data = await response.json();
+
+                // Hide loading
+                loading.style.display = 'none';
+                result.style.display = 'block';
+
+                if (response.ok && data.success) {
+                    result.className = 'result success';
+                    resultTitle.textContent = '✅ แก้ไขเรียบร้อยแล้ว!';
+                    resultMessage.textContent = data.message;
+                    resultDetails.innerHTML = `
+                        <p><strong>Page ID:</strong> ${data.pageId}</p>
+                        <p><strong>ขั้นตอนต่อไป:</strong></p>
+                        <ul>
+                            <li>ไปที่ <a href="https://jmc111.vercel.app/quotation" target="_blank" style="color: #4caf50;">https://jmc111.vercel.app/quotation</a></li>
+                            <li>รีเฟรชหน้า (F5 หรือ Ctrl+R)</li>
+                            <li>ฟอร์มควรแสดงครบถ้วนแล้ว</li>
+                        </ul>
+                    `;
+                } else {
+                    result.className = 'result error';
+                    resultTitle.textContent = '❌ เกิดข้อผิดพลาด';
+                    resultMessage.textContent = data.error || 'ไม่สามารถแก้ไขหน้า quotation ได้';
+                    resultDetails.innerHTML = `
+                        <p>กรุณาลองใหม่อีกครั้ง หรือติดต่อทีมพัฒนา</p>
+                        <p><strong>Status:</strong> ${response.status}</p>
+                    `;
+                }
+            } catch (error) {
+                // Hide loading
+                loading.style.display = 'none';
+                result.style.display = 'block';
+                result.className = 'result error';
+                resultTitle.textContent = '❌ เกิดข้อผิดพลาดในการเชื่อมต่อ';
+                resultMessage.textContent = 'ไม่สามารถเชื่อมต่อกับ API ได้';
+                resultDetails.innerHTML = `
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p>กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</p>
+                `;
+            }
+
+            // Re-enable button
+            button.disabled = false;
+        }
+    </script>
+</body>
+</html> 
