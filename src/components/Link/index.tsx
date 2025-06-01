@@ -40,7 +40,29 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
         }`
       : url
 
-  if (!href) return null
+  // Debug information
+  if (process.env.NODE_ENV === 'development') {
+    console.log('CMSLink Debug:', {
+      type,
+      reference,
+      url,
+      href,
+      label,
+      referenceValue: reference?.value,
+    })
+  }
+
+  // If no href, try to fallback to a default URL or show debug info
+  if (!href) {
+    if (process.env.NODE_ENV === 'development') {
+      return (
+        <span className={cn(className, 'text-red-500 cursor-not-allowed')}>
+          [ลิงก์ไม่สมบูรณ์: {label || 'ไม่มี label'}]
+        </span>
+      )
+    }
+    return null
+  }
 
   const size = appearance === 'link' ? 'clear' : sizeFromProps
   const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {}
