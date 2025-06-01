@@ -2,10 +2,42 @@
 
 import React from 'react'
 import type { Footer } from '@/payload-types'
-import { CMSLink } from '@/components/Link'
 
 interface FooterClientProps {
   footerData: Footer
+}
+
+// Helper function สำหรับ navigation
+const handleNavigation = (link: any) => {
+  if (!link) return
+
+  if (link.type === 'custom' && link.url) {
+    if (link.newTab) {
+      window.open(link.url, '_blank', 'noopener,noreferrer')
+    } else {
+      window.location.href = link.url
+    }
+  } else if (link.type === 'reference' && link.reference) {
+    // Handle reference links
+    const { relationTo, value } = link.reference
+    let url = ''
+
+    if (typeof value === 'string') {
+      // If value is just an ID, construct URL
+      url = `/${relationTo}/${value}`
+    } else if (typeof value === 'object' && value.slug) {
+      // If value is an object with slug
+      url = relationTo === 'pages' ? `/${value.slug}` : `/${relationTo}/${value.slug}`
+    }
+
+    if (url) {
+      if (link.newTab) {
+        window.open(url, '_blank', 'noopener,noreferrer')
+      } else {
+        window.location.href = url
+      }
+    }
+  }
 }
 
 export const FooterClient: React.FC<FooterClientProps> = ({ footerData }) => {
@@ -28,11 +60,13 @@ export const FooterClient: React.FC<FooterClientProps> = ({ footerData }) => {
           {navItems.length > 0 ? (
             <nav className="flex flex-wrap gap-4 mb-4 md:mb-0">
               {navItems.map(({ link }, i) => (
-                <CMSLink
+                <button
                   key={i}
-                  className="text-gray-400 hover:text-white transition-colors text-sm"
-                  {...link}
-                />
+                  onClick={() => handleNavigation(link)}
+                  className="text-gray-400 hover:text-white transition-colors text-sm cursor-pointer bg-transparent border-none p-0"
+                >
+                  {link.label}
+                </button>
               ))}
             </nav>
           ) : (

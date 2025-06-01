@@ -1,7 +1,6 @@
 'use client'
 import React from 'react'
 import type { Header } from '@/payload-types'
-import { CMSLink } from '@/components/Link'
 
 interface MobileNavItemsMenuProps {
   navItems: Header['navItems']
@@ -13,6 +12,39 @@ const XIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <path d="M6.225 4.811a.75.75 0 00-1.06 1.06L10.94 12l-5.775 6.129a.75.75 0 101.06 1.06L12 13.06l5.775 6.129a.75.75 0 101.06-1.06L13.06 12l5.775-6.129a.75.75 0 00-1.06-1.06L12 10.94 6.225 4.811z" />
   </svg>
 )
+
+// Helper function สำหรับ navigation
+const handleNavigation = (link: any) => {
+  if (!link) return
+
+  if (link.type === 'custom' && link.url) {
+    if (link.newTab) {
+      window.open(link.url, '_blank', 'noopener,noreferrer')
+    } else {
+      window.location.href = link.url
+    }
+  } else if (link.type === 'reference' && link.reference) {
+    // Handle reference links
+    const { relationTo, value } = link.reference
+    let url = ''
+
+    if (typeof value === 'string') {
+      // If value is just an ID, construct URL
+      url = `/${relationTo}/${value}`
+    } else if (typeof value === 'object' && value.slug) {
+      // If value is an object with slug
+      url = relationTo === 'pages' ? `/${value.slug}` : `/${relationTo}/${value.slug}`
+    }
+
+    if (url) {
+      if (link.newTab) {
+        window.open(url, '_blank', 'noopener,noreferrer')
+      } else {
+        window.location.href = url
+      }
+    }
+  }
+}
 
 export const MobileNavItemsMenu: React.FC<MobileNavItemsMenuProps> = ({ navItems, onClose }) => {
   const currentNavItems = navItems || []
@@ -30,6 +62,11 @@ export const MobileNavItemsMenu: React.FC<MobileNavItemsMenuProps> = ({ navItems
       document.removeEventListener('keydown', handleKeyDown)
     }
   }, [onClose])
+
+  const handleItemClick = (link: any) => {
+    handleNavigation(link)
+    onClose()
+  }
 
   return (
     <div
@@ -55,23 +92,25 @@ export const MobileNavItemsMenu: React.FC<MobileNavItemsMenuProps> = ({ navItems
             {currentNavItems.map(({ link }, i) => {
               return (
                 <li key={i}>
-                  <div
-                    onClick={onClose}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        onClose()
-                      }
-                    }}
-                    className="cursor-pointer"
+                  <button
+                    onClick={() => handleItemClick(link)}
+                    className="flex items-center justify-between w-full p-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 text-lg font-medium border border-transparent hover:border-blue-200 bg-transparent cursor-pointer text-left"
                   >
-                    <CMSLink
-                      {...link}
-                      appearance="link"
-                      className="flex items-center justify-between w-full p-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 text-lg font-medium border border-transparent hover:border-blue-200"
-                    />
-                  </div>
+                    {link.label}
+                    <svg
+                      className="w-4 h-4 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </button>
                 </li>
               )
             })}
