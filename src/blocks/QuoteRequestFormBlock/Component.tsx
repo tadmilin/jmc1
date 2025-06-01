@@ -503,7 +503,7 @@ export const QuoteRequestFormBlockComponent: React.FC<QuoteRequestFormBlockProps
               <h3 className="text-lg sm:text-2xl font-bold text-gray-800">ไฟล์แนบ</h3>
             </div>
             <FileUpload
-              name="attachments"
+              _name="attachments"
               label="อัปโหลดรูปภาพหรือเอกสารประกอบ"
               maxFiles={maxFiles}
               maxFileSize={maxFileSize * 1024 * 1024}

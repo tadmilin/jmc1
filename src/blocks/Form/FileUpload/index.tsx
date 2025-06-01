@@ -6,7 +6,7 @@ import { X, Upload, File, Image } from 'lucide-react'
 import { cn } from '@/utilities/ui'
 
 interface FileUploadProps {
-  name: string
+  _name?: string
   label?: string
   required?: boolean
   width?: number
@@ -17,7 +17,7 @@ interface FileUploadProps {
 }
 
 export const FileUpload: React.FC<FileUploadProps> = ({
-  name,
+  _name,
   label = 'อัปโหลดไฟล์',
   required = false,
   width = 100,
@@ -29,31 +29,34 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   const [files, setFiles] = useState<File[]>([])
   const [error, setError] = useState<string>('')
 
-  const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
-    setError('')
+  const onDrop = useCallback(
+    (acceptedFiles: File[], rejectedFiles: any[]) => {
+      setError('')
 
-    // Check for rejected files
-    if (rejectedFiles.length > 0) {
-      const rejection = rejectedFiles[0]
-      if (rejection.errors[0]?.code === 'file-too-large') {
-        setError(`ไฟล์มีขนาดใหญ่เกินไป (สูงสุด ${maxFileSize / 1024 / 1024}MB)`)
-      } else if (rejection.errors[0]?.code === 'file-invalid-type') {
-        setError('ประเภทไฟล์ไม่ถูกต้อง')
+      // Check for rejected files
+      if (rejectedFiles.length > 0) {
+        const rejection = rejectedFiles[0]
+        if (rejection.errors[0]?.code === 'file-too-large') {
+          setError(`ไฟล์มีขนาดใหญ่เกินไป (สูงสุด ${maxFileSize / 1024 / 1024}MB)`)
+        } else if (rejection.errors[0]?.code === 'file-invalid-type') {
+          setError('ประเภทไฟล์ไม่ถูกต้อง')
+        }
+        return
       }
-      return
-    }
 
-    // Check total files limit
-    const totalFiles = files.length + acceptedFiles.length
-    if (totalFiles > maxFiles) {
-      setError(`สามารถอัปโหลดได้สูงสุด ${maxFiles} ไฟล์`)
-      return
-    }
+      // Check total files limit
+      const totalFiles = files.length + acceptedFiles.length
+      if (totalFiles > maxFiles) {
+        setError(`สามารถอัปโหลดได้สูงสุด ${maxFiles} ไฟล์`)
+        return
+      }
 
-    const newFiles = [...files, ...acceptedFiles]
-    setFiles(newFiles)
-    onChange?.(newFiles)
-  }, [files, maxFiles, maxFileSize, onChange])
+      const newFiles = [...files, ...acceptedFiles]
+      setFiles(newFiles)
+      onChange?.(newFiles)
+    },
+    [files, maxFiles, maxFileSize, onChange],
+  )
 
   const removeFile = (index: number) => {
     const newFiles = files.filter((_, i) => i !== index)
@@ -63,10 +66,13 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: acceptedFileTypes.reduce((acc, type) => {
-      acc[type] = []
-      return acc
-    }, {} as Record<string, string[]>),
+    accept: acceptedFileTypes.reduce(
+      (acc, type) => {
+        acc[type] = []
+        return acc
+      },
+      {} as Record<string, string[]>,
+    ),
     maxSize: maxFileSize,
     disabled: files.length >= maxFiles,
   })
@@ -99,7 +105,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         className={cn(
           'border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors',
           isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400',
-          files.length >= maxFiles && 'opacity-50 cursor-not-allowed'
+          files.length >= maxFiles && 'opacity-50 cursor-not-allowed',
         )}
       >
         <input {...getInputProps()} />
@@ -112,21 +118,22 @@ export const FileUpload: React.FC<FileUploadProps> = ({
               ลากไฟล์มาวางที่นี่ หรือ <span className="text-blue-600">คลิกเพื่อเลือกไฟล์</span>
             </p>
             <p className="text-xs text-gray-500">
-              รองรับ: รูปภาพ, PDF, Word ({maxFiles} ไฟล์สูงสุด, ไฟล์ละไม่เกิน {maxFileSize / 1024 / 1024}MB)
+              รองรับ: รูปภาพ, PDF, Word ({maxFiles} ไฟล์สูงสุด, ไฟล์ละไม่เกิน{' '}
+              {maxFileSize / 1024 / 1024}MB)
             </p>
           </div>
         )}
       </div>
 
       {/* Error message */}
-      {error && (
-        <p className="text-red-500 text-sm">{error}</p>
-      )}
+      {error && <p className="text-red-500 text-sm">{error}</p>}
 
       {/* File list */}
       {files.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-medium">ไฟล์ที่เลือก ({files.length}/{maxFiles}):</p>
+          <p className="text-sm font-medium">
+            ไฟล์ที่เลือก ({files.length}/{maxFiles}):
+          </p>
           {files.map((file, index) => (
             <div
               key={index}
@@ -161,4 +168,4 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       )}
     </div>
   )
-} 
+}
