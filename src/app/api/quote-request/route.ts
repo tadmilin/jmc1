@@ -8,19 +8,40 @@ export async function POST(request: NextRequest) {
 
     const data = await request.json()
 
-    // Validate required fields
-    if (!data.customerName || !data.email || !data.phone || !data.productList) {
-      return NextResponse.json({ error: 'กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน' }, { status: 400 })
+    // Debug logging
+    console.log('Received data:', {
+      customerName: data.customerName,
+      email: data.email,
+      phone: data.phone,
+      productList: data.productList,
+      additionalNotes: data.additionalNotes,
+      attachments: data.attachments,
+    })
+
+    // Validate required fields - เฉพาะข้อมูลที่จำเป็นจริง ๆ
+    const missingFields = []
+    if (!data.customerName || data.customerName.trim() === '') missingFields.push('ชื่อและนามสกุล')
+    if (!data.email || data.email.trim() === '') missingFields.push('อีเมล')
+    if (!data.phone || data.phone.trim() === '') missingFields.push('เบอร์โทรศัพท์')
+    if (!data.productList || data.productList.trim() === '') missingFields.push('รายการสินค้า')
+
+    if (missingFields.length > 0) {
+      return NextResponse.json(
+        {
+          error: `กรุณากรอกข้อมูลที่จำเป็น: ${missingFields.join(', ')}`,
+        },
+        { status: 400 },
+      )
     }
 
     // Create quote request
     const result = await payload.create({
       collection: 'quote-requests',
       data: {
-        customerName: data.customerName,
-        email: data.email,
-        phone: data.phone,
-        productList: data.productList,
+        customerName: data.customerName.trim(),
+        email: data.email.trim(),
+        phone: data.phone.trim(),
+        productList: data.productList.trim(),
         additionalNotes: data.additionalNotes || '',
         attachments: data.attachments || [],
         status: 'new',
@@ -29,6 +50,8 @@ export async function POST(request: NextRequest) {
         followUpDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // ติดตาม 1 วันข้างหน้า
       },
     })
+
+    console.log('Created quote request:', result.id)
 
     // ส่งอีเมลแจ้งเตือนให้ admin (ถ้าต้องการ)
     // await sendNotificationEmail(result)

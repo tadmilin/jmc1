@@ -11,7 +11,7 @@ import { FileUpload } from '@/blocks/Form/FileUpload'
 import { getClientSideURL } from '@/utilities/getURL'
 
 const quoteRequestSchema = z.object({
-  fullName: z.string().min(1, 'กรุณากรอกชื่อและนามสกุล'),
+  customerName: z.string().min(1, 'กรุณากรอกชื่อและนามสกุล'),
   email: z.string().email('กรุณากรอกอีเมลที่ถูกต้อง'),
   phone: z.string().min(1, 'กรุณากรอกเบอร์โทรศัพท์'),
   productList: z.string().min(1, 'กรุณาระบุรายการสินค้าที่ต้องการ'),
@@ -312,24 +312,24 @@ export const QuoteRequestFormBlockComponent: React.FC<QuoteRequestFormBlockProps
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
                 <Label
-                  htmlFor="fullName"
+                  htmlFor="customerName"
                   className="text-sm font-semibold text-gray-700 flex items-center"
                 >
                   <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
                   ชื่อและนามสกุล
                 </Label>
                 <Input
-                  id="fullName"
-                  {...register('fullName')}
+                  id="customerName"
+                  {...register('customerName')}
                   placeholder="กรอกชื่อและนามสกุล"
                   suppressHydrationWarning
                   className={`h-10 sm:h-12 rounded-lg sm:rounded-xl border-2 transition-all duration-200 bg-white text-gray-900 ${
-                    errors.fullName
+                    errors.customerName
                       ? 'border-red-300 focus:border-red-500 bg-red-50'
                       : 'border-gray-200 focus:border-blue-500 hover:border-gray-300'
                   }`}
                 />
-                {errors.fullName && (
+                {errors.customerName && (
                   <p className="text-red-500 text-sm mt-1 flex items-center">
                     <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                       <path
@@ -338,7 +338,7 @@ export const QuoteRequestFormBlockComponent: React.FC<QuoteRequestFormBlockProps
                         clipRule="evenodd"
                       />
                     </svg>
-                    {errors.fullName.message}
+                    {errors.customerName.message}
                   </p>
                 )}
               </div>
@@ -469,7 +469,7 @@ export const QuoteRequestFormBlockComponent: React.FC<QuoteRequestFormBlockProps
 
               <div className="space-y-2">
                 <Label htmlFor="additionalNotes" className="text-sm font-semibold text-gray-700">
-                  หมายเหตุเพิ่มเติม
+                  หมายเหตุเพิ่มเติม <span className="text-gray-500 font-normal">(ไม่จำเป็น)</span>
                 </Label>
                 <Textarea
                   id="additionalNotes"
@@ -500,11 +500,13 @@ export const QuoteRequestFormBlockComponent: React.FC<QuoteRequestFormBlockProps
                   />
                 </svg>
               </div>
-              <h3 className="text-lg sm:text-2xl font-bold text-gray-800">ไฟล์แนบ</h3>
+              <h3 className="text-lg sm:text-2xl font-bold text-gray-800">
+                ไฟล์แนบ <span className="text-lg font-normal text-gray-500">(ไม่จำเป็น)</span>
+              </h3>
             </div>
             <FileUpload
               _name="attachments"
-              label="อัปโหลดรูปภาพหรือเอกสารประกอบ"
+              label="อัปโหลดรูปภาพหรือเอกสารประกอบ (ถ้ามี)"
               maxFiles={maxFiles}
               maxFileSize={maxFileSize * 1024 * 1024}
               acceptedFileTypes={getAcceptedFileTypes()}
