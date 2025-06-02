@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
       limit: 1,
     })
 
-    if (existingPage.docs.length > 0) {
+    if (existingPage.docs.length > 0 && existingPage.docs[0]) {
       // อัปเดตหน้าที่มีอยู่
       const updatedPage = await payload.update({
         collection: 'pages',
@@ -25,6 +25,9 @@ export async function POST(request: NextRequest) {
         data: {
           title: 'ขอใบเสนอราคา',
           slug: 'quotation',
+          hero: {
+            type: 'none',
+          },
           layout: [
             {
               blockType: 'quoteRequestFormBlock',
@@ -50,7 +53,6 @@ export async function POST(request: NextRequest) {
             title: 'ขอใบเสนอราคา - จงมีชัยค้าวัสดุ',
             description:
               'ขอใบเสนอราคาสินค้าจากจงมีชัยค้าวัสดุ กรอกข้อมูลและรับใบเสนอราคาภายใน 24 ชั่วโมง',
-            keywords: 'ขอใบเสนอราคา, จงมีชัยค้าวัสดุ, วัสดุก่อสร้าง, ราคาวัสดุ',
           },
         },
       })
@@ -67,6 +69,9 @@ export async function POST(request: NextRequest) {
         data: {
           title: 'ขอใบเสนอราคา',
           slug: 'quotation',
+          hero: {
+            type: 'none',
+          },
           layout: [
             {
               blockType: 'quoteRequestFormBlock',
@@ -92,7 +97,6 @@ export async function POST(request: NextRequest) {
             title: 'ขอใบเสนอราคา - จงมีชัยค้าวัสดุ',
             description:
               'ขอใบเสนอราคาสินค้าจากจงมีชัยค้าวัสดุ กรอกข้อมูลและรับใบเสนอราคาภายใน 24 ชั่วโมง',
-            keywords: 'ขอใบเสนอราคา, จงมีชัยค้าวัสดุ, วัสดุก่อสร้าง, ราคาวัสดุ',
           },
         },
       })

@@ -32,7 +32,7 @@ export const ImageSliderBlock: React.FC<{
   colorTheme?: string
 }> = ({ block, colorTheme = 'light' }) => {
   const { title = 'แบรนด์ของเรา', slides = [], aspectRatio = 'auto' } = block || {} // Default title and bg
-
+  
   // ใช้สีพื้นหลังเดียวกับ hero
   const getBackgroundColor = () => {
     switch (colorTheme) {
@@ -47,7 +47,7 @@ export const ImageSliderBlock: React.FC<{
         return '#f9fafb' // gray-50 เดียวกับ hero light
     }
   }
-
+  
   const backgroundColor = getBackgroundColor()
   const [isClient, setIsClient] = useState(false)
 
@@ -90,7 +90,7 @@ export const ImageSliderBlock: React.FC<{
         }
     }
   }
-
+  
   const textColors = getTextColors()
 
   const sliderStyles = `
@@ -180,8 +180,8 @@ export const ImageSliderBlock: React.FC<{
       padding: 12px 15px;
       background: ${
         colorTheme === 'dark'
-          ? 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 60%, transparent 100%)'
-          : 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 60%, transparent 100%)'
+        ? 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 60%, transparent 100%)'
+        : 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 60%, transparent 100%)'
       };
       color: white;
       text-align: center;
@@ -236,7 +236,7 @@ export const ImageSliderBlock: React.FC<{
   `
 
   if (!isClient) {
-    return (
+    return ( 
       <div style={{ background: backgroundColor, padding: '2rem 0' }}>
         <div
           style={{
@@ -292,11 +292,11 @@ export const ImageSliderBlock: React.FC<{
   return (
     <div className="brand-slider-container">
       <style dangerouslySetInnerHTML={{ __html: sliderStyles }} />
-
+      
       <div className="brand-slider-title-container">
         <h2 className="brand-slider-title">{title}</h2>
       </div>
-
+      
       <Swiper
         className="brand-swiper-container"
         modules={[Navigation, Pagination, Autoplay]}
@@ -304,7 +304,7 @@ export const ImageSliderBlock: React.FC<{
         slidesPerView={1.9} // Show almost 2 brands with good peek of next
         centeredSlides={false} // Can be true if you want active slide centered
         navigation
-        pagination={{
+        pagination={{ 
           clickable: true,
           el: '.brand-slider-pagination',
           bulletClass: 'swiper-pagination-bullet',
@@ -313,7 +313,7 @@ export const ImageSliderBlock: React.FC<{
         autoplay={{
           delay: 5000,
           disableOnInteraction: false,
-          pauseOnMouseEnter: true,
+          pauseOnMouseEnter: true, 
         }}
         loop={slides.length > 4} // Adjust loop condition based on slidesPerView
         grabCursor={true}
@@ -371,25 +371,25 @@ export const ImageSliderBlock: React.FC<{
                 </div>
               </a>
             ) : (
-              <div className="slide-inner-content">
-                {typeof slide.image === 'object' && slide.image !== null && 'url' in slide.image ? (
+              <div className="slide-inner-content"> 
+                 {typeof slide.image === 'object' && slide.image !== null && 'url' in slide.image ? (
                   <Media resource={slide.image} className="slide-image-effect" />
                 ) : typeof slide.image === 'string' ? (
                   <img
                     src={slide.image}
                     alt={slide.title || 'Brand Logo'}
-                    className="slide-image-effect"
-                  />
-                ) : null}
+                      className="slide-image-effect"
+                />
+                  ) : null}
                 <div className="slide-title-overlay">
                   <span>{slide.title}</span>
-                </div>
               </div>
-            )}
+          </div>
+        )}
           </SwiperSlide>
         ))}
       </Swiper>
-
+      
       <div className="brand-slider-pagination" />
     </div>
   )

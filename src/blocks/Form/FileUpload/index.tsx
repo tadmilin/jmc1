@@ -31,29 +31,29 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
   const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: any[]) => {
-      setError('')
+    setError('')
 
-      // Check for rejected files
-      if (rejectedFiles.length > 0) {
-        const rejection = rejectedFiles[0]
-        if (rejection.errors[0]?.code === 'file-too-large') {
-          setError(`ไฟล์มีขนาดใหญ่เกินไป (สูงสุด ${maxFileSize / 1024 / 1024}MB)`)
-        } else if (rejection.errors[0]?.code === 'file-invalid-type') {
-          setError('ประเภทไฟล์ไม่ถูกต้อง')
-        }
-        return
+    // Check for rejected files
+    if (rejectedFiles.length > 0) {
+      const rejection = rejectedFiles[0]
+      if (rejection.errors[0]?.code === 'file-too-large') {
+        setError(`ไฟล์มีขนาดใหญ่เกินไป (สูงสุด ${maxFileSize / 1024 / 1024}MB)`)
+      } else if (rejection.errors[0]?.code === 'file-invalid-type') {
+        setError('ประเภทไฟล์ไม่ถูกต้อง')
       }
+      return
+    }
 
-      // Check total files limit
-      const totalFiles = files.length + acceptedFiles.length
-      if (totalFiles > maxFiles) {
-        setError(`สามารถอัปโหลดได้สูงสุด ${maxFiles} ไฟล์`)
-        return
-      }
+    // Check total files limit
+    const totalFiles = files.length + acceptedFiles.length
+    if (totalFiles > maxFiles) {
+      setError(`สามารถอัปโหลดได้สูงสุด ${maxFiles} ไฟล์`)
+      return
+    }
 
-      const newFiles = [...files, ...acceptedFiles]
-      setFiles(newFiles)
-      onChange?.(newFiles)
+    const newFiles = [...files, ...acceptedFiles]
+    setFiles(newFiles)
+    onChange?.(newFiles)
     },
     [files, maxFiles, maxFileSize, onChange],
   )
@@ -68,8 +68,8 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     onDrop,
     accept: acceptedFileTypes.reduce(
       (acc, type) => {
-        acc[type] = []
-        return acc
+      acc[type] = []
+      return acc
       },
       {} as Record<string, string[]>,
     ),
@@ -168,4 +168,4 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       )}
     </div>
   )
-}
+} 
