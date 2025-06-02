@@ -11,7 +11,7 @@ export const CategoryNavigation = ({ categoryTitle }: { categoryTitle: string })
       >
         หมวดหมู่ทั้งหมด
       </button>
-      <span className="mx-2">{'>'}</span>
+      <span className="mx-2 text-black-600" >{'>'}</span>
       <span>{categoryTitle}</span>
     </div>
   )
@@ -28,7 +28,7 @@ export const ProductButton = ({
   return (
     <button
       onClick={() => (window.location.href = `/products/${product.slug}`)}
-      className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden cursor-pointer w-full text-left"
+      className="group bg-white rounded-lg text-black-900shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden cursor-pointer w-full text-left"
     >
       {children}
     </button>

@@ -20,8 +20,8 @@ export const NavigationButtons = ({ productTitle }: { productTitle: string }) =>
           >
             สินค้าทั้งหมด
           </button>
-          <span className="text-gray-400">/</span>
-          <span className="text-gray-600">{productTitle}</span>
+          <span className="text-black-400">/</span>
+          <span className="text-black-600">{productTitle}</span>
         </nav>
       </div>
     </div>

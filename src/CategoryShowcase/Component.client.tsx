@@ -22,10 +22,10 @@ export const CategoryShowcaseClient: React.FC<CategoryShowcaseClientProps> = ({ 
       <div className="container mx-auto px-4">
         {/* หัวข้อส่วน */}
         <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl md:text-3xl font-bold text-black-900 mb-2">
             หมวดหมู่สินค้า
           </h2>
-          <p className="text-gray-600">
+          <p className="text-black-600">
             เลือกดูสินค้าตามหมวดหมู่ที่คุณสนใจ
           </p>
         </div>
@@ -83,7 +83,7 @@ export const CategoryShowcaseClient: React.FC<CategoryShowcaseClientProps> = ({ 
             type="custom"
             url="/categories"
             label="ดูหมวดหมู่ทั้งหมด"
-            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md"
+            className="inline-flex items-center px-6 py-3 bg-blue-600 text-black font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md"
           >
             <span>ดูหมวดหมู่ทั้งหมด</span>
             <ChevronRightIcon className="w-5 h-5 ml-2" />
