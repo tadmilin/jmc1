@@ -49,7 +49,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     limit: 20,
     sort: '-publishedAt',
   })
-  
+
   const products = productsResponse.docs || []
 
   return (
@@ -61,10 +61,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           <div className="md:col-span-4 lg:col-span-3">
             <div className="relative aspect-square rounded-lg overflow-hidden mb-4 bg-gray-100">
               {category?.image && typeof category.image === 'object' && category.image.url ? (
-                <Media 
-                  resource={category.image} 
-                  fill 
-                  imgClassName="object-cover" 
+                <Media
+                  resource={category.image}
+                  fill
+                  imgClassName="object-cover"
                   size="(max-width: 768px) 100vw, 350px"
                 />
               ) : (
@@ -88,7 +88,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           </div>
 
           <div className="md:col-span-8 lg:col-span-9">
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">{category?.title || 'หมวดหมู่'}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4 text-black">
+              {category?.title || 'หมวดหมู่'}
+            </h1>
             {/* แสดงคำอธิบายของหมวดหมู่ ตามฟอร์แมตที่มี */}
             {category?.description && typeof category.description === 'object' && (
               <div className="prose dark:prose-invert mb-8">
@@ -97,7 +99,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             )}
             {category?.description && typeof category.description === 'string' && (
               <div className="prose dark:prose-invert mb-8">
-                <p>{category.description}</p>
+                <p className="text-lg text-black mb-6">{category.description}</p>
               </div>
             )}
           </div>
@@ -105,23 +107,23 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       </div>
 
       <div className="container">
-        <h2 className="text-2xl font-bold mb-6">สินค้าในหมวดหมู่นี้</h2>
-        
+        <h2 className="text-2xl font-bold mb-6 text-black">สินค้าในหมวดหมู่นี้</h2>
+
         {products.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {products.map((product) => {
               const mainImage = product.images?.[0]?.image
               const currentPrice = product.salePrice || product.price
               const hasDiscount = product.salePrice && product.salePrice < product.price
-              
+
               return (
                 <ProductButton key={product.id} product={product}>
                   <div className="relative aspect-square overflow-hidden bg-gray-100">
                     {mainImage && typeof mainImage === 'object' ? (
-                      <Media 
-                        resource={mainImage} 
-                        fill 
-                        imgClassName="object-cover group-hover:scale-105 transition-transform duration-200" 
+                      <Media
+                        resource={mainImage}
+                        fill
+                        imgClassName="object-cover group-hover:scale-105 transition-transform duration-200"
                         size="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
                       />
                     ) : (
@@ -129,31 +131,31 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                         ไม่มีรูปภาพ
                       </div>
                     )}
-                    
+
                     {hasDiscount && (
                       <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
                         ลดราคา
                       </div>
                     )}
-                    
+
                     {product.status === 'out_of_stock' && (
                       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                         <span className="text-white font-medium">สินค้าหมด</span>
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="p-4">
                     <h3 className="font-medium text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
                       {product.title}
                     </h3>
-                    
+
                     {product.shortDescription && (
                       <p className="text-sm text-gray-600 mb-3 line-clamp-2">
                         {product.shortDescription}
                       </p>
                     )}
-                    
+
                     <div className="flex items-center justify-between">
                       <div className="flex flex-col">
                         <span className="font-bold text-lg text-blue-600">
@@ -165,7 +167,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                           </span>
                         )}
                       </div>
-                      
+
                       {product.stock !== undefined && (
                         <span className="text-xs text-gray-500">คงเหลือ {product.stock}</span>
                       )}
@@ -184,4 +186,4 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       </div>
     </div>
   )
-} 
+}

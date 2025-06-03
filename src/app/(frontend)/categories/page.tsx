@@ -89,8 +89,8 @@ export default function CategoriesPage() {
     <div className="pt-24 pb-24">
       <div className="container mb-16">
         <div className="prose dark:prose-invert max-w-none">
-          <h1 className="text-3xl md:text-4xl font-bold mb-8">หมวดหมู่สินค้า</h1>
-          <p className="text-lg mb-8">เลือกดูสินค้าตามหมวดหมู่ที่ต้องการ</p>
+          <h1 className="text-3xl md:text-4xl font-bold mb-8 text-black">หมวดหมู่สินค้า</h1>
+          <p className="text-lg mb-8 text-black">เลือกดูสินค้าตามหมวดหมู่ที่ต้องการ</p>
         </div>
       </div>
 

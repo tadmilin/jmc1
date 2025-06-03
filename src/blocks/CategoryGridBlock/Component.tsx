@@ -132,11 +132,9 @@ export const CategoryGridBlock: React.FC<{
         {/* หัวข้อและคำอธิบาย */}
         {blockConfig.title && (
           <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-black-900 mb-4">
-              {blockConfig.title}
-            </h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-black mb-4">{blockConfig.title}</h2>
             {blockConfig.description && (
-              <div className="text-black-600 max-w-2xl mx-auto">
+              <div className="text-black max-w-2xl mx-auto">
                 <RichText data={blockConfig.description} />
               </div>
             )}
@@ -193,7 +191,7 @@ export const CategoryGridBlock: React.FC<{
                         size="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-black-400">
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">
                         <svg
                           className="w-12 h-12"
                           fill="none"
@@ -216,7 +214,7 @@ export const CategoryGridBlock: React.FC<{
                   {/* ชื่อหมวดหมู่ */}
                   {blockConfig.showCategoryNames && (
                     <div className="p-3">
-                      <h3 className="text-sm md:text-base font-medium text-black-900 group-hover:text-blue-600 transition-colors text-center line-clamp-2">
+                      <h3 className="text-sm md:text-base font-medium text-black text-center line-clamp-2">
                         {category.title || 'หมวดหมู่'}
                       </h3>
                     </div>

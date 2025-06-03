@@ -12,7 +12,7 @@ export const CategoryNavigation = ({ categoryTitle }: { categoryTitle: string })
         หมวดหมู่ทั้งหมด
       </button>
       <span className="mx-2 text-gray-600">{'>'}</span>
-      <span className="text-gray-800 font-medium">{categoryTitle}</span>
+      <span className="text-black font-medium">{categoryTitle}</span>
     </div>
   )
 }
