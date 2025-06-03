@@ -100,14 +100,14 @@ export default function CategoriesPage() {
             <button
               onClick={() => (window.location.href = `/categories/${category.slug}`)}
               key={category.id}
-              className="flex flex-col items-center p-4 rounded-lg bg-white shadow-sm hover:shadow-md transition-all group cursor-pointer w-full text-left"
+              className="flex flex-col items-center p-4 rounded-lg bg-white shadow-sm cursor-pointer w-full text-left"
             >
               <div className="relative w-full aspect-square rounded-lg overflow-hidden mb-4 bg-gray-100">
                 {hasValidImage(category.image) ? (
                   <Media
                     resource={category.image}
                     fill
-                    imgClassName="object-cover group-hover:scale-105 transition-transform duration-300"
+                    imgClassName="object-cover"
                     size="(max-width: 768px) 100vw, 250px"
                   />
                 ) : (
@@ -128,7 +128,7 @@ export default function CategoriesPage() {
                   </div>
                 )}
               </div>
-              <h2 className="text-center font-medium text-gray-800 group-hover:text-blue-600 transition-colors line-clamp-2 leading-tight">
+              <h2 className="text-center font-medium text-gray-800 line-clamp-2 leading-tight">
                 {category.title}
               </h2>
               {category.description && (

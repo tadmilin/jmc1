@@ -157,7 +157,7 @@ const HeroActionSlotsRenderer: React.FC<{
 
           const slotContent = (
             <div
-              className={`flex items-center space-x-4 p-4 md:p-5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1 ${cardBgColor} border ${cardBorderColor} h-full ${isValidLink ? 'cursor-pointer' : ''}`}
+              className={`flex items-center space-x-4 p-4 md:p-5 rounded-xl shadow-lg ${cardBgColor} border ${cardBorderColor} h-full ${isValidLink ? 'cursor-pointer' : ''}`}
               onClick={() => isValidLink && handleNavigation(linkData)}
               onKeyDown={(e) => {
                 if ((e.key === 'Enter' || e.key === ' ') && isValidLink) {
@@ -214,7 +214,7 @@ const HeroActionSlotsRenderer: React.FC<{
               {isValidLink && (
                 <div className="flex-shrink-0">
                   <svg
-                    className="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors"
+                    className="w-5 h-5 text-gray-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -233,7 +233,7 @@ const HeroActionSlotsRenderer: React.FC<{
           )
 
           return (
-            <div key={slot.id} className="h-full group">
+            <div key={slot.id} className="h-full">
               {slotContent}
             </div>
           )
@@ -323,19 +323,78 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
   }
 
   // ตรวจสอบว่าควรสลับคอลัมน์หรือไม่
-  const isReversed = layoutVariant === 'reversed'
   const isCentered = layoutVariant === 'centered'
 
-  // สร้างสไลด์โชว์อัตโนมัติ
-  useEffect(() => {
-    if (!hasSlideImages) return
-
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % (slideImages?.length || 1))
-    }, 5000)
-
-    return () => clearInterval(interval)
-  }, [hasSlideImages, slideImages])
+  // Main Slider/Media Component (to be placed in the center column, top)
+  const MainMediaArea = () => {
+    if (hasSlideImages) {
+      return (
+        <div className="relative rounded-xl overflow-hidden shadow-2xl w-full mb-2 aspect-video md:aspect-[16/9]">
+          {slideImages.map((slide, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}
+            >
+              {slide.image && typeof slide.image === 'object' && (
+                <Media
+                  className="w-full h-full object-cover"
+                  imgClassName="object-cover"
+                  priority={index === 0}
+                  resource={slide.image as MediaType}
+                />
+              )}
+            </div>
+          ))}
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
+            {slideImages.map((_, index) => (
+              <button
+                key={index}
+                className={`w-2.5 h-2.5 rounded-full ${
+                  index === currentSlide
+                    ? (colorTheme === 'dark' ? 'bg-white' : 'bg-gray-800') + ' scale-110 shadow-md'
+                    : colorTheme === 'dark'
+                      ? 'bg-white/50'
+                      : 'bg-gray-400'
+                }`}
+                onClick={() => setCurrentSlide(index)}
+                aria-label={`ดูรูปที่ ${index + 1}`}
+              />
+            ))}
+          </div>
+          {showDecorations && featuredText && (
+            <div
+              className={`absolute -right-3 -bottom-3 py-2 px-4 rounded-md flex items-center justify-center text-white shadow-lg ${colorTheme === 'dark' ? 'bg-blue-500' : 'bg-blue-600'}`}
+            >
+              <div className="text-center">
+                <div className="text-sm font-bold">{featuredText}</div>
+              </div>
+            </div>
+          )}
+        </div>
+      )
+    } else if (media && typeof media === 'object') {
+      return (
+        <div className="relative rounded-xl overflow-hidden shadow-2xl w-full mb-2 aspect-video md:aspect-[16/9]">
+          <Media
+            className="w-full h-full object-cover"
+            imgClassName="object-cover"
+            priority
+            resource={media as MediaType}
+          />
+          {showDecorations && featuredText && (
+            <div
+              className={`absolute -right-3 -bottom-3 py-2 px-4 rounded-md flex items-center justify-center text-white shadow-lg ${colorTheme === 'dark' ? 'bg-blue-500' : 'bg-blue-600'}`}
+            >
+              <div className="text-center">
+                <div className="text-sm font-bold">{featuredText}</div>
+              </div>
+            </div>
+          )}
+        </div>
+      )
+    }
+    return null
+  }
 
   // Reinstated CategoriesDropdown Component for the left sidebar
   const CategoriesDropdown = () => {
@@ -451,7 +510,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                 href={button.url}
                 target={button.newTab ? '_blank' : '_self'}
                 rel={button.newTab ? 'noopener noreferrer' : undefined}
-                className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 group"
+                className="flex items-center gap-3 p-3 rounded-lg"
               >
                 {button.icon && typeof button.icon === 'object' && (
                   <div className="w-8 h-8 flex-shrink-0 rounded-lg overflow-hidden shadow-sm relative">
@@ -462,11 +521,9 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                     />
                   </div>
                 )}
-                <span className="font-medium text-gray-900 group-hover:text-blue-600">
-                  {button.label}
-                </span>
+                <span className="font-medium text-gray-900">{button.label}</span>
                 <svg
-                  className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors ml-auto"
+                  className="w-4 h-4 text-gray-400 ml-auto"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -484,75 +541,6 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
         </div>
       </div>
     )
-  }
-
-  // Main Slider/Media Component (to be placed in the center column, top)
-  const MainMediaArea = () => {
-    if (hasSlideImages) {
-      return (
-        <div className="relative rounded-xl overflow-hidden shadow-2xl w-full mb-2 aspect-video md:aspect-[16/9]">
-          {slideImages.map((slide, index) => (
-            <div
-              key={index}
-              className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}
-            >
-              {slide.image && typeof slide.image === 'object' && (
-                <Media
-                  className="w-full h-full object-cover"
-                  imgClassName="object-cover"
-                  priority={index === 0}
-                  resource={slide.image as MediaType}
-                />
-              )}
-            </div>
-          ))}
-          <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
-            {slideImages.map((_, index) => (
-              <button
-                key={index}
-                className={`w-2.5 h-2.5 rounded-full transition-all ${
-                  index === currentSlide
-                    ? (colorTheme === 'dark' ? 'bg-white' : 'bg-gray-800') + ' scale-110 shadow-md'
-                    : (colorTheme === 'dark' ? 'bg-white/50' : 'bg-gray-400') + ' hover:opacity-80'
-                }`}
-                onClick={() => setCurrentSlide(index)}
-                aria-label={`ดูรูปที่ ${index + 1}`}
-              />
-            ))}
-          </div>
-          {showDecorations && featuredText && (
-            <div
-              className={`absolute -right-3 -bottom-3 py-2 px-4 rounded-md flex items-center justify-center text-white shadow-lg ${colorTheme === 'dark' ? 'bg-blue-500' : 'bg-blue-600'}`}
-            >
-              <div className="text-center">
-                <div className="text-sm font-bold">{featuredText}</div>
-              </div>
-            </div>
-          )}
-        </div>
-      )
-    } else if (media && typeof media === 'object') {
-      return (
-        <div className="relative rounded-xl overflow-hidden shadow-2xl w-full mb-2 aspect-video md:aspect-[16/9]">
-          <Media
-            className="w-full h-full object-cover"
-            imgClassName="object-cover"
-            priority
-            resource={media as MediaType}
-          />
-          {showDecorations && featuredText && (
-            <div
-              className={`absolute -right-3 -bottom-3 py-2 px-4 rounded-md flex items-center justify-center text-white shadow-lg ${colorTheme === 'dark' ? 'bg-blue-500' : 'bg-blue-600'}`}
-            >
-              <div className="text-center">
-                <div className="text-sm font-bold">{featuredText}</div>
-              </div>
-            </div>
-          )}
-        </div>
-      )
-    }
-    return null
   }
 
   return (
@@ -624,7 +612,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                       <li key={i}>
                         <button
                           onClick={handleLinkClick}
-                          className={`px-6 py-3 rounded-full text-white font-medium transform transition-all duration-300 hover:scale-105 hover:shadow-lg ${colorTheme === 'dark' ? 'bg-blue-600 hover:bg-blue-500' : 'bg-blue-700 hover:bg-blue-600'} focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+                          className={`px-6 py-3 rounded-full text-white font-medium ${colorTheme === 'dark' ? 'bg-blue-600' : 'bg-blue-700'} focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
                           aria-label={link?.label || 'Link button'}
                         >
                           {link?.label || 'Link'}
@@ -697,7 +685,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                         <li key={i}>
                           <button
                             onClick={handleLinkClick}
-                            className={`px-6 py-3 rounded-full text-white font-medium transform transition-all duration-300 hover:scale-105 hover:shadow-lg ${colorTheme === 'dark' ? 'bg-blue-600 hover:bg-blue-500' : 'bg-blue-700 hover:bg-blue-600'} focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+                            className={`px-6 py-3 rounded-full text-white font-medium ${colorTheme === 'dark' ? 'bg-blue-600' : 'bg-blue-700'} focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
                             aria-label={link?.label || 'Link button'}
                           >
                             {link?.label || 'Link'}

@@ -179,7 +179,7 @@ export const CategoryGridBlock: React.FC<{
                 <button
                   onClick={() => (window.location.href = categoryUrl)}
                   key={category.id}
-                  className="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 hover:border-blue-200 cursor-pointer w-full text-left"
+                  className="group bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 cursor-pointer w-full text-left"
                 >
                   {/* รูปภาพ */}
                   <div className="relative aspect-square overflow-hidden bg-gray-50">
@@ -187,7 +187,7 @@ export const CategoryGridBlock: React.FC<{
                       <MediaComponent
                         resource={category.image}
                         fill
-                        imgClassName="object-cover group-hover:scale-105 transition-transform duration-300"
+                        imgClassName="object-cover"
                         size="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                       />
                     ) : (
@@ -207,8 +207,6 @@ export const CategoryGridBlock: React.FC<{
                         </svg>
                       </div>
                     )}
-                    {/* Overlay */}
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300" />
                   </div>
 
                   {/* ชื่อหมวดหมู่ */}

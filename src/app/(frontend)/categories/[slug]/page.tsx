@@ -123,7 +123,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                       <Media
                         resource={mainImage}
                         fill
-                        imgClassName="object-cover group-hover:scale-105 transition-transform duration-200"
+                        imgClassName="object-cover"
                         size="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
                       />
                     ) : (
@@ -146,9 +146,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                   </div>
 
                   <div className="p-4">
-                    <h3 className="font-medium text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
-                      {product.title}
-                    </h3>
+                    <h3 className="font-medium text-gray-900 mb-2 line-clamp-2">{product.title}</h3>
 
                     {product.shortDescription && (
                       <p className="text-sm text-gray-600 mb-3 line-clamp-2">
