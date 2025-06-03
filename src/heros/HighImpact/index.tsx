@@ -344,24 +344,16 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
     // สี/ธีม เพิ่มเติม
     const containerBg = 'bg-white'
     const borderColor = 'border-gray-200'
-    const baseTextColor = 'text-gray-900'
-    const hoverBgColor = 'hover:bg-blue-50'
-
-    const scrollbarClasses = `
-      scrollbar-thin 
-      scrollbar-track-gray-100 
-      scrollbar-thumb-gray-300 
-      hover:scrollbar-thumb-gray-400
-    `
+    const baseTextColor = 'text-black'
 
     return (
       <div
         className={`w-full max-w-sm ${containerBg} rounded-xl shadow-lg border ${borderColor} overflow-hidden`}
       >
         <div className={`px-4 py-3 bg-blue-50 border-b ${borderColor}`}>
-          <h3 className={`text-lg font-semibold text-gray-900 flex items-center gap-2`}>
+          <h3 className={`text-lg font-semibold text-black flex items-center gap-2`}>
             <svg
-              className="w-5 h-5 text-gray-700"
+              className="w-5 h-5 text-black"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -376,13 +368,13 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
             หมวดหมู่สินค้า
           </h3>
         </div>
-        <div className={`max-h-80 overflow-y-auto ${scrollbarClasses}`}>
+        <div className={`max-h-80 overflow-y-auto`}>
           <ul className="divide-y divide-gray-100">
             {categories.map((category) => (
               <li key={category.id} className="group">
                 <button
                   onClick={() => (window.location.href = `/categories/${category.slug}`)}
-                  className={`flex items-center gap-3 px-4 py-3 transition-all duration-200 ${baseTextColor} ${hoverBgColor} group-hover:pl-6 w-full text-left cursor-pointer`}
+                  className={`flex items-center gap-3 px-4 py-3 ${baseTextColor} w-full text-left cursor-pointer`}
                 >
                   {category.image && typeof category.image === 'object' && (
                     <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 shadow-sm relative">
@@ -394,15 +386,13 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate text-gray-900">{category.title}</p>
+                    <p className="text-sm font-medium truncate text-black">{category.title}</p>
                     {category.description && (
-                      <p className="text-xs text-gray-500 truncate mt-0.5">
-                        {category.description}
-                      </p>
+                      <p className="text-xs text-black truncate mt-0.5">{category.description}</p>
                     )}
                   </div>
                   <svg
-                    className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors"
+                    className="w-4 h-4 text-black"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
