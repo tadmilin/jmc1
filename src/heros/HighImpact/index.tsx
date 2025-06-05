@@ -713,10 +713,9 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
               </div>
             </div>
 
-            {/* Categories และ Social Media สำหรับ Mobile/Tablet */}
+            {/* Social Media สำหรับ Mobile/Tablet */}
             {showCategoriesDropdown && (
               <div className="lg:hidden order-3 space-y-6">
-                <CategoriesDropdown />
                 <SocialMediaButtons />
               </div>
             )}
