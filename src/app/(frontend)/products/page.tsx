@@ -22,13 +22,13 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [showFilters, setShowFilters] = useState(false)
-  
+
   const [filters, setFilters] = useState<ProductFilters>({
     categories: [],
     priceRange: { min: 0, max: 100000 },
     onSaleOnly: false,
     sortBy: 'newest',
-    searchQuery: ''
+    searchQuery: '',
   })
 
   // Fetch products and categories
@@ -36,31 +36,30 @@ export default function ProductsPage() {
     const fetchData = async () => {
       try {
         setLoading(true)
-        
+
         // Fetch products
         const productsResponse = await fetch('/api/products?limit=100&depth=2')
         if (!productsResponse.ok) throw new Error('Failed to fetch products')
         const productsData = await productsResponse.json()
-        
+
         // Fetch categories
         const categoriesResponse = await fetch('/api/categories?limit=50')
         if (!categoriesResponse.ok) throw new Error('Failed to fetch categories')
         const categoriesData = await categoriesResponse.json()
-        
+
         setProducts(productsData.docs || [])
         setCategories(categoriesData.docs || [])
-        
+
         // Set initial price range based on products
         if (productsData.docs && productsData.docs.length > 0) {
           const prices = productsData.docs.map((p: any) => p.price || 0)
           const minPrice = Math.min(...prices)
           const maxPrice = Math.max(...prices)
-          setFilters(prev => ({
+          setFilters((prev) => ({
             ...prev,
-            priceRange: { min: minPrice, max: maxPrice }
+            priceRange: { min: minPrice, max: maxPrice },
           }))
         }
-        
       } catch (err) {
         console.error('Error fetching data:', err)
         setError('ไม่สามารถโหลดข้อมูลได้')
@@ -74,11 +73,11 @@ export default function ProductsPage() {
 
   // Filter and sort products
   const filteredProducts = useMemo(() => {
-    const filtered = products.filter(product => {
+    const filtered = products.filter((product) => {
       // Category filter
       if (filters.categories.length > 0) {
         const productCategories = product.categories || []
-        const hasMatchingCategory = productCategories.some(cat => {
+        const hasMatchingCategory = productCategories.some((cat) => {
           const categoryId = typeof cat === 'string' ? cat : cat.id
           return filters.categories.includes(categoryId)
         })
@@ -93,9 +92,8 @@ export default function ProductsPage() {
 
       // Sale filter
       if (filters.onSaleOnly) {
-        const hasValidSale = product.salePrice && 
-                           product.salePrice > 0 && 
-                           product.salePrice < product.price
+        const hasValidSale =
+          product.salePrice && product.salePrice > 0 && product.salePrice < product.price
         if (!hasValidSale) return false
       }
 
@@ -135,18 +133,18 @@ export default function ProductsPage() {
 
   // Handle filter changes
   const handleCategoryChange = (categoryId: string) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       categories: prev.categories.includes(categoryId)
-        ? prev.categories.filter(id => id !== categoryId)
-        : [...prev.categories, categoryId]
+        ? prev.categories.filter((id) => id !== categoryId)
+        : [...prev.categories, categoryId],
     }))
   }
 
   const handlePriceRangeChange = (min: number, max: number) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      priceRange: { min, max }
+      priceRange: { min, max },
     }))
   }
 
@@ -156,7 +154,7 @@ export default function ProductsPage() {
       priceRange: { min: 0, max: 100000 },
       onSaleOnly: false,
       sortBy: 'newest',
-      searchQuery: ''
+      searchQuery: '',
     })
   }
 
@@ -187,9 +185,7 @@ export default function ProductsPage() {
       <div className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-              สินค้าทั้งหมด
-            </h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">สินค้าทั้งหมด</h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               สินค้าคุณภาพดีจากเรา พร้อมบริการหลังการขายที่ดีเยี่ยม
             </p>
@@ -209,8 +205,18 @@ export default function ProductsPage() {
                   className="w-full flex items-center justify-between px-4 py-2 bg-blue-600 text-white rounded-lg"
                 >
                   <span>ตัวกรองสินค้า</span>
-                  <svg className={`w-5 h-5 transform transition-transform ${showFilters ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <svg
+                    className={`w-5 h-5 transform transition-transform ${showFilters ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </button>
               </div>
@@ -224,9 +230,11 @@ export default function ProductsPage() {
                   <input
                     type="text"
                     value={filters.searchQuery}
-                    onChange={(e) => setFilters(prev => ({ ...prev, searchQuery: e.target.value }))}
+                    onChange={(e) =>
+                      setFilters((prev) => ({ ...prev, searchQuery: e.target.value }))
+                    }
                     placeholder="ชื่อสินค้า..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
@@ -236,13 +244,13 @@ export default function ProductsPage() {
                     หมวดหมู่สินค้า
                   </label>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
-                    {categories.map(category => (
+                    {categories.map((category) => (
                       <label key={category.id} className="flex items-center">
                         <input
                           type="checkbox"
                           checked={filters.categories.includes(category.id)}
                           onChange={() => handleCategoryChange(category.id)}
-                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 bg-white"
                         />
                         <span className="ml-2 text-sm text-gray-700">{category.title}</span>
                       </label>
@@ -260,16 +268,20 @@ export default function ProductsPage() {
                       <input
                         type="number"
                         value={filters.priceRange.min}
-                        onChange={(e) => handlePriceRangeChange(Number(e.target.value), filters.priceRange.max)}
+                        onChange={(e) =>
+                          handlePriceRangeChange(Number(e.target.value), filters.priceRange.max)
+                        }
                         placeholder="ต่ำสุด"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                       <input
                         type="number"
                         value={filters.priceRange.max}
-                        onChange={(e) => handlePriceRangeChange(filters.priceRange.min, Number(e.target.value))}
+                        onChange={(e) =>
+                          handlePriceRangeChange(filters.priceRange.min, Number(e.target.value))
+                        }
                         placeholder="สูงสุด"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                   </div>
@@ -281,8 +293,10 @@ export default function ProductsPage() {
                     <input
                       type="checkbox"
                       checked={filters.onSaleOnly}
-                      onChange={(e) => setFilters(prev => ({ ...prev, onSaleOnly: e.target.checked }))}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      onChange={(e) =>
+                        setFilters((prev) => ({ ...prev, onSaleOnly: e.target.checked }))
+                      }
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 bg-white"
                     />
                     <span className="ml-2 text-sm text-gray-700">เฉพาะสินค้าลดราคา</span>
                   </label>
@@ -291,7 +305,7 @@ export default function ProductsPage() {
                 {/* Clear Filters */}
                 <button
                   onClick={clearFilters}
-                  className="w-full px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="w-full px-4 py-2 text-sm text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   ล้างตัวกรอง
                 </button>
@@ -313,13 +327,15 @@ export default function ProductsPage() {
                   )}
                 </p>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <label className="text-sm text-gray-700">เรียงตาม:</label>
                 <select
                   value={filters.sortBy}
-                  onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value as any }))}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={(e) =>
+                    setFilters((prev) => ({ ...prev, sortBy: e.target.value as any }))
+                  }
+                  className="px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="newest">ใหม่ล่าสุด</option>
                   <option value="price-low">ราคาต่ำ-สูง</option>
@@ -333,8 +349,18 @@ export default function ProductsPage() {
             {filteredProducts.length === 0 ? (
               <div className="text-center py-16 bg-white rounded-2xl border border-gray-200">
                 <div className="max-w-md mx-auto">
-                  <svg className="w-20 h-20 mx-auto mb-6 opacity-50 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  <svg
+                    className="w-20 h-20 mx-auto mb-6 opacity-50 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1}
+                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                    />
                   </svg>
                   <h3 className="text-2xl font-bold mb-4 text-gray-800">
                     ไม่พบสินค้าที่ตรงกับเงื่อนไข
@@ -353,11 +379,7 @@ export default function ProductsPage() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredProducts.map((product, index) => (
-                  <ProductCard 
-                    key={product.id || index} 
-                    product={product} 
-                    colorTheme="light"
-                  />
+                  <ProductCard key={product.id || index} product={product} colorTheme="light" />
                 ))}
               </div>
             )}
@@ -366,4 +388,4 @@ export default function ProductsPage() {
       </div>
     </div>
   )
-} 
+}
