@@ -41,10 +41,13 @@ export async function POST() {
     )
   } catch (error) {
     console.error('Error cleaning up pages:', error)
+
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
+
     return new Response(
       JSON.stringify({
         success: false,
-        message: error.message,
+        message: errorMessage,
       }),
       {
         status: 500,
