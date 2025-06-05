@@ -10,6 +10,20 @@ import { MenuIcon } from '@/components/ui/LucideIcons'
 const handleNavigation = (link: any) => {
   if (!link) return
 
+  // เช็คว่าเป็น link ที่อนุญาตหรือไม่
+  const allowedPages = ['home', 'quote-request']
+
+  if (link.type === 'reference' && link.reference) {
+    const { value } = link.reference
+    if (typeof value === 'object' && value.slug) {
+      // ถ้าไม่ใช่หน้าที่อนุญาต ให้ข้าม
+      if (!allowedPages.includes(value.slug)) {
+        console.log('Page not allowed:', value.slug)
+        return
+      }
+    }
+  }
+
   if (link.type === 'custom' && link.url) {
     if (link.newTab) {
       window.open(link.url, '_blank', 'noopener,noreferrer')
