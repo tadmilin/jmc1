@@ -109,5 +109,28 @@ const queryPageBySlug = cache(async ({ slug, depth }: { slug: string; depth: num
     depth,
   })
 
-  return result.docs?.[0] || null
+  let doc = result.docs?.[0] || null
+
+  // If no published document was found and we are not in draft mode,
+  // attempt to fetch the latest draft version (if it exists) and
+  // bypass collection-level access controls.
+  if (!doc && !draft) {
+    const draftResult = await payload.find({
+      collection: 'pages',
+      draft: true,
+      limit: 1,
+      pagination: false,
+      overrideAccess: true,
+      where: {
+        slug: {
+          equals: slug,
+        },
+      },
+      depth,
+    })
+
+    doc = draftResult.docs?.[0] || null
+  }
+
+  return doc
 })

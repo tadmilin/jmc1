@@ -415,7 +415,5 @@ export const Products: CollectionConfig = {
       },
     ],
   },
-  versions: {
-    drafts: true,
-  },
+  versions: false,
 }
