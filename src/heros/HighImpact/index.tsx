@@ -559,24 +559,30 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
         </div>
       )}
 
-      <div className={`container mx-auto px-1 pt-1 pb-1 md:pb-2 lg:pb-2 z-3 relative w-full`}>
+      <div
+        className={`container mx-auto px-4 md:px-6 pt-4 md:pt-6 pb-6 md:pb-8 lg:pb-10 z-3 relative w-full`}
+      >
         {isCentered ? (
-          <div className="text-center max-w-5xl mx-auto flex flex-col">
+          <div className="text-center max-w-5xl mx-auto flex flex-col space-y-6 md:space-y-8">
             <MainMediaArea />
             <HeroActionSlotsRenderer
               slots={heroActionSlots as HeroActionSlot[]}
               colorTheme={colorTheme ?? 'light'}
             />
-            <div className="space-y-4 mt-4">
+            <div className="space-y-6">
               {richText && (
                 <RichText
-                  className={`text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r ${colorTheme === 'dark' ? 'from-blue-300 to-indigo-300' : 'from-blue-600 to-indigo-600'} bg-clip-text text-transparent`}
+                  className={`text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r ${
+                    colorTheme === 'dark'
+                      ? 'from-blue-300 to-indigo-300'
+                      : 'from-blue-600 to-indigo-600'
+                  } bg-clip-text text-transparent`}
                   data={richText}
                   enableGutter={false}
                 />
               )}
               {Array.isArray(links) && links.length > 0 && (
-                <ul className="flex flex-wrap justify-center gap-4 mt-6">
+                <ul className="flex flex-wrap justify-center gap-4">
                   {links.map(({ link }, i) => {
                     // Handle navigation efficiently
                     const handleLinkClick = () => {
@@ -626,30 +632,39 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
           </div>
         ) : (
           <div
-            className={`grid grid-cols-1 ${showCategoriesDropdown ? (displayFrame ? 'lg:grid-cols-[280px_1fr_320px]' : 'lg:grid-cols-[280px_1fr]') : displayFrame ? 'lg:grid-cols-[1fr_320px]' : 'lg:grid-cols-1'} gap-8 lg:gap-12 items-start`}
+            className={`grid grid-cols-1 md:grid-cols-[1fr_320px] lg:grid-cols-[280px_1fr_320px] gap-6 md:gap-8 lg:gap-12 items-start`}
           >
+            {/* Categories และ Social Media สำหรับ Desktop */}
             {showCategoriesDropdown && (
-              <div className="hidden lg:block">
+              <div className="hidden lg:block order-1">
                 <CategoriesDropdown />
-                <SocialMediaButtons />
+                <div className="mt-6">
+                  <SocialMediaButtons />
+                </div>
               </div>
             )}
-            <div className="space-y-6">
+
+            {/* เนื้อหาหลัก */}
+            <div className="order-2 lg:order-2 flex flex-col space-y-6">
               <MainMediaArea />
               <HeroActionSlotsRenderer
                 slots={heroActionSlots as HeroActionSlot[]}
                 colorTheme={colorTheme ?? 'light'}
               />
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {richText && (
                   <RichText
-                    className={`text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r ${colorTheme === 'dark' ? 'from-blue-300 to-indigo-300' : 'from-blue-600 to-indigo-600'} bg-clip-text text-transparent`}
+                    className={`text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r ${
+                      colorTheme === 'dark'
+                        ? 'from-blue-300 to-indigo-300'
+                        : 'from-blue-600 to-indigo-600'
+                    } bg-clip-text text-transparent`}
                     data={richText}
                     enableGutter={false}
                   />
                 )}
                 {Array.isArray(links) && links.length > 0 && (
-                  <ul className="flex flex-wrap justify-center gap-4 mt-6">
+                  <ul className="flex flex-wrap gap-4">
                     {links.map(({ link }, i) => {
                       // Handle navigation efficiently
                       const handleLinkClick = () => {
@@ -697,8 +712,18 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                 )}
               </div>
             </div>
+
+            {/* Categories และ Social Media สำหรับ Mobile/Tablet */}
+            {showCategoriesDropdown && (
+              <div className="lg:hidden order-3 space-y-6">
+                <CategoriesDropdown />
+                <SocialMediaButtons />
+              </div>
+            )}
+
+            {/* Frame */}
             {displayFrame && (
-              <div className="hidden lg:block">
+              <div className="order-4 md:order-3">
                 <FramedContentRenderer blocks={framedHeroContent as SpecificHeroBlock[]} />
               </div>
             )}
