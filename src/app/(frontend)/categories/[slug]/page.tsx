@@ -41,8 +41,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       categories: {
         contains: category?.id,
       },
-      _status: {
-        equals: 'published',
+      status: {
+        equals: 'active',
       },
     },
     depth: 2,
