@@ -1,5 +1,6 @@
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
+import { Page } from '@/payload-types'
 
 export async function POST() {
   try {
@@ -12,9 +13,9 @@ export async function POST() {
     })
 
     // เก็บ Pages ที่จะลบ
-    const pagesToDelete = pages.docs.filter((page) => {
+    const pagesToDelete = pages.docs.filter((page: Page) => {
       // เก็บไว้เฉพาะ home และ quote-request
-      return !['home', 'quote-request'].includes(page.slug)
+      return page.slug && !['home', 'quote-request'].includes(page.slug)
     })
 
     // ลบ Pages ที่ไม่ต้องการ
