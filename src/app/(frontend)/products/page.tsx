@@ -37,8 +37,17 @@ export default function ProductsPage() {
       try {
         setLoading(true)
 
-        // Fetch products
-        const productsResponse = await fetch('/api/products?limit=100&depth=2')
+        // Fetch products with status=active condition
+        const productsResponse = await fetch(
+          '/api/products?limit=100&depth=2&where=' +
+            encodeURIComponent(
+              JSON.stringify({
+                status: {
+                  equals: 'active',
+                },
+              }),
+            ),
+        )
         if (!productsResponse.ok) throw new Error('Failed to fetch products')
         const productsData = await productsResponse.json()
 
@@ -62,7 +71,7 @@ export default function ProductsPage() {
         }
       } catch (err) {
         console.error('Error fetching data:', err)
-        setError('ไม่สามารถโหลดข้อมูลได้')
+        setError('ไม่สามารถโหลดข้อมูลสินค้าได้')
       } finally {
         setLoading(false)
       }
