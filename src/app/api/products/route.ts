@@ -1,5 +1,6 @@
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
+import type { CollectionConfig } from 'payload/types'
 
 export async function GET(request: Request) {
   try {
@@ -11,7 +12,7 @@ export async function GET(request: Request) {
     const payload = await getPayload({ config: configPromise })
 
     const query = {
-      collection: 'products',
+      collection: 'products' as const,
       limit,
       depth,
       where: whereParam ? JSON.parse(whereParam) : undefined,
