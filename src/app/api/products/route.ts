@@ -1,6 +1,5 @@
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
-import type { CollectionConfig } from 'payload/types'
 
 export async function GET(request: Request) {
   try {
