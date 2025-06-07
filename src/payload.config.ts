@@ -97,29 +97,6 @@ export default buildConfig({
     limits: {
       fileSize: 10000000, // 10MB สำหรับความยืดหยุ่น
     },
-    resizeOptions: {
-      width: 1920,
-      height: 1080,
-      fit: 'inside',
-      withoutEnlargement: true,
-    },
-    imageSizes: [
-      {
-        name: 'thumbnail',
-        width: 400,
-        height: 300,
-      },
-      {
-        name: 'card',
-        width: 768,
-        height: 576,
-      },
-      {
-        name: 'feature',
-        width: 1024,
-        height: 768,
-      },
-    ],
   },
 
   // Global settings
