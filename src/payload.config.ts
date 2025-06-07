@@ -126,7 +126,5 @@ export default buildConfig({
   ],
 
   // เพิ่มการตั้งค่าสำหรับ serverURL
-  serverURL:
-    process.env.NEXT_PUBLIC_SERVER_URL ||
-    (process.env.NODE_ENV === 'production' ? 'https://jmc111.vercel.app' : 'http://localhost:3000'),
+  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || 'https://jmc111.vercel.app',
 })
