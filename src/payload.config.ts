@@ -1,6 +1,7 @@
 // storage-adapter-import-placeholder
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
+import sharp from 'sharp'
 
 import path from 'path'
 import { buildConfig } from 'payload'
@@ -18,7 +19,6 @@ import { Footer } from './Footer/config'
 import { Header } from './Header/config'
 import { CategoryShowcase } from './CategoryShowcase/config'
 import { plugins } from './plugins'
-import { getServerSideURL } from '@/utilities/getURL'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -94,7 +94,7 @@ export default buildConfig({
   // Storage settings
   upload: {
     limits: {
-      fileSize: 10000000, // เพิ่มเป็น 10MB สำหรับความยืดหยุ่น
+      fileSize: 10000000, // 10MB สำหรับความยืดหยุ่น
     },
   },
 

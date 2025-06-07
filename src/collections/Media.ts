@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig } from 'payload/types'
 
 import {
   FixedToolbarFeature,
@@ -7,7 +7,6 @@ import {
   HeadingFeature,
 } from '@payloadcms/richtext-lexical'
 
-import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
 
 export const Media: CollectionConfig = {
@@ -53,31 +52,13 @@ export const Media: CollectionConfig = {
     ],
     filesRequiredOnCreate: false,
     adminThumbnail: 'thumbnail',
-    focalPoint: true,
-    crop: true,
-    resizeOptions: {
-      position: 'centre',
-      background: { r: 255, g: 255, b: 255, alpha: 1 },
+    focalPoint: false,
+    crop: false,
+    formatOptions: {
+      format: 'webp',
+      options: {
+        quality: 80,
+      },
     },
-    imageSizes: [
-      {
-        name: 'thumbnail',
-        width: 300,
-        height: 225,
-        position: 'centre',
-      },
-      {
-        name: 'card',
-        width: 600,
-        height: 400,
-        position: 'centre',
-      },
-      {
-        name: 'tablet',
-        width: 800,
-        height: undefined,
-        position: 'centre',
-      },
-    ],
   },
 }
