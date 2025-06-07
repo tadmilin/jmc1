@@ -68,8 +68,7 @@ const nextConfig = {
     minimumCacheTTL: 60,
     dangerouslyAllowSVG: false, // ปิดเพื่อความปลอดภัย
   },
-  // เพิ่มการตั้งค่าสำหรับ Vercel deployment
-  output: 'standalone',
+  output: 'export',
   // เพิ่ม rewrites สำหรับ admin panel
   async rewrites() {
     return [
@@ -138,15 +137,4 @@ const nextConfig = {
   },
 }
 
-// Bundle analyzer setup
-let config = withPayload(nextConfig)
-
-if (process.env.ANALYZE === 'true') {
-  const { default: bundleAnalyzer } = await import('@next/bundle-analyzer')
-  const withBundleAnalyzer = bundleAnalyzer({
-    enabled: true,
-  })
-  config = withBundleAnalyzer(config)
-}
-
-export default config
+export default withPayload(nextConfig)

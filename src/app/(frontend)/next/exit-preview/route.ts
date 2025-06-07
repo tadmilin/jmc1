@@ -1,7 +1,10 @@
 import { draftMode } from 'next/headers'
+import { redirect } from 'next/navigation'
 
-export async function GET(): Promise<Response> {
+export const dynamic = 'force-dynamic'
+
+export async function GET() {
   const draft = await draftMode()
   draft.disable()
-  return new Response('Draft mode is disabled')
+  redirect('/')
 }

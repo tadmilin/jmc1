@@ -95,7 +95,7 @@ export default buildConfig({
   // Storage settings
   upload: {
     limits: {
-      fileSize: 10000000, // 10MB สำหรับความยืดหยุ่น
+      fileSize: 5000000, // 5MB, written in bytes
     },
   },
 
@@ -126,5 +126,5 @@ export default buildConfig({
   ],
 
   // เพิ่มการตั้งค่าสำหรับ serverURL
-  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || 'https://jmc111.vercel.app',
+  serverURL: 'https://jmc111.vercel.app',
 })
