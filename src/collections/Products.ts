@@ -91,7 +91,7 @@ export const Products: CollectionConfig = {
       name: 'images',
       type: 'array',
       label: 'รูปภาพสินค้า',
-      minRows: 1,
+      minRows: 0,
       maxRows: 10,
       fields: [
         {
@@ -99,6 +99,9 @@ export const Products: CollectionConfig = {
           type: 'upload',
           relationTo: 'media',
           required: true,
+          admin: {
+            description: 'อัพโหลดรูปภาพสินค้า (รองรับ jpg, png, webp)',
+          },
         },
         {
           name: 'alt',
@@ -109,6 +112,15 @@ export const Products: CollectionConfig = {
           },
         },
       ],
+      validate: (value, { data }) => {
+        if (value && Array.isArray(value)) {
+          const hasInvalidImage = value.some(item => !item.image)
+          if (hasInvalidImage) {
+            return 'กรุณาอัพโหลดรูปภาพให้ครบทุกช่อง'
+          }
+        }
+        return true
+      },
     },
     {
       name: 'variants',
@@ -343,77 +355,95 @@ export const Products: CollectionConfig = {
     },
   ],
   hooks: {
+    beforeValidate: [
+      ({ data, req }) => {
+        console.log('Validating product data:', JSON.stringify(data, null, 2))
+        return data
+      }
+    ],
     beforeChange: [
-      ({ data }) => {
-        // Auto-set status based on stock
-        if (typeof data.stock === 'number' && data.stock <= 0 && data.status === 'active') {
-          data.status = 'out_of_stock'
-        }
+      ({ data, req, operation }) => {
+        try {
+          console.log(`Processing ${operation} operation for product:`, JSON.stringify(data, null, 2))
 
-        // Variants management
-        if (data.variants && Array.isArray(data.variants)) {
-          let hasDefaultVariant = false
-
-          // Check if any variant is set as default
-          data.variants.forEach(
-            (variant: { isDefault?: boolean; variantStock?: number; variantStatus?: string }) => {
-              if (variant.isDefault) {
-                hasDefaultVariant = true
-              }
-
-              // Auto-set variant status based on stock
-              if (
-                typeof variant.variantStock === 'number' &&
-                variant.variantStock <= 0 &&
-                variant.variantStatus === 'active'
-              ) {
-                variant.variantStatus = 'out_of_stock'
-              }
-            },
-          )
-
-          // If no default variant is set, make the first one default
-          if (!hasDefaultVariant && data.variants.length > 0) {
-            data.variants[0].isDefault = true
+          // Auto-set status based on stock
+          if (typeof data.stock === 'number' && data.stock <= 0 && data.status === 'active') {
+            data.status = 'out_of_stock'
           }
 
-          // Calculate total stock from variants
-          if (data.variants.length > 0) {
-            const totalVariantStock = data.variants.reduce(
-              (
-                total: number,
-                variant: {
-                  variantStock?: number
-                },
-              ) => {
-                return total + (variant.variantStock || 0)
+          // Variants management
+          if (data.variants && Array.isArray(data.variants)) {
+            let hasDefaultVariant = false
+
+            // Check if any variant is set as default
+            data.variants.forEach(
+              (variant: { isDefault?: boolean; variantStock?: number; variantStatus?: string }) => {
+                if (variant.isDefault) {
+                  hasDefaultVariant = true
+                }
+
+                // Auto-set variant status based on stock
+                if (
+                  typeof variant.variantStock === 'number' &&
+                  variant.variantStock <= 0 &&
+                  variant.variantStatus === 'active'
+                ) {
+                  variant.variantStatus = 'out_of_stock'
+                }
               },
-              0,
             )
 
-            // Update main product stock to sum of all variants
-            data.stock = totalVariantStock
+            // If no default variant is set, make the first one default
+            if (!hasDefaultVariant && data.variants.length > 0) {
+              data.variants[0].isDefault = true
+            }
 
-            // Update main product price to default variant price
-            const defaultVariant = data.variants.find(
-              (variant: {
-                isDefault?: boolean
-                variantPrice?: number
-                variantSalePrice?: number
-              }) => variant.isDefault,
-            )
-            if (defaultVariant) {
-              data.price = defaultVariant.variantPrice
-              if (defaultVariant.variantSalePrice) {
-                data.salePrice = defaultVariant.variantSalePrice
+            // Calculate total stock from variants
+            if (data.variants.length > 0) {
+              const totalVariantStock = data.variants.reduce(
+                (
+                  total: number,
+                  variant: {
+                    variantStock?: number
+                  },
+                ) => {
+                  return total + (variant.variantStock || 0)
+                },
+                0,
+              )
+
+              // Update main product stock to sum of all variants
+              data.stock = totalVariantStock
+
+              // Update main product price to default variant price
+              const defaultVariant = data.variants.find(
+                (variant: {
+                  isDefault?: boolean
+                  variantPrice?: number
+                  variantSalePrice?: number
+                }) => variant.isDefault,
+              )
+              if (defaultVariant) {
+                data.price = defaultVariant.variantPrice
+                if (defaultVariant.variantSalePrice) {
+                  data.salePrice = defaultVariant.variantSalePrice
+                }
               }
             }
           }
-        }
 
-        return data
+          return data
+        } catch (error) {
+          console.error('Error in product beforeChange hook:', error)
+          throw error
+        }
       },
     ],
+    afterError: [
+      ({ error }) => {
+        console.error('Product operation error:', error)
+      }
+    ]
   },
   versions: false,
 }
