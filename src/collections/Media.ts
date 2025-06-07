@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload/types'
+import type { CollectionConfig } from 'payload'
 
 import {
   FixedToolbarFeature,
@@ -59,6 +59,47 @@ export const Media: CollectionConfig = {
       options: {
         quality: 80,
       },
+    },
+    imageSizes: [
+      {
+        name: 'thumbnail',
+        width: 400,
+        height: 300,
+        formatOptions: {
+          format: 'webp',
+          options: {
+            quality: 80,
+          },
+        },
+      },
+      {
+        name: 'card',
+        width: 768,
+        height: 576,
+        formatOptions: {
+          format: 'webp',
+          options: {
+            quality: 80,
+          },
+        },
+      },
+      {
+        name: 'feature',
+        width: 1024,
+        height: 768,
+        formatOptions: {
+          format: 'webp',
+          options: {
+            quality: 80,
+          },
+        },
+      },
+    ],
+    resizeOptions: {
+      width: 1920,
+      height: 1080,
+      fit: 'inside',
+      withoutEnlargement: true,
     },
   },
 }

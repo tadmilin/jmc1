@@ -87,7 +87,11 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
     depth: 2,
   })
 
-  return generateMeta({ doc: page })
+  return generateMeta({
+    title: page?.meta?.title,
+    description: page?.meta?.description,
+    image: page?.meta?.image
+  })
 }
 
 const queryPageBySlug = cache(async ({ slug, depth }: { slug: string; depth: number }) => {

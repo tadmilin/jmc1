@@ -11,51 +11,18 @@ export const image2: Omit<Media, 'createdAt' | 'id' | 'updatedAt'> = {
           children: [
             {
               type: 'text',
-              detail: 0,
+              text: 'This is a caption for the image.',
+              version: 1,
               format: 0,
+              detail: 0,
               mode: 'normal',
               style: '',
-              text: 'Photo by ',
-              version: 1,
-            },
-            {
-              type: 'link',
-              children: [
-                {
-                  type: 'text',
-                  detail: 0,
-                  format: 0,
-                  mode: 'normal',
-                  style: '',
-                  text: 'Andrew Kliatskyi',
-                  version: 1,
-                },
-              ],
-              direction: 'ltr',
-              fields: {
-                linkType: 'custom',
-                newTab: true,
-                url: 'https://unsplash.com/@kirp',
-              },
-              format: '',
-              indent: 0,
-              version: 2,
-            },
-            {
-              type: 'text',
-              detail: 0,
-              format: 0,
-              mode: 'normal',
-              style: '',
-              text: ' on Unsplash.',
-              version: 1,
             },
           ],
-          direction: 'ltr',
           format: '',
           indent: 0,
-          textFormat: 0,
           version: 1,
+          direction: 'ltr',
         },
       ],
       direction: 'ltr',
@@ -64,4 +31,28 @@ export const image2: Omit<Media, 'createdAt' | 'id' | 'updatedAt'> = {
       version: 1,
     },
   },
+  url: '/images/image-2.jpg',
+  filename: 'image-2.jpg',
+  mimeType: 'image/jpeg',
+  filesize: 1024,
+  width: 800,
+  height: 600,
+  sizes: {
+    thumbnail: {
+      url: '/images/image-2-thumbnail.jpg',
+      width: 100,
+      height: 75,
+      mimeType: 'image/jpeg',
+      filesize: 256,
+      filename: 'image-2-thumbnail.jpg'
+    },
+    og: {
+      url: '/images/image-2-og.jpg',
+      width: 1200,
+      height: 630,
+      mimeType: 'image/jpeg',
+      filesize: 2048,
+      filename: 'image-2-og.jpg'
+    }
+  }
 }

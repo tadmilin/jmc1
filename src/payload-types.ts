@@ -178,6 +178,7 @@ export interface Category {
  * via the `definition` "media".
  */
 export interface Media {
+  sizes: any;
   id: string;
   alt: string;
   caption?: {
