@@ -7,7 +7,7 @@ export const RowLabel: React.FC<RowLabelProps> = () => {
 
   const label = data?.data?.link?.label
     ? `Nav item ${data.rowNumber !== undefined ? data.rowNumber + 1 : ''}: ${data?.data?.link?.label}`
-    : 'Row'
+    : `Row ${data.rowNumber !== undefined ? data.rowNumber + 1 : ''}`
 
   return <div>{label}</div>
 }

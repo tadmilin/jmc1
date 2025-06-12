@@ -4,77 +4,107 @@ import {
   FixedToolbarFeature,
   InlineToolbarFeature,
   lexicalEditor,
+  HeadingFeature,
 } from '@payloadcms/richtext-lexical'
-import path from 'path'
-import { fileURLToPath } from 'url'
 
-import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
-
-const filename = fileURLToPath(import.meta.url)
-const dirname = path.dirname(filename)
 
 export const Media: CollectionConfig = {
   slug: 'media',
   access: {
     create: authenticated,
     delete: authenticated,
-    read: anyone,
+    read: () => true,
     update: authenticated,
+  },
+  admin: {
+    useAsTitle: 'alt',
+    group: 'สื่อ',
   },
   fields: [
     {
       name: 'alt',
       type: 'text',
-      //required: true,
+      required: true,
+      label: 'คำอธิบายภาพ',
     },
     {
       name: 'caption',
       type: 'richText',
       editor: lexicalEditor({
         features: ({ rootFeatures }) => {
-          return [...rootFeatures, FixedToolbarFeature(), InlineToolbarFeature()]
+          return [
+            ...rootFeatures,
+            FixedToolbarFeature(),
+            InlineToolbarFeature(),
+            HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+          ]
         },
       }),
     },
   ],
   upload: {
-    // Upload to the public/media directory in Next.js making them publicly accessible even outside of Payload
-    staticDir: path.resolve(dirname, '../../public/media'),
+    mimeTypes: [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'image/svg+xml',
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ],
+    filesRequiredOnCreate: false,
     adminThumbnail: 'thumbnail',
-    focalPoint: true,
+    focalPoint: false,
+    crop: false,
+    formatOptions: {
+      format: 'webp',
+      options: {
+        quality: 80,
+      },
+    },
     imageSizes: [
       {
         name: 'thumbnail',
-        width: 300,
+        width: 400,
+        height: 300,
+        formatOptions: {
+          format: 'webp',
+          options: {
+            quality: 80,
+          },
+        },
       },
       {
-        name: 'square',
-        width: 500,
-        height: 500,
+        name: 'card',
+        width: 768,
+        height: 576,
+        formatOptions: {
+          format: 'webp',
+          options: {
+            quality: 80,
+          },
+        },
       },
       {
-        name: 'small',
-        width: 600,
-      },
-      {
-        name: 'medium',
-        width: 900,
-      },
-      {
-        name: 'large',
-        width: 1400,
-      },
-      {
-        name: 'xlarge',
-        width: 1920,
-      },
-      {
-        name: 'og',
-        width: 1200,
-        height: 630,
-        crop: 'center',
+        name: 'feature',
+        width: 1024,
+        height: 768,
+        formatOptions: {
+          format: 'webp',
+          options: {
+            quality: 80,
+          },
+        },
       },
     ],
+    resizeOptions: {
+      width: 1920,
+      height: 1080,
+      fit: 'inside',
+      withoutEnlargement: true,
+    },
   },
 }

@@ -84,5 +84,15 @@ export const homeStatic: RequiredDataFromCollectionSlug<'pages'> = {
     title: 'Payload Website Template',
   },
   title: 'Home',
-  layout: [],
+  layout: [
+    {
+      blockType: 'saleProductsSliderBlock' as any,
+      title: 'สินค้าลดราคาพิเศษ 🔥',
+      subtitle: 'สินค้าคุณภาพดีราคาพิเศษ จำกัดเวลา อย่าพลาด!',
+      limit: 12,
+      colorTheme: 'light',
+      showViewAllButton: true,
+      viewAllLink: '/products?sale=true',
+    },
+  ] as any,
 }

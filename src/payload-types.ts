@@ -67,11 +67,13 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    categories: Category;
+    media: Media;
     pages: Page;
     posts: Post;
-    media: Media;
-    categories: Category;
+    products: Product;
     users: User;
+    'quote-requests': QuoteRequest;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -83,11 +85,13 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
-    categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    'quote-requests': QuoteRequestsSelect<false> | QuoteRequestsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -103,10 +107,12 @@ export interface Config {
   globals: {
     header: Header;
     footer: Footer;
+    'category-showcase': CategoryShowcase;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    'category-showcase': CategoryShowcaseSelect<false> | CategoryShowcaseSelect<true>;
   };
   locale: null;
   user: User & {
@@ -143,6 +149,97 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: string;
+  title: string;
+  description?: string | null;
+  /**
+   * ขนาดแนะนำ 400x400 พิกเซล
+   */
+  image?: (string | null) | Media;
+  /**
+   * กำหนดลำดับการแสดง (เลขน้อยแสดงก่อน)
+   */
+  sortOrder?: number | null;
+  isActive?: boolean | null;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  parent?: (string | null) | Category;
+  breadcrumbs?:
+    | {
+        doc?: (string | null) | Category;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: string;
+  alt: string;
+  caption?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    feature?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
 export interface Page {
@@ -150,6 +247,13 @@ export interface Page {
   title: string;
   hero: {
     type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
+    colorTheme?: ('light' | 'lightBlue' | 'dark' | 'gradient') | null;
+    /**
+     * รูปพื้นหลังสำหรับ Hero Section
+     */
+    backgroundImage?: (string | null) | Media;
+    layoutVariant?: ('standard' | 'reversed' | 'centered') | null;
+    showDecorations?: boolean | null;
     richText?: {
       root: {
         type: string;
@@ -190,8 +294,141 @@ export interface Page {
         }[]
       | null;
     media?: (string | null) | Media;
+    /**
+     * เพิ่มรูปภาพหลายรูปเพื่อแสดงเป็นสไลด์โชว์
+     */
+    slideImages?:
+      | {
+          image: string | Media;
+          caption?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * เปิด/ปิดการแสดงเมนูหมวดหมู่แบบ Dropdown
+     */
+    showCategoriesDropdown?: boolean | null;
+    /**
+     * จำนวนหมวดหมู่สูงสุดที่จะแสดงในเมนู
+     */
+    categoriesLimit?: number | null;
+    featuredText?: string | null;
+    /**
+     * เลือกเพื่อแสดงกรอบเนื้อหาเพิ่มเติมทางด้านขวาของ Hero (สำหรับ High/Medium Impact)
+     */
+    displayFrame?: boolean | null;
+    /**
+     * เพิ่มเนื้อหาต่างๆ ที่จะแสดงในกรอบด้านขวา (เมื่อเปิดใช้งาน)
+     */
+    framedHeroContent?:
+      | (
+          | {
+              text?: {
+                root: {
+                  type: string;
+                  children: {
+                    type: string;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              } | null;
+              id?: string | null;
+              blockName?: string | null;
+              blockType: 'heroContentText';
+            }
+          | {
+              image: string | Media;
+              caption?: string | null;
+              id?: string | null;
+              blockName?: string | null;
+              blockType: 'heroContentImage';
+            }
+          | {
+              /**
+               * กำหนดความสูงของตัวเว้นระยะเป็นพิกเซล
+               */
+              height?: number | null;
+              id?: string | null;
+              blockName?: string | null;
+              blockType: 'heroContentSpacer';
+            }
+        )[]
+      | null;
+    /**
+     * เพิ่มช่องที่มีไอคอน, หัวข้อ, คำอธิบาย และลิงก์ (แสดงผลด้านล่าง Hero หลัก)
+     */
+    heroActionSlots?:
+      | {
+          icon: string | Media;
+          title: string;
+          description?: string | null;
+          slotLink?:
+            | {
+                link: {
+                  type?: ('reference' | 'custom') | null;
+                  newTab?: boolean | null;
+                  reference?:
+                    | ({
+                        relationTo: 'pages';
+                        value: string | Page;
+                      } | null)
+                    | ({
+                        relationTo: 'posts';
+                        value: string | Post;
+                      } | null);
+                  url?: string | null;
+                  label: string;
+                };
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * เพิ่มปุ่มโซเชียลมีเดีย (Line, Facebook, เบอร์โทร) ที่จะแสดงใต้หมวดหมู่สินค้า
+     */
+    socialMediaButtons?:
+      | {
+          /**
+           * เช่น "Line", "Facebook", "โทรศัพท์"
+           */
+          label: string;
+          /**
+           * รูปไอคอนสำหรับปุ่ม (แนะนำขนาด 32x32px หรือ 64x64px)
+           */
+          icon: string | Media;
+          /**
+           * เช่น https://line.me/ti/p/your-line-id, https://www.facebook.com/your-page, tel:0801234567
+           */
+          url: string;
+          /**
+           * เปิดลิงก์ในแท็บใหม่หรือไม่
+           */
+          newTab?: boolean | null;
+          id?: string | null;
+        }[]
+      | null;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
+  layout: (
+    | CallToActionBlock
+    | ContentBlock
+    | MediaBlock
+    | ArchiveBlock
+    | FormBlock
+    | ImageSliderBlock
+    | CategoryGridBlock
+    | GoogleMapBlock
+    | ServiceFeaturesBlock
+    | ProductsBlock
+    | QuoteRequestFormBlock
+  )[];
   meta?: {
     title?: string | null;
     /**
@@ -256,124 +493,12 @@ export interface Post {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: string;
-  alt?: string | null;
-  caption?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-  sizes?: {
-    thumbnail?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    square?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    small?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    medium?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    large?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    xlarge?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    og?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-  };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories".
- */
-export interface Category {
-  id: string;
-  title: string;
-  slug?: string | null;
-  slugLock?: boolean | null;
-  parent?: (string | null) | Category;
-  breadcrumbs?:
-    | {
-        doc?: (string | null) | Category;
-        url?: string | null;
-        label?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
   id: string;
-  name?: string | null;
+  name: string;
+  role: 'admin' | 'user';
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -729,6 +854,312 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageSliderBlock".
+ */
+export interface ImageSliderBlock {
+  title?: string | null;
+  slides?:
+    | {
+        image: string | Media;
+        title: string;
+        link?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  aspectRatio?: ('1:1' | '16:9' | '4:3' | '3:4') | null;
+  backgroundColor?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'imageSlider';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CategoryGridBlock".
+ */
+export interface CategoryGridBlock {
+  title?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  categorySelection?: ('all' | 'select') | null;
+  categories?: (string | Category)[] | null;
+  limit?: number | null;
+  columns?: ('auto' | '2' | '3' | '4' | '6') | null;
+  showCategoryNames?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'categoryGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GoogleMapBlock".
+ */
+export interface GoogleMapBlock {
+  title?: string | null;
+  description?: string | null;
+  /**
+   * URL จาก Google Maps (ใช้ Share > Embed a map แล้วคัดลอก URL จาก iframe src)
+   */
+  mapEmbedUrl: string;
+  height?: number | null;
+  address?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  openingHours?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'googleMap';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ServiceFeaturesBlock".
+ */
+export interface ServiceFeaturesBlock {
+  title?: string | null;
+  subtitle?: string | null;
+  style?: ('modern' | 'classic' | 'card' | 'minimal') | null;
+  backgroundColor?: ('white' | 'light' | 'blue' | 'gradient') | null;
+  features?:
+    | {
+        title: string;
+        description?: string | null;
+        iconType?:
+          | ('cart' | 'phone' | 'lock' | 'truck' | 'return' | 'money' | 'gift' | 'ticket' | 'location' | 'check')
+          | null;
+        /**
+         * ถ้าอัพโหลดไอคอนเอง จะใช้ไอคอนนี้แทนไอคอนที่เลือกข้างบน
+         */
+        customIcon?: (string | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  animation?: ('none' | 'fade' | 'slideUp' | 'slideLeft' | 'bounce') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'serviceFeatures';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProductsBlock".
+ */
+export interface ProductsBlock {
+  title?: string | null;
+  subtitle?: string | null;
+  limit?: number | null;
+  /**
+   * แสดงเฉพาะสินค้าที่มีราคาลดพิเศษ
+   */
+  showOnlyOnSale?: boolean | null;
+  /**
+   * เลือกหมวดหมู่ที่ต้องการแสดง (ไม่เลือก = แสดงทุกหมวดหมู่)
+   */
+  categories?: (string | Category)[] | null;
+  layout?: ('grid' | 'slider') | null;
+  showViewAllButton?: boolean | null;
+  viewAllLink?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'productsBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "QuoteRequestFormBlock".
+ */
+export interface QuoteRequestFormBlock {
+  title?: string | null;
+  description?: string | null;
+  showInstructions?: boolean | null;
+  showContactInfo?: boolean | null;
+  maxFiles?: number | null;
+  maxFileSize?: number | null;
+  allowedFileTypes?: ('image' | 'pdf' | 'document')[] | null;
+  submitButtonText?: string | null;
+  successMessage?: string | null;
+  contactInfo?: {
+    phone?: string | null;
+    email?: string | null;
+    lineId?: string | null;
+    workingHours?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'quoteRequestFormBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: string;
+  title: string;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * คำอธิบายสั้นๆ สำหรับแสดงในรายการสินค้า (แนะนำ 100-150 ตัวอักษร)
+   */
+  shortDescription?: string | null;
+  price: number;
+  /**
+   * ใส่ราคาลดพิเศษ (ถ้ามี)
+   */
+  salePrice?: number | null;
+  stock?: number | null;
+  /**
+   * รหัสสินค้าเฉพาะ (ถ้ามี)
+   */
+  sku?: string | null;
+  images?:
+    | {
+        image: string | Media;
+        /**
+         * คำอธิบายรูปภาพสำหรับ SEO และผู้พิการทางสายตา
+         */
+        alt?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * เพิ่มตัวเลือกย่อยเช่น ขนาด สี หรือประเภทต่างๆ ของสินค้า
+   */
+  variants?:
+    | {
+        /**
+         * เช่น "4 หุน", "6 หุน", "สีแดง", "ขนาด L" เป็นต้น
+         */
+        variantName: string;
+        /**
+         * ราคาเฉพาะของตัวเลือกนี้
+         */
+        variantPrice: number;
+        /**
+         * ราคาลดพิเศษของตัวเลือกนี้ (ถ้ามี)
+         */
+        variantSalePrice?: number | null;
+        /**
+         * จำนวนสินค้าคงเหลือของตัวเลือกนี้
+         */
+        variantStock?: number | null;
+        /**
+         * รหัสสินค้าเฉพาะของตัวเลือกนี้
+         */
+        variantSku?: string | null;
+        /**
+         * รูปภาพที่แสดงเฉพาะตัวเลือกนี้ (ถ้าไม่มีจะใช้รูปหลักของสินค้า)
+         */
+        variantImages?:
+          | {
+              image: string | Media;
+              /**
+               * คำอธิบายรูปภาพสำหรับ SEO และผู้พิการทางสายตา
+               */
+              alt?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        /**
+         * สถานะของตัวเลือกนี้
+         */
+        variantStatus?: ('active' | 'inactive' | 'out_of_stock') | null;
+        /**
+         * กำหนดให้ตัวเลือกนี้เป็นตัวเลือกหลักที่แสดงก่อน
+         */
+        isDefault?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  categories: (string | Category)[];
+  /**
+   * แสดงในหน้าแรกและหมวดสินค้าแนะนำ
+   */
+  featured?: boolean | null;
+  status?: ('active' | 'inactive' | 'out_of_stock' | 'discontinued') | null;
+  specifications?:
+    | {
+        label: string;
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
+  relatedProducts?: (string | Product)[] | null;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  publishedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quote-requests".
+ */
+export interface QuoteRequest {
+  id: string;
+  customerName: string;
+  email: string;
+  phone: string;
+  status?: ('new' | 'in-progress' | 'quoted' | 'closed-won' | 'closed-lost') | null;
+  priority?: ('high' | 'medium' | 'low') | null;
+  assignedTo?: (string | null) | User;
+  productList: string;
+  additionalNotes?: string | null;
+  /**
+   * รูปภาพหรือเอกสารประกอบ (สูงสุด 3 ไฟล์)
+   */
+  attachments?: (string | Media)[] | null;
+  followUpDate?: string | null;
+  estimatedValue?: number | null;
+  quotedAmount?: number | null;
+  /**
+   * บันทึกการสื่อสาร การประชุม หรือข้อมูลสำคัญอื่นๆ
+   */
+  notes?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  quotationFile?: (string | null) | Media;
+  contractFile?: (string | null) | Media;
+  relatedDocuments?: (string | Media)[] | null;
+  source?: ('website' | 'phone' | 'email' | 'line' | 'facebook' | 'referral' | 'other') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -901,6 +1332,14 @@ export interface PayloadLockedDocument {
   id: string;
   document?:
     | ({
+        relationTo: 'categories';
+        value: string | Category;
+      } | null)
+    | ({
+        relationTo: 'media';
+        value: string | Media;
+      } | null)
+    | ({
         relationTo: 'pages';
         value: string | Page;
       } | null)
@@ -909,16 +1348,16 @@ export interface PayloadLockedDocument {
         value: string | Post;
       } | null)
     | ({
-        relationTo: 'media';
-        value: string | Media;
-      } | null)
-    | ({
-        relationTo: 'categories';
-        value: string | Category;
+        relationTo: 'products';
+        value: string | Product;
       } | null)
     | ({
         relationTo: 'users';
         value: string | User;
+      } | null)
+    | ({
+        relationTo: 'quote-requests';
+        value: string | QuoteRequest;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -984,6 +1423,83 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories_select".
+ */
+export interface CategoriesSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  image?: T;
+  sortOrder?: T;
+  isActive?: T;
+  slug?: T;
+  slugLock?: T;
+  parent?: T;
+  breadcrumbs?:
+    | T
+    | {
+        doc?: T;
+        url?: T;
+        label?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  caption?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        feature?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages_select".
  */
 export interface PagesSelect<T extends boolean = true> {
@@ -992,6 +1508,10 @@ export interface PagesSelect<T extends boolean = true> {
     | T
     | {
         type?: T;
+        colorTheme?: T;
+        backgroundImage?: T;
+        layoutVariant?: T;
+        showDecorations?: T;
         richText?: T;
         links?:
           | T
@@ -1009,6 +1529,74 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
             };
         media?: T;
+        slideImages?:
+          | T
+          | {
+              image?: T;
+              caption?: T;
+              id?: T;
+            };
+        showCategoriesDropdown?: T;
+        categoriesLimit?: T;
+        featuredText?: T;
+        displayFrame?: T;
+        framedHeroContent?:
+          | T
+          | {
+              heroContentText?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                    blockName?: T;
+                  };
+              heroContentImage?:
+                | T
+                | {
+                    image?: T;
+                    caption?: T;
+                    id?: T;
+                    blockName?: T;
+                  };
+              heroContentSpacer?:
+                | T
+                | {
+                    height?: T;
+                    id?: T;
+                    blockName?: T;
+                  };
+            };
+        heroActionSlots?:
+          | T
+          | {
+              icon?: T;
+              title?: T;
+              description?: T;
+              slotLink?:
+                | T
+                | {
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          newTab?: T;
+                          reference?: T;
+                          url?: T;
+                          label?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+            };
+        socialMediaButtons?:
+          | T
+          | {
+              label?: T;
+              icon?: T;
+              url?: T;
+              newTab?: T;
+              id?: T;
+            };
       };
   layout?:
     | T
@@ -1018,6 +1606,12 @@ export interface PagesSelect<T extends boolean = true> {
         mediaBlock?: T | MediaBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
+        imageSlider?: T | ImageSliderBlockSelect<T>;
+        categoryGrid?: T | CategoryGridBlockSelect<T>;
+        googleMap?: T | GoogleMapBlockSelect<T>;
+        serviceFeatures?: T | ServiceFeaturesBlockSelect<T>;
+        productsBlock?: T | ProductsBlockSelect<T>;
+        quoteRequestFormBlock?: T | QuoteRequestFormBlockSelect<T>;
       };
   meta?:
     | T
@@ -1119,6 +1713,119 @@ export interface FormBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageSliderBlock_select".
+ */
+export interface ImageSliderBlockSelect<T extends boolean = true> {
+  title?: T;
+  slides?:
+    | T
+    | {
+        image?: T;
+        title?: T;
+        link?: T;
+        id?: T;
+      };
+  aspectRatio?: T;
+  backgroundColor?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CategoryGridBlock_select".
+ */
+export interface CategoryGridBlockSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  categorySelection?: T;
+  categories?: T;
+  limit?: T;
+  columns?: T;
+  showCategoryNames?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GoogleMapBlock_select".
+ */
+export interface GoogleMapBlockSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  mapEmbedUrl?: T;
+  height?: T;
+  address?: T;
+  phone?: T;
+  email?: T;
+  openingHours?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ServiceFeaturesBlock_select".
+ */
+export interface ServiceFeaturesBlockSelect<T extends boolean = true> {
+  title?: T;
+  subtitle?: T;
+  style?: T;
+  backgroundColor?: T;
+  features?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        iconType?: T;
+        customIcon?: T;
+        id?: T;
+      };
+  animation?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProductsBlock_select".
+ */
+export interface ProductsBlockSelect<T extends boolean = true> {
+  title?: T;
+  subtitle?: T;
+  limit?: T;
+  showOnlyOnSale?: T;
+  categories?: T;
+  layout?: T;
+  showViewAllButton?: T;
+  viewAllLink?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "QuoteRequestFormBlock_select".
+ */
+export interface QuoteRequestFormBlockSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  showInstructions?: T;
+  showContactInfo?: T;
+  maxFiles?: T;
+  maxFileSize?: T;
+  allowedFileTypes?: T;
+  submitButtonText?: T;
+  successMessage?: T;
+  contactInfo?:
+    | T
+    | {
+        phone?: T;
+        email?: T;
+        lineId?: T;
+        workingHours?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
@@ -1150,114 +1857,56 @@ export interface PostsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
+ * via the `definition` "products_select".
  */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  caption?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-  sizes?:
-    | T
-    | {
-        thumbnail?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        square?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        small?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        medium?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        large?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        xlarge?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        og?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-      };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories_select".
- */
-export interface CategoriesSelect<T extends boolean = true> {
+export interface ProductsSelect<T extends boolean = true> {
   title?: T;
-  slug?: T;
-  slugLock?: T;
-  parent?: T;
-  breadcrumbs?:
+  description?: T;
+  shortDescription?: T;
+  price?: T;
+  salePrice?: T;
+  stock?: T;
+  sku?: T;
+  images?:
     | T
     | {
-        doc?: T;
-        url?: T;
-        label?: T;
+        image?: T;
+        alt?: T;
         id?: T;
       };
+  variants?:
+    | T
+    | {
+        variantName?: T;
+        variantPrice?: T;
+        variantSalePrice?: T;
+        variantStock?: T;
+        variantSku?: T;
+        variantImages?:
+          | T
+          | {
+              image?: T;
+              alt?: T;
+              id?: T;
+            };
+        variantStatus?: T;
+        isDefault?: T;
+        id?: T;
+      };
+  categories?: T;
+  featured?: T;
+  status?: T;
+  specifications?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        id?: T;
+      };
+  relatedProducts?: T;
+  slug?: T;
+  slugLock?: T;
+  publishedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1267,6 +1916,7 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  role?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1276,6 +1926,31 @@ export interface UsersSelect<T extends boolean = true> {
   hash?: T;
   loginAttempts?: T;
   lockUntil?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quote-requests_select".
+ */
+export interface QuoteRequestsSelect<T extends boolean = true> {
+  customerName?: T;
+  email?: T;
+  phone?: T;
+  status?: T;
+  priority?: T;
+  assignedTo?: T;
+  productList?: T;
+  additionalNotes?: T;
+  attachments?: T;
+  followUpDate?: T;
+  estimatedValue?: T;
+  quotedAmount?: T;
+  notes?: T;
+  quotationFile?: T;
+  contractFile?: T;
+  relatedDocuments?: T;
+  source?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1538,6 +2213,25 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface Header {
   id: string;
+  /**
+   * ข้อมูลโลโก้และชื่อบริษัทที่จะแสดงใน Header
+   */
+  logo: {
+    /**
+     * อัปโหลดรูปโลโก้ (ถ้าไม่ใส่จะใช้โลโก้เริ่มต้น)
+     */
+    logoImage?: (string | null) | Media;
+    companyName: string;
+    companySubtitle: string;
+    /**
+     * รหัสสี Hex สำหรับพื้นหลังโลโก้ (เช่น #1E40AF)
+     */
+    logoBackgroundColor?: string | null;
+    /**
+     * รหัสสี Hex สำหรับชื่อบริษัท (เช่น #1E40AF)
+     */
+    companyNameColor?: string | null;
+  };
   navItems?:
     | {
         link: {
@@ -1592,9 +2286,53 @@ export interface Footer {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "category-showcase".
+ */
+export interface CategoryShowcase {
+  id: string;
+  /**
+   * หมวดหมู่สินค้าที่จะแสดงในส่วนแนะนำของหน้าแรก (แนะนำให้แสดง 4 หมวดหมู่)
+   */
+  categories?:
+    | {
+        title: string;
+        subtitle?: string | null;
+        image: string | Media;
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: string | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: string | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
+  logo?:
+    | T
+    | {
+        logoImage?: T;
+        companyName?: T;
+        companySubtitle?: T;
+        logoBackgroundColor?: T;
+        companyNameColor?: T;
+      };
   navItems?:
     | T
     | {
@@ -1621,6 +2359,32 @@ export interface FooterSelect<T extends boolean = true> {
   navItems?:
     | T
     | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+            };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "category-showcase_select".
+ */
+export interface CategoryShowcaseSelect<T extends boolean = true> {
+  categories?:
+    | T
+    | {
+        title?: T;
+        subtitle?: T;
+        image?: T;
         link?:
           | T
           | {

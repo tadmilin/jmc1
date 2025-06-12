@@ -1,16 +1,6 @@
 'use client'
 
-import type { PayloadAdminBarProps, PayloadMeUser } from '@payloadcms/admin-bar'
-
-import { cn } from '@/utilities/ui'
-import { useSelectedLayoutSegments } from 'next/navigation'
-import { PayloadAdminBar } from '@payloadcms/admin-bar'
-import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
-
-import './index.scss'
-
-import { getClientSideURL } from '@/utilities/getURL'
+import React from 'react'
 
 const baseClass = 'admin-bar'
 
@@ -32,25 +22,29 @@ const collectionLabels = {
 const Title: React.FC = () => <span>Dashboard</span>
 
 export const AdminBar: React.FC<{
-  adminBarProps?: PayloadAdminBarProps
+  adminBarProps?: any;
 }> = (props) => {
-  const { adminBarProps } = props || {}
-  const segments = useSelectedLayoutSegments()
-  const [show, setShow] = useState(false)
+  return null;
+
+  // Original logic (commented out):
+  /*
+  const { adminBarProps } = props || {};
+  const segments = useSelectedLayoutSegments();
+  const [show, setShow] = React.useState(false);
   const collection = (
     collectionLabels[segments?.[1] as keyof typeof collectionLabels] ? segments[1] : 'pages'
-  ) as keyof typeof collectionLabels
-  const router = useRouter()
+  ) as keyof typeof collectionLabels;
+  const router = useRouter();
 
   const onAuthChange = React.useCallback((user: PayloadMeUser) => {
-    setShow(Boolean(user?.id))
-  }, [])
+    setShow(Boolean(user?.id));
+  }, []);
 
   return (
     <div
-      className={cn(baseClass, 'py-2 bg-black text-white', {
-        block: show,
-        hidden: !show,
+      className={cn(baseClass, {
+        'py-2 bg-black text-white block': show,
+        'hidden p-0 m-0 h-0': !show,
       })}
     >
       <div className="container">
@@ -85,5 +79,6 @@ export const AdminBar: React.FC<{
         />
       </div>
     </div>
-  )
-}
+  );
+  */
+};

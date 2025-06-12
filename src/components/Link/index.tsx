@@ -33,14 +33,44 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     url,
   } = props
 
-  const href =
-    type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
-      ? `${reference?.relationTo !== 'pages' ? `/${reference?.relationTo}` : ''}/${
-          reference.value.slug
-        }`
-      : url
+  // Build href based on type
+  let href = ''
 
-  if (!href) return null
+  if (type === 'reference' && reference) {
+    if (typeof reference.value === 'object' && reference.value && 'slug' in reference.value) {
+      const slug = reference.value.slug
+      if (slug) {
+        href = reference.relationTo === 'pages' ? `/${slug}` : `/${reference.relationTo}/${slug}`
+      }
+    }
+  } else if (type === 'custom' && url) {
+    href = url
+  }
+
+  // Debug information (only in development)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('CMSLink Debug:', {
+      type,
+      reference,
+      url,
+      href,
+      label,
+      referenceValue: reference?.value,
+    })
+  }
+
+  // If no href, try to fallback to a default URL or show debug info
+  if (!href) {
+    if (process.env.NODE_ENV === 'development') {
+      return (
+        <span className={cn(className, 'text-red-500 cursor-not-allowed text-xs')}>
+          [ลิงก์ไม่สมบูรณ์: {label || 'ไม่มี label'}]
+        </span>
+      )
+    }
+    // In production, just return null if no href
+    return null
+  }
 
   const size = appearance === 'link' ? 'clear' : sizeFromProps
   const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {}
@@ -48,7 +78,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   /* Ensure we don't break any styles set by richText */
   if (appearance === 'inline') {
     return (
-      <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
+      <Link className={cn(className)} href={href} {...newTabProps}>
         {label && label}
         {children && children}
       </Link>
@@ -57,7 +87,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
 
   return (
     <Button asChild className={className} size={size} variant={appearance}>
-      <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
+      <Link className={cn(className)} href={href} {...newTabProps}>
         {label && label}
         {children && children}
       </Link>

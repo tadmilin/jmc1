@@ -14,13 +14,49 @@ export const Categories: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
+    defaultColumns: ['title', 'slug', 'sortOrder'],
+    group: 'เนื้อหา',
   },
   fields: [
     {
       name: 'title',
       type: 'text',
       required: true,
+      label: 'ชื่อหมวดหมู่',
+    },
+    {
+      name: 'description',
+      type: 'textarea',
+      label: 'คำอธิบาย',
+    },
+    {
+      name: 'image',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'รูปภาพหมวดหมู่',
+      admin: {
+        description: 'ขนาดแนะนำ 400x400 พิกเซล',
+      },
+    },
+    {
+      name: 'sortOrder',
+      type: 'number',
+      label: 'ลำดับการแสดง',
+      defaultValue: 0,
+      admin: {
+        description: 'กำหนดลำดับการแสดง (เลขน้อยแสดงก่อน)',
+      },
+    },
+    {
+      name: 'isActive',
+      type: 'checkbox',
+      label: 'เปิดใช้งาน',
+      defaultValue: true,
+      admin: {
+        position: 'sidebar',
+      },
     },
     ...slugField(),
   ],
+  defaultSort: 'sortOrder',
 }
