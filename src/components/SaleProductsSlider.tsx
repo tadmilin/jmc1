@@ -39,24 +39,29 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
         const params = new URLSearchParams({
           limit: limit.toString(),
           depth: '1',
+          sale: 'true', // กรองเฉพาะสินค้าลดราคา
         })
 
+        console.log('SaleProductsSlider: Fetching sale products...')
         const response = await fetch(`/api/products?${params.toString()}`)
         
         if (!response.ok) {
+          console.error('SaleProductsSlider API failed:', response.status, response.statusText)
           setProducts([])
           return
         }
 
         const data = await response.json()
+        console.log('SaleProductsSlider success:', data.totalDocs, 'sale products found')
         
-        // กรองเฉพาะสินค้าที่ลดราคาและ active
+        // กรองเพิ่มเติมฝั่ง client เพื่อความแน่ใจ
         let saleProducts = (data.docs || []).filter((product: any) => 
           product && 
           product.status === 'active' &&
           product.salePrice && 
           product.price && 
-          product.salePrice < product.price
+          Number(product.salePrice) > 0 &&
+          Number(product.salePrice) < Number(product.price)
         )
 
         setProducts(saleProducts.slice(0, limit))
