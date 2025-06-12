@@ -130,6 +130,7 @@ export default buildConfig({
       payload.logger.info('🚀 Payload CMS initialized in production mode')
       payload.logger.info(`📊 Server URL: ${serverURL}`)
       payload.logger.info(`🗄️ Database connected: ${process.env.DATABASE_URI ? 'Yes' : 'No'}`)
+      payload.logger.info(`🔐 Admin Panel: ${serverURL}/admin`)
     }
   },
 

@@ -81,10 +81,7 @@ const nextConfig = {
   // เพิ่ม rewrites สำหรับ admin panel
   async rewrites() {
     return [
-      {
-        source: '/admin/:path*',
-        destination: '/admin/:path*',
-      },
+      // ไม่ต้องมี rewrite สำหรับ admin เพราะ Payload จัดการเอง
     ]
   },
   // เพิ่มการตั้งค่าสำหรับ headers ที่รองรับ blob storage
