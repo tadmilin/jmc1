@@ -98,9 +98,9 @@ export default buildConfig({
       w: 'majority',
       maxPoolSize: 10,
       minPoolSize: 1,
-      serverSelectionTimeoutMS: 10000,
+      serverSelectionTimeoutMS: 30000, // เพิ่มเวลา timeout
       socketTimeoutMS: 60000,
-      connectTimeoutMS: 10000,
+      connectTimeoutMS: 30000, // เพิ่มเวลา timeout
       bufferCommands: false,
       autoIndex: true,
       family: 4, // Use IPv4, skip trying IPv6
@@ -122,6 +122,15 @@ export default buildConfig({
 
   graphQL: {
     disable: true,
+  },
+
+  // Callback สำหรับ debug และ logging
+  onInit: async (payload) => {
+    if (process.env.NODE_ENV === 'production') {
+      payload.logger.info('🚀 Payload CMS initialized in production mode')
+      payload.logger.info(`📊 Server URL: ${serverURL}`)
+      payload.logger.info(`🗄️ Database connected: ${process.env.DATABASE_URI ? 'Yes' : 'No'}`)
+    }
   },
 
   collections: [Categories, Media, Pages, Posts, Products, Users, QuoteRequests],
