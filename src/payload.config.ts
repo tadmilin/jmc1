@@ -24,7 +24,7 @@ import { plugins } from './plugins'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || 'https://jmc111.vercel.app'
 
 export default buildConfig({
   serverURL,
@@ -59,25 +59,27 @@ export default buildConfig({
     },
   },
   cors: [
-    serverURL,
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:3001',
     'https://jmc111.vercel.app',
     'https://jmc111-git-main-tadmilins-projects.vercel.app',
     'https://jmc111-mv7jkkd-tadmilins-projects.vercel.app',
+    ...(process.env.NODE_ENV === 'development' ? [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001',
+    ] : []),
     process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '',
   ].filter(Boolean),
   csrf: [
-    serverURL,
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:3001',
     'https://jmc111.vercel.app',
     'https://jmc111-git-main-tadmilins-projects.vercel.app',
     'https://jmc111-mv7jkkd-tadmilins-projects.vercel.app',
+    ...(process.env.NODE_ENV === 'development' ? [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001',
+    ] : []),
     process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '',
   ].filter(Boolean),
 
