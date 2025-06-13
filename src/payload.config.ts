@@ -24,7 +24,10 @@ import { plugins } from './plugins'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || 'https://jmc111.vercel.app'
+// Production URL handling
+const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || (
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'
+)
 
 export default buildConfig({
   serverURL,
@@ -33,7 +36,10 @@ export default buildConfig({
     meta: {
       titleSuffix: '- จงมีชัยค้าวัสดุ',
     },
-    autoLogin: false,
+    autoLogin: process.env.NODE_ENV === 'development' ? {
+      email: 'admin@jmc111.com',
+      password: 'password123',
+    } : false,
     disable: false,
     livePreview: {
       breakpoints: [
@@ -59,34 +65,36 @@ export default buildConfig({
     },
   },
   cors: [
-    'https://jmc111.vercel.app',
-    'https://jmc111-git-main-tadmilins-projects.vercel.app',
-    'https://jmc111-mv7jkkd-tadmilins-projects.vercel.app',
+    serverURL,
     ...(process.env.NODE_ENV === 'development' ? [
       'http://localhost:3000',
       'http://localhost:3001',
       'http://127.0.0.1:3000',
       'http://127.0.0.1:3001',
     ] : []),
-    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '',
+    // Include Vercel preview URLs
+    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+    'https://jmc111-git-main-tadmilins-projects.vercel.app',
+    'https://jmc111-mv7jkkd-tadmilins-projects.vercel.app',
   ].filter(Boolean),
   csrf: [
-    'https://jmc111.vercel.app',
-    'https://jmc111-git-main-tadmilins-projects.vercel.app',
-    'https://jmc111-mv7jkkd-tadmilins-projects.vercel.app',
+    serverURL,
     ...(process.env.NODE_ENV === 'development' ? [
       'http://localhost:3000',
       'http://localhost:3001',
       'http://127.0.0.1:3000',
       'http://127.0.0.1:3001',
     ] : []),
-    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '',
+    // Include Vercel preview URLs
+    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+    'https://jmc111-git-main-tadmilins-projects.vercel.app',
+    'https://jmc111-mv7jkkd-tadmilins-projects.vercel.app',
   ].filter(Boolean),
 
   // Secret key setting
   secret: process.env.PAYLOAD_SECRET || '8ecc0ba2b1c8c461f2daba9d',
 
-  // Adapter settings
+  // Adapter settings with better production configuration
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
     connectOptions: {
@@ -96,13 +104,13 @@ export default buildConfig({
       tlsAllowInvalidHostnames: false,
       retryWrites: true,
       w: 'majority',
-      maxPoolSize: 10,
+      maxPoolSize: process.env.NODE_ENV === 'production' ? 5 : 10,
       minPoolSize: 1,
-      serverSelectionTimeoutMS: 30000, // เพิ่มเวลา timeout
+      serverSelectionTimeoutMS: 45000, // เพิ่มเวลา timeout
       socketTimeoutMS: 60000,
-      connectTimeoutMS: 30000, // เพิ่มเวลา timeout
+      connectTimeoutMS: 45000, // เพิ่มเวลา timeout
       bufferCommands: false,
-      autoIndex: true,
+      autoIndex: process.env.NODE_ENV !== 'production', // ปิด autoIndex ใน production
       family: 4, // Use IPv4, skip trying IPv6
     },
   }),
@@ -121,7 +129,7 @@ export default buildConfig({
   },
 
   graphQL: {
-    disable: true,
+    disable: true, // ปิด GraphQL เพื่อประสิทธิภาพ
   },
 
   // Callback สำหรับ debug และ logging
@@ -131,6 +139,8 @@ export default buildConfig({
       payload.logger.info(`📊 Server URL: ${serverURL}`)
       payload.logger.info(`🗄️ Database connected: ${process.env.DATABASE_URI ? 'Yes' : 'No'}`)
       payload.logger.info(`🔐 Admin Panel: ${serverURL}/admin`)
+    } else {
+      payload.logger.info('🔧 Payload CMS initialized in development mode')
     }
   },
 
@@ -139,13 +149,13 @@ export default buildConfig({
   plugins: [
     ...plugins,
     // ใช้ Vercel Blob Storage เฉพาะใน production
-    ...(process.env.NODE_ENV === 'production' ? [
+    ...(process.env.NODE_ENV === 'production' && process.env.BLOB_READ_WRITE_TOKEN ? [
       vercelBlobStorage({
         enabled: true,
         collections: {
           media: true,
         },
-        token: process.env.BLOB_READ_WRITE_TOKEN || '',
+        token: process.env.BLOB_READ_WRITE_TOKEN,
         addRandomSuffix: true,
         cacheControlMaxAge: 365 * 24 * 60 * 60,
         clientUploads: true,
