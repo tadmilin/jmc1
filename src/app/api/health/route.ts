@@ -1,53 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getPayload } from 'payload'
-import config from '@payload-config'
 
 export async function GET(request: NextRequest) {
   try {
-    const payload = await getPayload({ config })
-    
-    // ทดสอบการเชื่อมต่อ database
-    const users = await payload.find({
-      collection: 'users',
-      limit: 1,
-    })
-
-    const healthData = {
-      status: 'healthy',
+    // Simple health check ไม่ต้องเชื่อมต่อ payload
+    const health = {
+      status: 'ok',
       timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV,
-      serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
-      database: {
-        connected: !!process.env.DATABASE_URI,
-        userCount: users.totalDocs,
+      environment: {
+        nodeEnv: process.env.NODE_ENV,
+        serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
+        payloadSecret: !!process.env.PAYLOAD_SECRET,
+        databaseURI: !!process.env.DATABASE_URI,
+        vercelUrl: process.env.VERCEL_URL,
+        cronSecret: !!process.env.CRON_SECRET,
       },
-      payload: {
-        initialized: true,
-        secret: !!process.env.PAYLOAD_SECRET,
-      },
-      vercel: {
-        url: process.env.VERCEL_URL,
-        region: process.env.VERCEL_REGION,
-      },
+      routes: {
+        admin: `${process.env.NEXT_PUBLIC_SERVER_URL}/admin`,
+        api: `${process.env.NEXT_PUBLIC_SERVER_URL}/api`,
+        debug: `${process.env.NEXT_PUBLIC_SERVER_URL}/admin/debug`,
+      }
     }
 
-    return NextResponse.json(healthData, { status: 200 })
+    return NextResponse.json(health)
   } catch (error) {
-    const errorData = {
-      status: 'error',
-      timestamp: new Date().toISOString(),
-      error: error instanceof Error ? error.message : String(error),
-      environment: process.env.NODE_ENV,
-      serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
-      database: {
-        connected: !!process.env.DATABASE_URI,
+    console.error('Health Check Error:', error)
+    return NextResponse.json(
+      { 
+        status: 'error',
+        error: 'Health check failed',
+        details: error instanceof Error ? error.message : String(error),
+        timestamp: new Date().toISOString(),
       },
-      payload: {
-        initialized: false,
-        secret: !!process.env.PAYLOAD_SECRET,
-      },
-    }
-
-    return NextResponse.json(errorData, { status: 500 })
+      { status: 500 }
+    )
   }
 } 

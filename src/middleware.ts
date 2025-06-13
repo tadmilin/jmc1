@@ -15,10 +15,13 @@ export function middleware(request: NextRequest) {
     ] : [])
   ]
 
-  // Set CORS headers
-  if (origin && allowedOrigins.includes(origin)) {
-    response.headers.set('Access-Control-Allow-Origin', origin)
-  } else if (process.env.NODE_ENV === 'development') {
+  // Set CORS headers - เหมาะสำหรับ production
+  if (process.env.NODE_ENV === 'production') {
+    if (origin && allowedOrigins.includes(origin)) {
+      response.headers.set('Access-Control-Allow-Origin', origin)
+    }
+  } else {
+    // Development - อนุญาตทุก origin
     response.headers.set('Access-Control-Allow-Origin', '*')
   }
 
@@ -31,28 +34,23 @@ export function middleware(request: NextRequest) {
     return new Response(null, { status: 200, headers: response.headers })
   }
 
-  // Admin route handling
+  // Admin route handling - ไม่บล็อก เพียงเพิ่ม headers
   if (pathname.startsWith('/admin')) {
-    // Security headers for admin
     response.headers.set('X-Frame-Options', 'SAMEORIGIN')
     response.headers.set('X-Content-Type-Options', 'nosniff')
-    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
     response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
     
-    // Log admin access for debugging
+    // Log เฉพาะใน development
     if (process.env.NODE_ENV === 'development') {
       console.log(`🔐 Admin route accessed: ${pathname}`)
-      console.log(`🌐 Origin: ${origin}`)
-      console.log(`🍪 Cookies: ${request.headers.get('cookie') ? 'Present' : 'None'}`)
     }
   }
 
-  // API route handling
+  // API route handling - ไม่บล็อก เพียงเพิ่ม headers
   if (pathname.startsWith('/api')) {
-    // Add additional headers for API routes
     response.headers.set('Cache-Control', 'no-cache')
     
-    // Debug API calls in development
+    // Log เฉพาะใน development
     if (process.env.NODE_ENV === 'development') {
       console.log(`🔌 API route accessed: ${pathname}`)
     }
@@ -63,8 +61,8 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/admin/:path*',
+    // ลด matcher ให้เจาะจงมากขึ้น
     '/api/:path*',
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/admin/:path*',
   ],
 } 
