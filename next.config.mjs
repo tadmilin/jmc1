@@ -13,7 +13,7 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // เพิ่ม serverExternalPackages สำหรับ Payload
+  // เพิ่ม serverExternalPackages สำหรับ Payload (ใช้อันนี้แทน experimental.serverComponentsExternalPackages)
   serverExternalPackages: ['payload', 'mongodb', 'sharp'],
   // การ optimize สำหรับ production
   compiler: {
@@ -136,6 +136,14 @@ const nextConfig = {
         fs: false,
         path: false,
         os: false,
+      }
+    }
+
+    // แก้ปัญหา Payload CMS hydration
+    if (dev) {
+      config.watchOptions = {
+        ...config.watchOptions,
+        ignored: ['**/node_modules/**', '**/.git/**'],
       }
     }
 
