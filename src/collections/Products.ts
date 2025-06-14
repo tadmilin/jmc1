@@ -2,14 +2,14 @@ import type { CollectionConfig } from 'payload'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 
 import { authenticated } from '../access/authenticated'
-import { authenticatedOrPublished } from '../access/authenticatedOrPublished'
+import { anyone } from '../access/anyone'
 import { slugField } from '@/fields/slug'
 
 export const Products: CollectionConfig = {
   slug: 'products',
   access: {
     create: authenticated,
-    read: authenticatedOrPublished,
+    read: anyone,
     update: authenticated,
     delete: authenticated,
   },
