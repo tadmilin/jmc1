@@ -96,11 +96,12 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 lg:py-8">
-      {/* Header */}
-      <div className="mb-6 lg:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-3 lg:mb-4">สินค้าทั้งหมด</h1>
-        <p className="text-gray-600 text-sm sm:text-base">
+    <div className="min-h-screen bg-white">
+      <div className="container mx-auto px-4 py-6 lg:py-8">
+        {/* Header */}
+        <div className="mb-6 lg:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-3 lg:mb-4 text-gray-900">สินค้าทั้งหมด</h1>
+          <p className="text-gray-600 text-sm sm:text-base">
           {totalDocs > 0 ? `พบสินค้า ${totalDocs} รายการ` : 'ไม่พบสินค้า'}
         </p>
       </div>
@@ -183,8 +184,8 @@ export default function ProductsPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m13-8V4a1 1 0 00-1-1H7a1 1 0 00-1 1v1m8 0V4.5" />
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-3">ไม่พบสินค้า</h3>
-            <p className="text-gray-600 text-lg leading-relaxed mb-6">
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">ไม่พบสินค้า</h3>
+            <p className="text-gray-700 text-lg leading-relaxed mb-6">
               {searchTerm || selectedCategory !== 'all'
                 ? 'ไม่พบสินค้าที่ตรงกับเงื่อนไขการค้นหา'
                 : 'ยังไม่มีสินค้าในระบบ'
@@ -267,6 +268,7 @@ export default function ProductsPage() {
           </div>
         </div>
       )}
+      </div>
     </div>
   )
 } 

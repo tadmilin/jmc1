@@ -51,11 +51,12 @@ export default function CategoriesPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 lg:py-8">
-      {/* Header */}
-      <div className="mb-6 lg:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-3 lg:mb-4">หมวดหมู่สินค้า</h1>
-        <p className="text-gray-600 text-sm sm:text-base">
+    <div className="min-h-screen bg-white">
+      <div className="container mx-auto px-4 py-6 lg:py-8">
+        {/* Header */}
+        <div className="mb-6 lg:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-3 lg:mb-4 text-gray-900">หมวดหมู่สินค้า</h1>
+          <p className="text-gray-600 text-sm sm:text-base">
           {filteredCategories.length > 0 
             ? `พบหมวดหมู่ ${filteredCategories.length} หมวดหมู่` 
             : 'ไม่พบหมวดหมู่'
@@ -115,8 +116,8 @@ export default function CategoriesPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-3">ไม่พบหมวดหมู่</h3>
-            <p className="text-gray-600 text-lg leading-relaxed mb-6">
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">ไม่พบหมวดหมู่</h3>
+            <p className="text-gray-700 text-lg leading-relaxed mb-6">
               {searchTerm 
                 ? `ไม่พบหมวดหมู่ที่ตรงกับ "${searchTerm}"`
                 : 'ยังไม่มีหมวดหมู่ในระบบ'
@@ -133,6 +134,7 @@ export default function CategoriesPage() {
           </div>
         </div>
       )}
+      </div>
     </div>
   )
 }
@@ -183,13 +185,13 @@ function CategoryCard({ category }: { category: Category }) {
         {/* Content Section */}
         <div className="p-3 sm:p-4 lg:p-6">
           {/* Title */}
-          <h3 className="text-sm sm:text-base lg:text-lg font-bold leading-tight mb-1 sm:mb-2 transition-colors duration-300 text-gray-800 group-hover:text-blue-600 line-clamp-2">
+          <h3 className="text-sm sm:text-base lg:text-lg font-bold leading-tight mb-1 sm:mb-2 transition-colors duration-300 text-gray-900 group-hover:text-blue-600 line-clamp-2">
             {title}
           </h3>
 
           {/* Description - Hide on mobile */}
           {description && (
-            <p className="text-xs sm:text-sm leading-relaxed line-clamp-1 sm:line-clamp-2 mb-2 sm:mb-3 text-gray-600 hidden sm:block">
+            <p className="text-xs sm:text-sm leading-relaxed line-clamp-1 sm:line-clamp-2 mb-2 sm:mb-3 text-gray-700 hidden sm:block">
               {description}
             </p>
           )}

@@ -93,7 +93,8 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-white">
+      <div className="container mx-auto px-4 py-8">
       {/* Back Button */}
       <div className="mb-6">
         <Link href="/products">
@@ -209,7 +210,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
           {/* Short Description */}
           {shortDescription && (
-            <p className="text-lg text-gray-600 leading-relaxed">{shortDescription}</p>
+            <p className="text-lg text-gray-700 leading-relaxed">{shortDescription}</p>
           )}
 
           {/* Variants */}
@@ -230,9 +231,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                         : 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed'
                     }`}
                   >
-                    <div className="font-medium">{variant.variantName}</div>
+                    <div className="font-medium text-gray-900">{variant.variantName}</div>
                     {variant.variantPrice && (
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-gray-700">
                         ฿{variant.variantPrice.toLocaleString()}
                       </div>
                     )}
@@ -263,7 +264,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             <div className="space-y-4">
               {/* Quantity Selector */}
               <div className="flex items-center gap-3">
-                <span className="font-medium">จำนวน:</span>
+                <span className="font-medium text-gray-900">จำนวน:</span>
                 <div className="flex items-center border rounded-lg">
                   <Button
                     variant="ghost"
@@ -318,6 +319,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   )
