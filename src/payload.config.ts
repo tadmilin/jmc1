@@ -104,14 +104,14 @@ export default buildConfig({
       tlsAllowInvalidHostnames: false,
       retryWrites: true,
       w: 'majority',
-      maxPoolSize: process.env.NODE_ENV === 'production' ? 5 : 10,
+      maxPoolSize: process.env.NODE_ENV === 'production' ? 3 : 10,
       minPoolSize: 1,
-      serverSelectionTimeoutMS: 45000, // เพิ่มเวลา timeout
-      socketTimeoutMS: 60000,
-      connectTimeoutMS: 45000, // เพิ่มเวลา timeout
+      serverSelectionTimeoutMS: 15000,
+      socketTimeoutMS: 30000,
+      connectTimeoutMS: 15000,
       bufferCommands: false,
-      autoIndex: process.env.NODE_ENV !== 'production', // ปิด autoIndex ใน production
-      family: 4, // Use IPv4, skip trying IPv6
+      autoIndex: process.env.NODE_ENV !== 'production',
+      family: 4,
     },
   }),
 
