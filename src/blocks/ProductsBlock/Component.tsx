@@ -83,11 +83,30 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
           product && product.status === 'active'
         )
 
-        // ถ้า showOnlyOnSale เป็น true ให้กรองเฉพาะสินค้าลดราคา
+        // ถ้า showOnlyOnSale เป็น true ให้กรองเฉพาะสินค้าลดราคา (รวม variants)
         if (showOnlyOnSale) {
-          filteredProducts = filteredProducts.filter((product: any) => 
-            product.salePrice && product.price && product.salePrice < product.price
-          )
+          filteredProducts = filteredProducts.filter((product: any) => {
+            if (!product || product.status !== 'active') return false
+            
+            // เช็คสินค้าหลักว่ามีราคาลดหรือไม่
+            const hasBaseSale = product.salePrice && 
+                               product.price && 
+                               Number(product.salePrice) > 0 &&
+                               Number(product.salePrice) < Number(product.price)
+            
+            // เช็ค variants ว่ามีราคาลดหรือไม่
+            const hasVariantSale = product.variants && 
+                                  product.variants.length > 0 && 
+                                  product.variants.some((variant: any) => 
+                                    variant.variantStatus === 'active' &&
+                                    variant.variantSalePrice && 
+                                    variant.variantPrice && 
+                                    Number(variant.variantSalePrice) > 0 &&
+                                    Number(variant.variantSalePrice) < Number(variant.variantPrice)
+                                  )
+            
+            return hasBaseSale || hasVariantSale
+          })
         }
 
         setProducts(filteredProducts.slice(0, limit))
