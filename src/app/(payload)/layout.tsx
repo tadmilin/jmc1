@@ -15,17 +15,38 @@ type Args = {
 
 const serverFunction: ServerFunctionClient = async function (args) {
   'use server'
-  return handleServerFunctions({
-    ...args,
-    config,
-    importMap,
-  })
+  try {
+    return handleServerFunctions({
+      ...args,
+      config,
+      importMap,
+    })
+  } catch (error) {
+    console.error('Payload server function error:', error)
+    throw error
+  }
 }
 
-const Layout = ({ children }: Args) => (
-  <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}>
-    {children}
-  </RootLayout>
-)
+const Layout = ({ children }: Args) => {
+  try {
+    return (
+      <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}>
+        {children}
+      </RootLayout>
+    )
+  } catch (error) {
+    console.error('Payload layout error:', error)
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>
+        <h1>เกิดข้อผิดพลาดในการโหลด Admin Panel</h1>
+        <p>กรุณาลองรีเฟรชหน้าใหม่หรือติดต่อผู้ดูแลระบบ</p>
+        <details style={{ marginTop: '20px', textAlign: 'left' }}>
+          <summary>รายละเอียดข้อผิดพลาด</summary>
+          <pre>{error instanceof Error ? error.message : 'Unknown error'}</pre>
+        </details>
+      </div>
+    )
+  }
+}
 
 export default Layout
