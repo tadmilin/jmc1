@@ -39,7 +39,7 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
         const params = new URLSearchParams({
           limit: limit.toString(),
           depth: '1',
-          sale: 'true', // กรองเฉพาะสินค้าลดราคา
+          'where[status][equals]': 'active',
         })
 
         console.log('SaleProductsSlider: Fetching sale products...')
@@ -54,15 +54,29 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
         const data = await response.json()
         console.log('SaleProductsSlider success:', data.totalDocs, 'sale products found')
         
-        // กรองเพิ่มเติมฝั่ง client เพื่อความแน่ใจ
-        let saleProducts = (data.docs || []).filter((product: any) => 
-          product && 
-          product.status === 'active' &&
-          product.salePrice && 
-          product.price && 
-          Number(product.salePrice) > 0 &&
-          Number(product.salePrice) < Number(product.price)
-        )
+        // กรองเพิ่มเติมฝั่ง client เพื่อความแน่ใจ - รวมทั้ง variants
+        let saleProducts = (data.docs || []).filter((product: any) => {
+          if (!product || product.status !== 'active') return false
+          
+          // เช็คสินค้าหลักว่ามีราคาลดหรือไม่
+          const hasBaseSale = product.salePrice && 
+                             product.price && 
+                             Number(product.salePrice) > 0 &&
+                             Number(product.salePrice) < Number(product.price)
+          
+          // เช็ค variants ว่ามีราคาลดหรือไม่
+          const hasVariantSale = product.variants && 
+                                product.variants.length > 0 && 
+                                product.variants.some((variant: any) => 
+                                  variant.variantStatus === 'active' &&
+                                  variant.variantSalePrice && 
+                                  variant.variantPrice && 
+                                  Number(variant.variantSalePrice) > 0 &&
+                                  Number(variant.variantSalePrice) < Number(variant.variantPrice)
+                                )
+          
+          return hasBaseSale || hasVariantSale
+        })
 
         setProducts(saleProducts.slice(0, limit))
       } catch (err) {
