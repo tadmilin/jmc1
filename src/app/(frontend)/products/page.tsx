@@ -118,7 +118,7 @@ export default function ProductsPage() {
                   placeholder="ค้นหาสินค้า..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pr-20 text-base border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl h-12"
+                  className="w-full pr-20 text-base border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl h-12 bg-white text-gray-900 placeholder:text-gray-500"
                 />
                 <Button 
                   type="submit" 
@@ -133,7 +133,7 @@ export default function ProductsPage() {
             {/* Category Filter */}
             <div>
               <Select value={selectedCategory} onValueChange={handleCategoryChange}>
-                <SelectTrigger className="h-12 text-base border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl">
+                <SelectTrigger className="h-12 text-base border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl bg-white text-gray-900">
                   <SelectValue placeholder="เลือกหมวดหมู่" />
                 </SelectTrigger>
                 <SelectContent>
