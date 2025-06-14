@@ -16,6 +16,7 @@ export type ProductCardData = Pick<
   | 'categories'
   | 'stock'
   | 'status'
+  | 'variants'
 >
 
 export const ProductCard: React.FC<{
@@ -24,7 +25,7 @@ export const ProductCard: React.FC<{
   colorTheme?: string
 }> = ({ className, product, colorTheme = 'light' }) => {
   const [isClient, setIsClient] = useState(false)
-  const { title, slug, price, salePrice, shortDescription, images, categories, stock, status } =
+  const { title, slug, price, salePrice, shortDescription, images, categories, stock, status, variants } =
     product
 
   useEffect(() => {
@@ -32,9 +33,57 @@ export const ProductCard: React.FC<{
   }, [])
 
   const isDarkTheme = colorTheme === 'dark'
-  const isOnSale = salePrice && salePrice < price
-  const discountPercent = isOnSale ? Math.round(((price - salePrice) / price) * 100) : 0
-  const isOutOfStock = status === 'out_of_stock' || stock === 0
+  
+  // Calculate price range and sale info
+  const getPriceInfo = () => {
+    if (!variants || variants.length === 0) {
+      // No variants - use base price
+      const isOnSale = salePrice && salePrice < price
+      const discountPercent = isOnSale ? Math.round(((price - salePrice) / price) * 100) : 0
+      return {
+        displayPrice: isOnSale ? salePrice : price,
+        originalPrice: isOnSale ? price : null,
+        isOnSale,
+        discountPercent,
+        priceRange: null
+      }
+    }
+    
+    // Has variants - calculate range
+    const activeVariants = variants.filter(v => v.variantStatus === 'active')
+    if (activeVariants.length === 0) {
+      // No active variants - fallback to base price
+      const isOnSale = salePrice && salePrice < price
+      return {
+        displayPrice: isOnSale ? salePrice : price,
+        originalPrice: isOnSale ? price : null,
+        isOnSale,
+        discountPercent: isOnSale ? Math.round(((price - salePrice) / price) * 100) : 0,
+        priceRange: null
+      }
+    }
+    
+    // Get price range from active variants
+    const prices = activeVariants.map(v => v.variantSalePrice && v.variantSalePrice < v.variantPrice ? v.variantSalePrice : v.variantPrice)
+    const minPrice = Math.min(...prices)
+    const maxPrice = Math.max(...prices)
+    
+    // Check if any variant is on sale
+    const hasVariantOnSale = activeVariants.some(v => v.variantSalePrice && v.variantSalePrice < v.variantPrice)
+    
+    return {
+      displayPrice: minPrice,
+      originalPrice: null,
+      isOnSale: hasVariantOnSale,
+      discountPercent: 0, // Don't show specific discount for variants
+      priceRange: minPrice === maxPrice ? null : { min: minPrice, max: maxPrice }
+    }
+  }
+  
+  const priceInfo = getPriceInfo()
+  const isOutOfStock = variants && variants.length > 0 
+    ? variants.every(v => v.variantStatus === 'out_of_stock' || v.variantStock === 0)
+    : (status === 'out_of_stock' || stock === 0)
   const isInactive = status === 'inactive' || status === 'discontinued'
 
   // Get first image
@@ -82,10 +131,10 @@ export const ProductCard: React.FC<{
       onClick={handleCardClick}
     >
       {/* Sale Badge */}
-      {isOnSale && !isInactive && (
+      {priceInfo.isOnSale && !isInactive && (
         <div className="absolute top-2 sm:top-4 left-2 sm:left-4 z-10">
           <div className="bg-red-500 text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-bold shadow-lg">
-            -{discountPercent}%
+            {priceInfo.discountPercent > 0 ? `-${priceInfo.discountPercent}%` : 'SALE'}
           </div>
         </div>
       )}
@@ -196,34 +245,59 @@ export const ProductCard: React.FC<{
 
         {/* Price Section */}
         <div className="flex items-center justify-between mb-2 sm:mb-4">
-          <div className="flex items-center gap-1 sm:gap-2">
-            {isOnSale ? (
-              <>
+          <div className="flex flex-col gap-1">
+            {priceInfo.priceRange ? (
+              // Show price range for variants
+              <div className="flex flex-col">
+                <span
+                  className={`text-base sm:text-lg lg:text-xl font-bold ${isDarkTheme ? 'text-gray-100' : 'text-gray-800'}`}
+                >
+                  ฿{priceInfo.priceRange.min.toLocaleString()} - ฿{priceInfo.priceRange.max.toLocaleString()}
+                </span>
+                {priceInfo.isOnSale && (
+                  <span className={`text-xs ${isDarkTheme ? 'text-red-400' : 'text-red-600'}`}>
+                    มีราคาพิเศษ
+                  </span>
+                )}
+              </div>
+            ) : priceInfo.originalPrice ? (
+              // Show sale price
+              <div className="flex items-center gap-1 sm:gap-2">
                 <span
                   className={`text-base sm:text-lg lg:text-xl font-bold ${isDarkTheme ? 'text-red-400' : 'text-red-600'}`}
                 >
-                  ฿{salePrice?.toLocaleString()}
+                  ฿{priceInfo.displayPrice.toLocaleString()}
                 </span>
                 <span
                   className={`text-xs sm:text-sm line-through ${
                     isDarkTheme ? 'text-gray-500' : 'text-gray-400'
                   }`}
                 >
-                  ฿{price.toLocaleString()}
+                  ฿{priceInfo.originalPrice.toLocaleString()}
                 </span>
-              </>
+              </div>
             ) : (
+              // Show regular price
               <span
                 className={`text-base sm:text-lg lg:text-xl font-bold ${isDarkTheme ? 'text-gray-100' : 'text-gray-800'}`}
               >
-                ฿{price.toLocaleString()}
+                {variants && variants.length > 0 ? 
+                  `เริ่มต้น ฿${priceInfo.displayPrice.toLocaleString()}` : 
+                  `฿${priceInfo.displayPrice.toLocaleString()}`
+                }
               </span>
             )}
           </div>
 
           {/* Stock Info - Smaller on mobile */}
-          {stock !== undefined && stock !== null && stock > 0 && stock <= 5 && (
-            <span className="text-xs text-orange-500 font-medium hidden sm:inline">เหลือ {stock}</span>
+          {!variants || variants.length === 0 ? (
+            stock !== undefined && stock !== null && stock > 0 && stock <= 5 && (
+              <span className="text-xs text-orange-500 font-medium hidden sm:inline">เหลือ {stock}</span>
+            )
+          ) : (
+            <span className="text-xs text-blue-600 font-medium hidden sm:inline">
+              {variants.filter(v => v.variantStatus === 'active').length} ตัวเลือก
+            </span>
           )}
         </div>
 

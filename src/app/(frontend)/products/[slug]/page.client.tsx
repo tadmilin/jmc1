@@ -15,6 +15,11 @@ interface ProductDetailClientProps {
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState<any>(null)
+  
+  // Reset image index when variant changes
+  useEffect(() => {
+    setSelectedImageIndex(0)
+  }, [selectedVariant])
   const [quantity, setQuantity] = useState(1)
   const [isClient, setIsClient] = useState(false)
 
@@ -22,7 +27,11 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     setIsClient(true)
     // Set default variant if available
     if (product.variants && product.variants.length > 0) {
-      const defaultVariant = product.variants.find(v => v.isDefault) || product.variants[0]
+      // Smart default variant selection
+      const activeVariants = product.variants.filter(v => v.variantStatus === 'active')
+      const defaultVariant = activeVariants.find(v => v.isDefault) || 
+                            activeVariants.sort((a, b) => (a.variantPrice || 0) - (b.variantPrice || 0))[0] ||
+                            product.variants[0]
       setSelectedVariant(defaultVariant)
     }
   }, [product])
@@ -42,15 +51,24 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   } = product
 
   const isOnSale = salePrice && salePrice < price
-  const discountPercent = isOnSale ? Math.round(((price - salePrice) / price) * 100) : 0
-  const isOutOfStock = status === 'out_of_stock' || stock === 0
-  const isInactive = status === 'inactive' || status === 'discontinued'
+  const discountPercent = isCurrentOnSale ? Math.round(((currentPrice - currentSalePrice) / currentPrice) * 100) : 0
+  const isOutOfStock = selectedVariant 
+    ? (selectedVariant.variantStatus === 'out_of_stock' || selectedVariant.variantStock === 0)
+    : (status === 'out_of_stock' || stock === 0)
+  const isInactive = selectedVariant
+    ? (selectedVariant.variantStatus === 'inactive')
+    : (status === 'inactive' || status === 'discontinued')
 
   // Get current price based on selected variant or base price
-  const currentPrice = selectedVariant?.price || price
-  const currentSalePrice = selectedVariant?.salePrice || salePrice
-  const currentStock = selectedVariant?.stock || stock
+  const currentPrice = selectedVariant?.variantPrice || price
+  const currentSalePrice = selectedVariant?.variantSalePrice || salePrice
+  const currentStock = selectedVariant?.variantStock || stock
   const isCurrentOnSale = currentSalePrice && currentSalePrice < currentPrice
+  
+  // Get current images (variant images or base images)
+  const currentImages = selectedVariant?.variantImages && selectedVariant.variantImages.length > 0 
+    ? selectedVariant.variantImages 
+    : images
 
   const handleQuantityChange = (change: number) => {
     const newQuantity = quantity + change
@@ -114,9 +132,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         <div className="space-y-4">
           {/* Main Image */}
           <div className="aspect-square overflow-hidden rounded-2xl bg-gray-100">
-            {images && images.length > 0 ? (
+            {currentImages && currentImages.length > 0 ? (
               <Media
-                resource={images[selectedImageIndex]?.image as MediaType}
+                resource={currentImages[selectedImageIndex]?.image as MediaType}
                 size="600px"
                 className="w-full h-full object-cover"
               />
@@ -140,9 +158,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           </div>
 
           {/* Thumbnail Images */}
-          {images && images.length > 1 && (
+          {currentImages && currentImages.length > 1 && (
             <div className="flex gap-2 overflow-x-auto">
-              {images.map((imageItem, index) => (
+              {currentImages.map((imageItem, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImageIndex(index)}
@@ -236,14 +254,33 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     }`}
                   >
                     <div className="font-medium text-gray-900">{variant.variantName}</div>
-                    {variant.variantPrice && (
-                      <div className="text-sm text-gray-700">
-                        ฿{variant.variantPrice.toLocaleString()}
-                      </div>
-                    )}
-                    {variant.variantStatus === 'out_of_stock' && (
-                      <div className="text-xs text-red-500">สินค้าหมด</div>
-                    )}
+                    <div className="text-sm">
+                      {variant.variantSalePrice && variant.variantSalePrice < variant.variantPrice ? (
+                        <div className="flex items-center gap-2">
+                          <span className="text-red-600 font-semibold">
+                            ฿{variant.variantSalePrice.toLocaleString()}
+                          </span>
+                          <span className="text-gray-500 line-through text-xs">
+                            ฿{variant.variantPrice.toLocaleString()}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-gray-700">
+                          ฿{variant.variantPrice.toLocaleString()}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs mt-1">
+                      {variant.variantStatus === 'out_of_stock' ? (
+                        <span className="text-red-500">สินค้าหมด</span>
+                      ) : variant.variantStatus === 'inactive' ? (
+                        <span className="text-gray-500">ไม่พร้อมขาย</span>
+                      ) : variant.variantStock && variant.variantStock <= 5 ? (
+                        <span className="text-orange-500">เหลือ {variant.variantStock}</span>
+                      ) : (
+                        <span className="text-green-600">พร้อมส่ง</span>
+                      )}
+                    </div>
                   </button>
                 ))}
               </div>
