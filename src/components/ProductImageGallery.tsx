@@ -2,10 +2,11 @@
 
 import React from 'react'
 import { Media } from '@/components/Media'
+import type { Media as MediaType } from '@/payload-types'
 
 interface ProductImageGalleryProps {
-  mainImages: any[]
-  variantImages?: any[]
+  mainImages: MediaType[]
+  variantImages?: MediaType[]
   productTitle: string
   isOnSale?: boolean
   discountPercent?: number
@@ -16,7 +17,7 @@ interface ProductImageGalleryProps {
 export function ProductImageGallery({
   mainImages,
   variantImages,
-  productTitle,
+  productTitle: _productTitle,
   isOnSale = false,
   discountPercent = 0,
   isOutOfStock = false,

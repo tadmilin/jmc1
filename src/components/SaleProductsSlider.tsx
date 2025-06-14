@@ -29,8 +29,6 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
   const [products, setProducts] = useState<ProductCardData[]>([])
   const [loading, setLoading] = useState(true)
 
-  const isDarkTheme = colorTheme === 'dark'
-
   useEffect(() => {
     const fetchSaleProducts = async () => {
       try {
@@ -56,7 +54,7 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
         console.log('Raw products data:', data.docs?.slice(0, 3))
         
         // กรองเพิ่มเติมฝั่ง client เพื่อความแน่ใจ - รวมทั้ง variants
-        let saleProducts = (data.docs || []).filter((product: any) => {
+        const saleProducts = (data.docs || []).filter((product: ProductCardData) => {
           if (!product || product.status !== 'active') return false
           
           // เช็คสินค้าหลักว่ามีราคาลดหรือไม่
@@ -66,15 +64,15 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
                              Number(product.salePrice) < Number(product.price)
           
           // เช็ค variants ว่ามีราคาลดหรือไม่
-          const hasVariantSale = product.variants && 
-                                product.variants.length > 0 && 
-                                product.variants.some((variant: any) => 
-                                  variant.variantStatus === 'active' &&
-                                  variant.variantSalePrice && 
-                                  variant.variantPrice && 
-                                  Number(variant.variantSalePrice) > 0 &&
-                                  Number(variant.variantSalePrice) < Number(variant.variantPrice)
-                                )
+                      const hasVariantSale = product.variants && 
+                                  product.variants.length > 0 && 
+                                  product.variants.some((variant) => 
+                                    variant.variantStatus === 'active' &&
+                                    variant.variantSalePrice && 
+                                    variant.variantPrice && 
+                                    Number(variant.variantSalePrice) > 0 &&
+                                    Number(variant.variantSalePrice) < Number(variant.variantPrice)
+                                  )
           
           const result = hasBaseSale || hasVariantSale
           if (result) {
