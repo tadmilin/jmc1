@@ -52,7 +52,8 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
         }
 
         const data = await response.json()
-        console.log('SaleProductsSlider success:', data.totalDocs, 'sale products found')
+        console.log('SaleProductsSlider success:', data.totalDocs, 'products found')
+        console.log('Raw products data:', data.docs?.slice(0, 3))
         
         // กรองเพิ่มเติมฝั่ง client เพื่อความแน่ใจ - รวมทั้ง variants
         let saleProducts = (data.docs || []).filter((product: any) => {
@@ -75,9 +76,20 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
                                   Number(variant.variantSalePrice) < Number(variant.variantPrice)
                                 )
           
-          return hasBaseSale || hasVariantSale
+          const result = hasBaseSale || hasVariantSale
+          if (result) {
+            console.log('Found sale product:', product.title, {
+              hasBaseSale,
+              hasVariantSale,
+              basePrice: product.price,
+              baseSalePrice: product.salePrice,
+              variants: product.variants?.length || 0
+            })
+          }
+          return result
         })
 
+        console.log('Filtered sale products:', saleProducts.length, 'out of', data.docs?.length || 0)
         setProducts(saleProducts.slice(0, limit))
       } catch (err) {
         console.error('Error fetching sale products:', err)
@@ -199,27 +211,29 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
               clickable: true,
               dynamicBullets: true,
             }}
-            autoplay={{
+            autoplay={products.length > 1 ? {
               delay: 3500,
               disableOnInteraction: false,
               pauseOnMouseEnter: true,
-            }}
-            loop={products.length > 4}
+            } : false}
+            loop={products.length >= 8}
+            loopAdditionalSlides={2}
+            watchSlidesProgress={true}
             breakpoints={{
               640: {
-                slidesPerView: 2,
+                slidesPerView: Math.min(2, products.length),
                 spaceBetween: 20,
               },
               768: {
-                slidesPerView: 2,
+                slidesPerView: Math.min(2, products.length),
                 spaceBetween: 24,
               },
               1024: {
-                slidesPerView: 3,
+                slidesPerView: Math.min(3, products.length),
                 spaceBetween: 24,
               },
               1280: {
-                slidesPerView: 4,
+                slidesPerView: Math.min(4, products.length),
                 spaceBetween: 24,
               },
             }}
