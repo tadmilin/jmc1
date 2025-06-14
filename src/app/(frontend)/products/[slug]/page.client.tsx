@@ -50,15 +50,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     featured,
   } = product
 
-  const isOnSale = salePrice && salePrice < price
-  const discountPercent = isCurrentOnSale ? Math.round(((currentPrice - currentSalePrice) / currentPrice) * 100) : 0
-  const isOutOfStock = selectedVariant 
-    ? (selectedVariant.variantStatus === 'out_of_stock' || selectedVariant.variantStock === 0)
-    : (status === 'out_of_stock' || stock === 0)
-  const isInactive = selectedVariant
-    ? (selectedVariant.variantStatus === 'inactive')
-    : (status === 'inactive' || status === 'discontinued')
-
   // Get current price based on selected variant or base price
   const currentPrice = selectedVariant?.variantPrice || price
   const currentSalePrice = selectedVariant?.variantSalePrice || salePrice
@@ -69,6 +60,15 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const currentImages = selectedVariant?.variantImages && selectedVariant.variantImages.length > 0 
     ? selectedVariant.variantImages 
     : images
+
+  const isOnSale = salePrice && salePrice < price
+  const discountPercent = isCurrentOnSale ? Math.round(((currentPrice - currentSalePrice) / currentPrice) * 100) : 0
+  const isOutOfStock = selectedVariant 
+    ? (selectedVariant.variantStatus === 'out_of_stock' || selectedVariant.variantStock === 0)
+    : (status === 'out_of_stock' || stock === 0)
+  const isInactive = selectedVariant
+    ? (selectedVariant.variantStatus === 'inactive')
+    : (status === 'inactive' || status === 'discontinued')
 
   const handleQuantityChange = (change: number) => {
     const newQuantity = quantity + change
