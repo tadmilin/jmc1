@@ -2,6 +2,7 @@
 import { cn } from '@/utilities/ui'
 import useClickableCard from '@/utilities/useClickableCard'
 import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 import type { Post } from '@/payload-types'
 
@@ -20,6 +21,7 @@ export const Card: React.FC<{
 }> = (props) => {
   const { card } = useClickableCard({})
   const [isClient, setIsClient] = useState(false)
+  const router = useRouter()
   const {
     className,
     doc,
@@ -46,14 +48,14 @@ export const Card: React.FC<{
   const handleCardClick = (e: React.MouseEvent) => {
     e.preventDefault()
     if (isClient && href) {
-      window.location.href = href
+      router.push(href)
     }
   }
 
   const handleLinkClick = (e: React.MouseEvent) => {
     e.preventDefault()
     if (isClient && href) {
-      window.location.href = href
+      router.push(href)
     }
   }
 

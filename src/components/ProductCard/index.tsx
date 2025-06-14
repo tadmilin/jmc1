@@ -1,6 +1,7 @@
 'use client'
 import { cn } from '@/utilities/ui'
 import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import type { Product, Media as MediaType } from '@/payload-types'
 import { Media } from '@/components/Media'
 
@@ -25,6 +26,7 @@ export const ProductCard: React.FC<{
   colorTheme?: string
 }> = ({ className, product, colorTheme = 'light' }) => {
   const [isClient, setIsClient] = useState(false)
+  const router = useRouter()
   const { title, slug, price, salePrice, shortDescription, images, categories, stock, status, variants } =
     product
 
@@ -95,14 +97,14 @@ export const ProductCard: React.FC<{
   const handleCardClick = (e: React.MouseEvent) => {
     e.preventDefault()
     if (isClient && href && !isInactive && !isOutOfStock) {
-      window.location.href = href
+      router.push(href)
     }
   }
 
   const handleLinkClick = (e: React.MouseEvent) => {
     e.preventDefault()
     if (isClient && href) {
-      window.location.href = href
+      router.push(href)
     }
   }
 
