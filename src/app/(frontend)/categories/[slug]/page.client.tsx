@@ -129,7 +129,10 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
         {/* Back Button */}
         <div className="mb-6">
           <Link href="/categories">
-            <Button variant="ghost" className="gap-2 hover:bg-blue-50 transition-colors">
+            <Button 
+              variant="outline" 
+              className="gap-2 bg-white border-2 border-blue-500 text-blue-600 hover:bg-blue-50 hover:border-blue-600 hover:text-blue-700 shadow-md hover:shadow-lg transition-all duration-200 font-medium px-4 py-2 rounded-lg"
+            >
               <ArrowLeft className="w-4 h-4" />
               <span className="hidden sm:inline">กลับไปหน้าหมวดหมู่</span>
               <span className="sm:hidden">กลับ</span>
