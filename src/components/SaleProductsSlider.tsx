@@ -34,13 +34,16 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
       try {
         setLoading(true)
         
+        // เพิ่ม limit มากขึ้นเพื่อให้มีโอกาสหาสินค้าลดราคาได้มากขึ้น
+        const fetchLimit = Math.max(limit * 3, 50) // ดึงมาก่อน แล้วกรองทีหลัง
+        
         const params = new URLSearchParams({
-          limit: limit.toString(),
+          limit: fetchLimit.toString(),
           depth: '1',
           'where[status][equals]': 'active',
         })
 
-        console.log('SaleProductsSlider: Fetching sale products...')
+        console.log('SaleProductsSlider: Fetching products for sale filtering...')
         const response = await fetch(`/api/products?${params.toString()}`)
         
         if (!response.ok) {
@@ -50,45 +53,52 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
         }
 
         const data = await response.json()
-        console.log('SaleProductsSlider success:', data.totalDocs, 'products found')
-        console.log('Raw products data:', data.docs?.slice(0, 3))
+        console.log('SaleProductsSlider: Received', data.totalDocs, 'products, filtering for sales...')
         
-        // กรองเพิ่มเติมฝั่ง client เพื่อความแน่ใจ - รวมทั้ง variants
+        // กรองสินค้าลดราคาอย่างละเอียด
         const saleProducts = (data.docs || []).filter((product: ProductCardData) => {
           if (!product || product.status !== 'active') return false
           
           // เช็คสินค้าหลักว่ามีราคาลดหรือไม่
-          const hasBaseSale = product.salePrice && 
-                             product.price && 
-                             Number(product.salePrice) > 0 &&
-                             Number(product.salePrice) < Number(product.price)
+          const basePrice = product.price ? Number(product.price) : 0
+          const baseSalePrice = product.salePrice ? Number(product.salePrice) : 0
+          const hasBaseSale = baseSalePrice > 0 && baseSalePrice < basePrice
           
           // เช็ค variants ว่ามีราคาลดหรือไม่
-                      const hasVariantSale = product.variants && 
-                                  product.variants.length > 0 && 
-                                  product.variants.some((variant) => 
-                                    variant.variantStatus === 'active' &&
-                                    variant.variantSalePrice && 
-                                    variant.variantPrice && 
-                                    Number(variant.variantSalePrice) > 0 &&
-                                    Number(variant.variantSalePrice) < Number(variant.variantPrice)
-                                  )
+          const hasVariantSale = product.variants && 
+                                product.variants.length > 0 && 
+                                product.variants.some((variant) => {
+                                  if (variant.variantStatus !== 'active') return false
+                                  const variantPrice = variant.variantPrice ? Number(variant.variantPrice) : 0
+                                  const variantSalePrice = variant.variantSalePrice ? Number(variant.variantSalePrice) : 0
+                                  return variantSalePrice > 0 && variantSalePrice < variantPrice
+                                })
           
-          const result = hasBaseSale || hasVariantSale
-          if (result) {
-            console.log('Found sale product:', product.title, {
+          const isSaleProduct = hasBaseSale || hasVariantSale
+          
+          if (isSaleProduct) {
+            console.log('✅ Sale product found:', product.title, {
               hasBaseSale,
               hasVariantSale,
-              basePrice: product.price,
-              baseSalePrice: product.salePrice,
-              variants: product.variants?.length || 0
+              basePrice,
+              baseSalePrice,
+              variantsCount: product.variants?.length || 0
             })
           }
-          return result
+          
+          return isSaleProduct
         })
 
-        console.log('Filtered sale products:', saleProducts.length, 'out of', data.docs?.length || 0)
-        setProducts(saleProducts.slice(0, limit))
+        console.log('🎯 Final sale products:', saleProducts.length, 'out of', data.docs?.length || 0)
+        
+        // จำกัดจำนวนตาม limit ที่ต้องการ
+        const finalProducts = saleProducts.slice(0, limit)
+        setProducts(finalProducts)
+        
+        if (finalProducts.length === 0) {
+          console.warn('⚠️ No sale products found! Check if products have salePrice or variant salePrice set')
+        }
+        
       } catch (err) {
         console.error('Error fetching sale products:', err)
         setProducts([])
@@ -138,6 +148,11 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
             <p className="text-lg text-gray-600 mb-8">
               ขณะนี้ยังไม่มีสินค้าลดราคา กรุณาติดตามใหม่อีกครั้ง
             </p>
+            <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded-lg mb-6 max-w-md mx-auto">
+              <p className="text-sm">
+                💡 <strong>สำหรับ Admin:</strong> ตั้งค่า salePrice ในสินค้าหรือ variant เพื่อแสดงในส่วนนี้
+              </p>
+            </div>
             <a 
               href="/products" 
               className="inline-block bg-red-600 text-white px-8 py-3 rounded-xl hover:bg-red-700 transition-colors font-semibold"
@@ -149,6 +164,12 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
       </div>
     )
   }
+
+  // คำนวณ slidesPerView สำหรับแต่ละ breakpoint
+  const getMaxSlidesPerView = (breakpointSlides: number) => Math.min(breakpointSlides, products.length)
+  
+  // เงื่อนไข loop ที่ปลอดภัย - ต้องมีสินค้าเพียงพอสำหรับ loop
+  const shouldEnableLoop = products.length >= 6 // ต้องมีอย่างน้อย 6 ชิ้นถึงจะ loop ได้
 
   return (
     <div className={`py-12 lg:py-16 ${getBgClasses()}`}>
@@ -190,7 +211,7 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
           )}
           <div className="mt-6 flex justify-center">
             <div className="bg-red-100 text-red-800 px-6 py-2 rounded-full text-sm font-semibold">
-              🎯 ลดราคาสูงสุด 50% เฉพาะวันนี้!
+              🎯 ลดราคาสูงสุด 50% เฉพาะวันนี้! ({products.length} รายการ)
             </div>
           </div>
         </div>
@@ -214,24 +235,24 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
               disableOnInteraction: false,
               pauseOnMouseEnter: true,
             } : false}
-            loop={products.length >= 8}
-            loopAdditionalSlides={2}
+            loop={shouldEnableLoop}
+            loopAdditionalSlides={shouldEnableLoop ? 3 : 0}
             watchSlidesProgress={true}
             breakpoints={{
               640: {
-                slidesPerView: Math.min(2, products.length),
+                slidesPerView: getMaxSlidesPerView(2),
                 spaceBetween: 20,
               },
               768: {
-                slidesPerView: Math.min(2, products.length),
+                slidesPerView: getMaxSlidesPerView(2),
                 spaceBetween: 24,
               },
               1024: {
-                slidesPerView: Math.min(3, products.length),
+                slidesPerView: getMaxSlidesPerView(3),
                 spaceBetween: 24,
               },
               1280: {
-                slidesPerView: Math.min(4, products.length),
+                slidesPerView: getMaxSlidesPerView(4),
                 spaceBetween: 24,
               },
             }}

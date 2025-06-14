@@ -45,7 +45,7 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
 
   const [products, setProducts] = useState<ProductCardData[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [_error, setError] = useState<string | null>(null)
 
   const isDarkTheme = colorTheme === 'dark'
 
@@ -55,64 +55,81 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
         setLoading(true)
         setError(null)
 
-        // ใช้ query ง่ายๆ ที่สุด ไม่ใส่ where condition
+        // เพิ่ม limit เมื่อต้องการกรองสินค้าลดราคา
+        const fetchLimit = showOnlyOnSale ? Math.max((limit || 8) * 3, 50) : (limit || 8)
+
         const params = new URLSearchParams({
-          limit: (limit || 8).toString(),
+          limit: fetchLimit.toString(),
           depth: '1',
+          'where[status][equals]': 'active',
         })
 
-        console.log('ProductsBlock: Simple API call...')
+        console.log('ProductsBlock: Fetching products...', { showOnlyOnSale, limit: fetchLimit })
         const response = await fetch(`/api/products?${params.toString()}`)
 
         if (!response.ok) {
           console.error('ProductsBlock API failed:', response.status, response.statusText)
-          // ถ้า API ไม่ทำงาน ให้แสดง placeholder แทน
           setProducts([])
-          setError(null) // ไม่แสดง error ให้ user เห็น
+          setError(null)
           return
         }
 
         const data = await response.json()
-        console.log('ProductsBlock success:', data.totalDocs, 'products found')
+        console.log('ProductsBlock: Received', data.totalDocs, 'products')
 
-        // กรองข้อมูลฝั่ง client แบบง่ายๆ
         let filteredProducts = data.docs || []
         
         // กรองเฉพาะสินค้าที่ active
-        filteredProducts = filteredProducts.filter((product: any) => 
+        filteredProducts = filteredProducts.filter((product: ProductCardData) => 
           product && product.status === 'active'
         )
 
-        // ถ้า showOnlyOnSale เป็น true ให้กรองเฉพาะสินค้าลดราคา (รวม variants)
+        // ถ้า showOnlyOnSale เป็น true ให้กรองเฉพาะสินค้าลดราคา (ใช้ logic เดียวกับ SaleProductsSlider)
         if (showOnlyOnSale) {
-          filteredProducts = filteredProducts.filter((product: any) => {
+          filteredProducts = filteredProducts.filter((product: ProductCardData) => {
             if (!product || product.status !== 'active') return false
             
             // เช็คสินค้าหลักว่ามีราคาลดหรือไม่
-            const hasBaseSale = product.salePrice && 
-                               product.price && 
-                               Number(product.salePrice) > 0 &&
-                               Number(product.salePrice) < Number(product.price)
+            const basePrice = product.price ? Number(product.price) : 0
+            const baseSalePrice = product.salePrice ? Number(product.salePrice) : 0
+            const hasBaseSale = baseSalePrice > 0 && baseSalePrice < basePrice
             
             // เช็ค variants ว่ามีราคาลดหรือไม่
             const hasVariantSale = product.variants && 
                                   product.variants.length > 0 && 
-                                  product.variants.some((variant: any) => 
-                                    variant.variantStatus === 'active' &&
-                                    variant.variantSalePrice && 
-                                    variant.variantPrice && 
-                                    Number(variant.variantSalePrice) > 0 &&
-                                    Number(variant.variantSalePrice) < Number(variant.variantPrice)
-                                  )
+                                  product.variants.some((variant) => {
+                                    if (variant.variantStatus !== 'active') return false
+                                    const variantPrice = variant.variantPrice ? Number(variant.variantPrice) : 0
+                                    const variantSalePrice = variant.variantSalePrice ? Number(variant.variantSalePrice) : 0
+                                    return variantSalePrice > 0 && variantSalePrice < variantPrice
+                                  })
             
-            return hasBaseSale || hasVariantSale
+            const isSaleProduct = hasBaseSale || hasVariantSale
+            
+            if (isSaleProduct) {
+              console.log('✅ ProductsBlock sale product:', product.title, {
+                hasBaseSale,
+                hasVariantSale,
+                basePrice,
+                baseSalePrice
+              })
+            }
+            
+            return isSaleProduct
           })
+          
+          console.log('🎯 ProductsBlock filtered sale products:', filteredProducts.length)
         }
 
-        setProducts(filteredProducts.slice(0, limit))
+        const finalProducts = filteredProducts.slice(0, limit || 8)
+        setProducts(finalProducts)
+        
+        if (showOnlyOnSale && finalProducts.length === 0) {
+          console.warn('⚠️ ProductsBlock: No sale products found!')
+        }
+        
       } catch (err) {
         console.error('ProductsBlock error:', err)
-        // ไม่แสดง error ให้ user เห็น แต่แสดง empty state แทน
         setProducts([])
         setError(null)
       } finally {
@@ -150,7 +167,7 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
     )
   }
 
-  // ถ้าไม่มีสินค้า ให้แสดง message ธรรมดา
+  // ถ้าไม่มีสินค้า ให้แสดง message ที่เหมาะสม
   if (products.length === 0) {
     return (
       <div className={`py-8 lg:py-12 ${getBgClasses()}`}>
@@ -159,15 +176,28 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
             <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>
               {title}
             </h2>
-            <p className={`text-lg ${isDarkTheme ? 'text-gray-300' : 'text-gray-600'}`}>
-              กำลังเตรียมสินค้าสำหรับคุณ...
-            </p>
+            {showOnlyOnSale ? (
+              <>
+                <p className={`text-lg ${isDarkTheme ? 'text-gray-300' : 'text-gray-600'} mb-6`}>
+                  ขณะนี้ยังไม่มีสินค้าลดราคา กรุณาติดตามใหม่อีกครั้ง
+                </p>
+                <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded-lg mb-6 max-w-md mx-auto">
+                  <p className="text-sm">
+                    💡 <strong>สำหรับ Admin:</strong> ตั้งค่า salePrice ในสินค้าหรือ variant เพื่อแสดงในส่วนนี้
+                  </p>
+                </div>
+              </>
+            ) : (
+              <p className={`text-lg ${isDarkTheme ? 'text-gray-300' : 'text-gray-600'} mb-6`}>
+                กำลังเตรียมสินค้าสำหรับคุณ...
+              </p>
+            )}
             <div className="mt-6">
               <a 
-                href="/admin" 
+                href={showOnlyOnSale ? "/products" : "/admin"} 
                 className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
               >
-                เพิ่มสินค้าใน Admin Panel
+                {showOnlyOnSale ? "ดูสินค้าทั้งหมด" : "เพิ่มสินค้าใน Admin Panel"}
               </a>
             </div>
           </div>
@@ -175,6 +205,10 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
       </div>
     )
   }
+
+  // คำนวณ slidesPerView และ loop condition สำหรับ Swiper
+  const getMaxSlidesPerView = (breakpointSlides: number) => Math.min(breakpointSlides, products.length)
+  const shouldEnableLoop = products.length >= 6 // ต้องมีอย่างน้อย 6 ชิ้นถึงจะ loop ได้
 
   return (
     <div className={`py-8 lg:py-12 ${getBgClasses()}`}>
@@ -189,6 +223,13 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
             <p className={`text-lg max-w-2xl mx-auto ${isDarkTheme ? 'text-gray-300' : 'text-gray-600'}`}>
               {subtitle}
             </p>
+          )}
+          {showOnlyOnSale && (
+            <div className="mt-4">
+              <div className="bg-red-100 text-red-800 px-4 py-2 rounded-full text-sm font-semibold inline-block">
+                🔥 สินค้าลดราคา {products.length} รายการ
+              </div>
+            </div>
           )}
         </div>
 
@@ -207,25 +248,28 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
                 clickable: true,
                 el: '.swiper-pagination-custom',
               }}
-              autoplay={{
+              autoplay={products.length > 1 ? {
                 delay: 4000,
                 disableOnInteraction: false,
-              }}
+              } : false}
+              loop={shouldEnableLoop}
+              loopAdditionalSlides={shouldEnableLoop ? 2 : 0}
+              watchSlidesProgress={true}
               breakpoints={{
                 640: {
-                  slidesPerView: 2,
+                  slidesPerView: getMaxSlidesPerView(2),
                   spaceBetween: 20,
                 },
                 768: {
-                  slidesPerView: 2,
+                  slidesPerView: getMaxSlidesPerView(2),
                   spaceBetween: 24,
                 },
                 1024: {
-                  slidesPerView: 3,
+                  slidesPerView: getMaxSlidesPerView(3),
                   spaceBetween: 24,
                 },
                 1280: {
-                  slidesPerView: 4,
+                  slidesPerView: getMaxSlidesPerView(4),
                   spaceBetween: 24,
                 },
               }}
@@ -265,6 +309,7 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
             </div>
           </div>
         ) : (
+          // Grid Layout
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {products.map((product, index) => (
               <ProductCard key={product.id || index} product={product} colorTheme={colorTheme} />
@@ -273,15 +318,19 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
         )}
 
         {/* View All Button */}
-        {showViewAllButton && viewAllLink && products.length > 0 && (
+        {showViewAllButton && viewAllLink && (
           <div className="text-center mt-12">
             <a
               href={viewAllLink}
-              className="inline-flex items-center gap-2 px-8 py-3 text-lg font-semibold rounded-lg transition-colors bg-blue-600 text-white hover:bg-blue-700"
+              className={`inline-flex items-center px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 ${
+                isDarkTheme
+                  ? 'bg-red-600 text-white hover:bg-red-700 shadow-lg hover:shadow-xl'
+                  : 'bg-gradient-to-r from-red-600 to-orange-600 text-white hover:from-red-700 hover:to-orange-700 shadow-lg hover:shadow-xl'
+              }`}
             >
               ดูสินค้าทั้งหมด
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </a>
           </div>

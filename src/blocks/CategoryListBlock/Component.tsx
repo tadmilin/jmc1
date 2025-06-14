@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useRouter } from 'next/navigation'
 import type { Category } from '@/payload-types'
 import Image from 'next/image'
 // Remove Payload imports as data fetching is moved
@@ -36,12 +37,19 @@ const categoryListStyles = `
   }
 `
 
+// Define proper interface for block props
+interface CategoryListBlockProps {
+  title?: string
+  subtitle?: string
+}
+
 // Update component to accept categories data as a prop
 export const CategoryListBlock: React.FC<{
-  block: any // Use any for now since CategoryListBlockProps doesn't exist
+  block: CategoryListBlockProps
   categories: Category[] // Expect categories data as a prop
 }> = (props) => {
-  const { block, categories } = props // Destructure block data and categories
+  const { block: _block, categories } = props // Destructure block data and categories
+  const router = useRouter()
 
   // No data fetching logic needed here anymore
 
@@ -63,14 +71,18 @@ export const CategoryListBlock: React.FC<{
               category.image.url &&
               category.slug
             ) {
+              const handleCategoryClick = () => {
+                router.push(`/categories/${category.slug}`)
+              }
+
               return (
                 <button
-                  onClick={() => (window.location.href = `/categories/${category.slug}`)}
+                  onClick={handleCategoryClick}
                   key={category.id}
                   className="category-item cursor-pointer"
                 >
                   <div className="category-image-container">
-                    {/* @ts-ignore */}
+                  
                     <Image
                       src={category.image.url}
                       alt={category.title || 'Category Image'}

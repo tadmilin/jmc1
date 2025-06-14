@@ -2,7 +2,6 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { cn } from '@/utilities/ui'
 import { Media } from '@/components/Media'
 import type { Media as MediaType } from '@/payload-types'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -21,155 +20,150 @@ interface SlideType {
 }
 
 interface ImageSliderBlockProps {
-  title?: string
   slides: SlideType[]
-  aspectRatio?: 'auto' | '1:1' | '16:9' | '4:3' | '3:4' // เพิ่ม 'auto'
-  backgroundColor?: string
+  title?: string
+  autoplay?: boolean
+  showNavigation?: boolean
+  showPagination?: boolean
 }
 
 export const ImageSliderBlock: React.FC<{
   block: ImageSliderBlockProps
   colorTheme?: string
 }> = ({ block, colorTheme = 'light' }) => {
-  const { title = 'แบรนด์ของเรา', slides = [], aspectRatio = 'auto' } = block || {} // Default title and bg
-  
-  // ใช้สีพื้นหลังเดียวกับ hero
-  const getBackgroundColor = () => {
-    switch (colorTheme) {
-      case 'dark':
-        return '#111827' // gray-900 เดียวกับ hero dark
-      case 'lightBlue':
-        return '#eff6ff' // blue-50 เดียวกับ hero lightBlue
-      case 'gradient':
-        return 'linear-gradient(to bottom right, #eff6ff, #e0e7ff)' // gradient เดียวกับ hero
-      case 'light':
-      default:
-        return '#f9fafb' // gray-50 เดียวกับ hero light
-    }
-  }
-  
-  const backgroundColor = getBackgroundColor()
-  const [isClient, setIsClient] = useState(false)
+  const {
+    slides = [],
+    title = 'แบรนด์ที่เราไว้วางใจ',
+    autoplay = true,
+    showNavigation = true,
+    showPagination = true,
+  } = block
+
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setIsClient(true)
+    setMounted(true)
   }, [])
 
-  const getAspectRatioStyle = () => {
-    if (aspectRatio === 'auto') {
-      return { paddingTop: '0', height: '80px' } // Reduced height for smaller logos
-    }
-    switch (aspectRatio) {
-      case '16:9':
-        return { paddingTop: '56.25%' }
-      case '4:3':
-        return { paddingTop: '75%' }
-      case '3:4':
-        return { paddingTop: '133.33%' }
-      case '1:1':
-      default:
-        return { paddingTop: '100%' }
-    }
+  if (!mounted) {
+    return (
+      <div className="py-12">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <div className="animate-pulse bg-gray-200 h-8 w-64 mx-auto mb-8 rounded"></div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="animate-pulse bg-gray-200 h-32 rounded-lg"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
-  // ปรับสีข้อความตาม colorTheme
-  const getTextColors = () => {
-    switch (colorTheme) {
-      case 'dark':
-        return {
-          title: '#ffffff',
-          icon: '#9ca3af',
-        }
-      case 'lightBlue':
-      case 'gradient':
-      case 'light':
-      default:
-        return {
-          title: '#1f2937', // gray-800
-          icon: '#6b7280', // gray-500
-        }
-    }
+  if (!slides || slides.length === 0) {
+    return (
+      <div className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{title}</h2>
+            <p className="text-gray-600">ไม่มีรูปภาพในสไลเดอร์</p>
+            <div className="mt-6">
+              <a 
+                href="/admin" 
+                className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                เพิ่มรูปภาพใน Admin Panel
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
-  
-  const textColors = getTextColors()
+
+  // คำนวณ slidesPerView และ loop condition ที่ปลอดภัย
+  const getMaxSlidesPerView = (breakpointSlides: number) => Math.min(breakpointSlides, slides.length)
+  const shouldEnableLoop = slides.length >= 8 // ต้องมีอย่างน้อย 8 slides ถึงจะ loop ได้
 
   const sliderStyles = `
     .brand-slider-container {
-      background: ${backgroundColor};
-      padding: 1.5rem 0; /* Further reduced padding */
+      padding: 3rem 0;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     }
     
     .brand-slider-title-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 1rem; /* Further reduced margin */
-    }
-
-    .brand-slider-title {
-      color: ${textColors.title};
       text-align: center;
-      font-size: 2rem; /* Increased font size to match other sections */
-      font-weight: 700; /* Increased font weight for better visibility */
+      margin-bottom: 3rem;
     }
     
-    @media (min-width: 768px) {
-      .brand-slider-title {
-        font-size: 2.5rem; /* Even larger on desktop */
-      }
+    .brand-slider-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     
     .brand-swiper-container {
-      padding: 0 45px; /* Better padding for navigation arrows */
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
     }
-
-    /* Styling for each slide card */
+    
     .brand-slide {
-      height: 220px; /* Increased height for better brand visibility */
-      border-radius: 12px; /* Rounded corners for the card */
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      transition: all 0.3s ease;
       overflow: hidden;
       position: relative;
-      background: transparent; /* Transparent background to show hero background */
-      border: 1px solid ${colorTheme === 'dark' ? '#374151' : 'rgba(229, 231, 235, 0.3)'}; /* Subtle border */
-      transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
     }
-
+    
     .brand-slide:hover {
-        transform: translateY(-5px) scale(1.03); /* Slight lift and scale on hover */
-        box-shadow: 0 10px 20px rgba(0,0,0,0.15); 
-        background: ${colorTheme === 'dark' ? 'rgba(31, 41, 55, 0.3)' : 'rgba(255, 255, 255, 0.5)'}; /* Subtle background on hover */
+      transform: translateY(-8px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
     
     .brand-slide-link {
-      display: block; /* Changed to block */
+      display: block;
       width: 100%;
       height: 100%;
-      text-decoration: none; /* Remove underline from link */
+      text-decoration: none;
+      color: inherit;
     }
-
+    
     .slide-inner-content {
-      position: relative;
       width: 100%;
       height: 100%;
-      overflow: hidden; /* Clip the image if it scales */
-      display: flex; /* Added for centering */
-      align-items: center; /* Added for vertical centering */
-      justify-content: center; /* Added for horizontal centering */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      position: relative;
     }
     
     .slide-image-effect {
-      /* Removed width: 100%; height: 100%; to allow natural aspect ratio centering via flexbox */
-      max-width: 100%; /* Ensure image does not overflow its flex container */
-      max-height: 100%; /* Ensure image does not overflow its flex container */
-      object-fit: contain; 
-      transform: scale(1); 
-      filter: brightness(1); 
-      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      width: 100%;
+      height: 70%;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+      filter: grayscale(20%);
     }
-
+    
     .brand-slide:hover .slide-image-effect {
       transform: scale(1.05);
-      filter: brightness(1.1);
+      filter: grayscale(0%);
     }
     
     .slide-title-overlay {
@@ -177,12 +171,8 @@ export const ImageSliderBlock: React.FC<{
       bottom: 0;
       left: 0;
       right: 0;
-      padding: 12px 15px;
-      background: ${
-        colorTheme === 'dark'
-        ? 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 60%, transparent 100%)'
-        : 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 60%, transparent 100%)'
-      };
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      padding: 1rem;
       color: white;
       text-align: center;
       font-size: 1rem;
@@ -195,14 +185,14 @@ export const ImageSliderBlock: React.FC<{
     .brand-slider-pagination {
       display: flex;
       justify-content: center;
-      gap: 0.5rem; /* Reduced gap */
-      margin-top: 1.5rem; /* Reduced margin */
+      gap: 0.5rem;
+      margin-top: 1.5rem;
     }
     
     .swiper-pagination-bullet {
-      width: 8px; /* Smaller bullets */
+      width: 8px;
       height: 8px;
-      background-color: #9ca3af; /* Gray bullet color */
+      background-color: #9ca3af;
       opacity: 0.7;
       border-radius: 50%;
       cursor: pointer;
@@ -210,18 +200,18 @@ export const ImageSliderBlock: React.FC<{
     }
     
     .swiper-pagination-bullet-active {
-      background-color: #3b82f6; /* Blue active bullet color */
+      background-color: #3b82f6;
       opacity: 1;
       transform: scale(1.1);
     }
     
-    /* Navigation arrows styling based on theme */
+    /* Navigation arrows styling */
     .swiper-button-next, .swiper-button-prev {
-      color: #374151; /* Gray arrow color */
-      width: 35px; /* Smaller arrows */
+      color: #374151;
+      width: 35px;
       height: 35px;
-      background-color: rgba(255, 255, 255, 0.9); /* White background */
-      border: 1px solid #e5e7eb; /* Light gray border */
+      background-color: rgba(255, 255, 255, 0.9);
+      border: 1px solid #e5e7eb;
       border-radius: 50%;
       transition: background-color 0.3s ease, color 0.3s ease;
     }
@@ -230,64 +220,23 @@ export const ImageSliderBlock: React.FC<{
       color: #3b82f6;
     }
     .swiper-button-next::after, .swiper-button-prev::after {
-      font-size: 16px; /* Smaller arrow icons */
+      font-size: 16px;
       font-weight: bold;
     }
+    
+    @media (max-width: 640px) {
+      .brand-slider-title {
+        font-size: 2rem;
+      }
+      .brand-slide {
+        height: 150px;
+      }
+      .slide-title-overlay {
+        font-size: 0.875rem;
+        padding: 0.75rem;
+      }
+    }
   `
-
-  if (!isClient) {
-    return ( 
-      <div style={{ background: backgroundColor, padding: '2rem 0' }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '1.5rem',
-          }}
-        >
-          <span style={{ fontSize: '1.75rem', marginRight: '0.5rem', color: textColors.icon }}>
-            🛒
-          </span>
-          <h2
-            style={{
-              color: textColors.title,
-              textAlign: 'center',
-              fontSize: '1.5rem',
-              fontWeight: 600,
-            }}
-          >
-            {title}
-          </h2>
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            color: textColors.icon,
-            fontSize: '0.875rem',
-          }}
-        >
-          Loading brands...
-        </div>
-      </div>
-    )
-  }
-
-  if (!slides || slides.length === 0) {
-    return (
-      <div className="brand-slider-container">
-        <div className="brand-slider-title-container">
-          <span className="brand-slider-icon">🛒</span>
-          <h2 className="brand-slider-title">{title}</h2>
-        </div>
-        <div className="text-center py-6" style={{ color: textColors.icon }}>
-          <p className="text-sm">ไม่พบแบรนด์สินค้า</p>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="brand-slider-container">
@@ -300,42 +249,40 @@ export const ImageSliderBlock: React.FC<{
       <Swiper
         className="brand-swiper-container"
         modules={[Navigation, Pagination, Autoplay]}
-        spaceBetween={20} // Good space between cards
-        slidesPerView={1.9} // Show almost 2 brands with good peek of next
-        centeredSlides={false} // Can be true if you want active slide centered
-        navigation
-        pagination={{ 
+        spaceBetween={20}
+        slidesPerView={1.9}
+        centeredSlides={false}
+        navigation={showNavigation}
+        pagination={showPagination ? { 
           clickable: true,
           el: '.brand-slider-pagination',
           bulletClass: 'swiper-pagination-bullet',
           bulletActiveClass: 'swiper-pagination-bullet-active',
-        }}
-        autoplay={{
+        } : false}
+        autoplay={autoplay && slides.length > 1 ? {
           delay: 5000,
           disableOnInteraction: false,
           pauseOnMouseEnter: true, 
-        }}
-        loop={slides.length > 4} // Adjust loop condition based on slidesPerView
+        } : false}
+        loop={shouldEnableLoop}
+        loopAdditionalSlides={shouldEnableLoop ? 3 : 0}
+        watchSlidesProgress={true}
         grabCursor={true}
         breakpoints={{
           640: {
-            // sm
-            slidesPerView: 2.2,
+            slidesPerView: getMaxSlidesPerView(2.2),
             spaceBetween: 20,
           },
           768: {
-            // md
-            slidesPerView: 3.2,
+            slidesPerView: getMaxSlidesPerView(3.2),
             spaceBetween: 25,
           },
           1024: {
-            // lg
-            slidesPerView: 4.2,
+            slidesPerView: getMaxSlidesPerView(4.2),
             spaceBetween: 25,
           },
           1280: {
-            // xl
-            slidesPerView: 5.2,
+            slidesPerView: getMaxSlidesPerView(5.2),
             spaceBetween: 30,
           },
         }}
@@ -355,8 +302,7 @@ export const ImageSliderBlock: React.FC<{
                   'url' in slide.image ? (
                     <Media
                       resource={slide.image}
-                      className="slide-image-effect" // Apply effect class to Media itself
-                      // fill prop might not be needed if width/height 100% is on className
+                      className="slide-image-effect"
                     />
                   ) : typeof slide.image === 'string' ? (
                     <img
@@ -390,7 +336,9 @@ export const ImageSliderBlock: React.FC<{
         ))}
       </Swiper>
       
-      <div className="brand-slider-pagination" />
+      {showPagination && (
+        <div className="brand-slider-pagination"></div>
+      )}
     </div>
   )
 }
