@@ -259,7 +259,7 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
                       placeholder="ค้นหาสินค้าในหมวดหมู่นี้..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pr-20 text-base border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl h-12"
+                      className="w-full pr-20 text-base border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl h-12 bg-white text-gray-900 placeholder:text-gray-500"
                     />
                     <Button 
                       type="submit" 
@@ -275,7 +275,7 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
                 <div className="flex gap-3">
                   <div className="flex-1">
                     <Select value={sortBy} onValueChange={handleSortChange}>
-                      <SelectTrigger className="h-12 text-base border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl">
+                      <SelectTrigger className="h-12 text-base border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl bg-white text-gray-900">
                         <SelectValue placeholder="เรียงตาม" />
                       </SelectTrigger>
                       <SelectContent>
@@ -327,7 +327,7 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
                         placeholder="ค้นหาสินค้าในหมวดหมู่นี้..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="flex-1 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                        className="flex-1 border-gray-200 focus:border-blue-500 focus:ring-blue-500 bg-white text-gray-900 placeholder:text-gray-500"
                       />
                       <Button type="submit" className="bg-blue-600 hover:bg-blue-700 px-6">
                         ค้นหา
@@ -338,7 +338,7 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
                   {/* Sort */}
                   <div className="w-64">
                     <Select value={sortBy} onValueChange={handleSortChange}>
-                      <SelectTrigger className="border-gray-200 focus:border-blue-500 focus:ring-blue-500">
+                      <SelectTrigger className="border-gray-200 focus:border-blue-500 focus:ring-blue-500 bg-white text-gray-900">
                         <SelectValue placeholder="เรียงตาม" />
                       </SelectTrigger>
                       <SelectContent>
