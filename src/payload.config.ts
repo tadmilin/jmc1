@@ -36,10 +36,6 @@ export default buildConfig({
     meta: {
       titleSuffix: '- จงมีชัยค้าวัสดุ',
     },
-    autoLogin: process.env.NODE_ENV === 'development' ? {
-      email: 'admin@jmc111.com',
-      password: 'password123',
-    } : false,
     disable: false,
     livePreview: {
       breakpoints: [
