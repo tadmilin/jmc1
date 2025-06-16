@@ -46,12 +46,12 @@ export const QuoteRequestFormBlockComponent: React.FC<QuoteRequestFormBlockProps
   maxFileSize = 5,
   allowedFileTypes = ['image', 'pdf', 'document'],
   submitButtonText = 'ส่งคำขอใบเสนอราคา',
-  successMessage = 'ขอบคุณสำหรับการส่งคำขอใบเสนอราคา ทีมงานของเราจะติดต่อกลับภายใน 24 ชั่วโมง',
+  successMessage = 'ขอบคุณสำหรับการส่งคำขอใบเสนอราคา ทีมงานของเราจะติดต่อกลับภายใน 4 ชั่วโมง',
   contactInfo = {
-    phone: '02-xxx-xxxx',
-    email: 'info@jmc.com',
-    lineId: '@jmc-materials',
-    workingHours: 'จันทร์-ศุกร์ 8:00-17:00 น.',
+    phone: '02-4348319',
+    email: 'tadeyes1@gmail.com',
+    lineId: '@308aoxno',
+    workingHours: 'จันทร์-เสาร์ 7:00-17:00 น.',
   },
 }) => {
   const [isLoading, setIsLoading] = useState(false)

@@ -7,6 +7,7 @@ export async function POST(request: NextRequest) {
     const payload = await getPayload({ config: configPromise })
     
     const body = await request.json()
+    console.log('Received quote request:', { ...body, attachments: body.attachments?.length || 0 })
     
     // Extract form data
     const {
@@ -20,8 +21,18 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!customerName || !email || !phone || !productList) {
+      console.log('Validation failed - missing required fields')
       return NextResponse.json(
         { error: 'กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน' },
+        { status: 400 }
+      )
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: 'กรุณากรอกอีเมลที่ถูกต้อง' },
         { status: 400 }
       )
     }
@@ -30,11 +41,11 @@ export async function POST(request: NextRequest) {
     const quoteRequest = await payload.create({
       collection: 'quote-requests',
       data: {
-        customerName,
-        email,
-        phone,
-        productList,
-        additionalNotes,
+        customerName: customerName.trim(),
+        email: email.trim().toLowerCase(),
+        phone: phone.trim(),
+        productList: productList.trim(),
+        additionalNotes: additionalNotes?.trim() || '',
         attachments,
         status: 'new',
         source: 'website',
@@ -42,10 +53,12 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    console.log('Quote request created successfully:', quoteRequest.id)
+
     // Success response
     return NextResponse.json({
       success: true,
-      message: 'บันทึกคำขอใบเสนอราคาเรียบร้อยแล้ว',
+      message: 'บันทึกคำขอใบเสนอราคาเรียบร้อยแล้ว ทีมงานจะติดต่อกลับภายใน 24 ชั่วโมง',
       id: quoteRequest.id,
     })
 
