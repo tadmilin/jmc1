@@ -112,7 +112,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
       {/* Back Button */}
       <div className="mb-6">
         <Link href="/products">
@@ -261,9 +261,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                             ฿{variant.variantSalePrice.toLocaleString()}
                           </span>
                           <span className="text-gray-500 line-through text-xs">
-                            ฿{variant.variantPrice.toLocaleString()}
+                        ฿{variant.variantPrice.toLocaleString()}
                           </span>
-                        </div>
+                      </div>
                       ) : (
                         <span className="text-gray-700">
                           ฿{variant.variantPrice.toLocaleString()}
@@ -360,7 +360,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             </div>
           )}
         </div>
-      </div>
+        </div>
       </div>
     </div>
   )

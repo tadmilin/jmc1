@@ -40,8 +40,8 @@ export const ProductCard: React.FC<{
   const getPriceInfo = () => {
     if (!variants || variants.length === 0) {
       // No variants - use base price
-      const isOnSale = salePrice && salePrice < price
-      const discountPercent = isOnSale ? Math.round(((price - salePrice) / price) * 100) : 0
+  const isOnSale = salePrice && salePrice < price
+  const discountPercent = isOnSale ? Math.round(((price - salePrice) / price) * 100) : 0
       return {
         displayPrice: isOnSale ? salePrice : price,
         originalPrice: isOnSale ? price : null,
@@ -123,7 +123,7 @@ export const ProductCard: React.FC<{
   return (
     <article
       className={cn(
-        `group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer ${
+        `group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer max-w-none sm:max-w-xs mx-auto ${
           isDarkTheme
             ? 'bg-gray-800 border border-gray-700 hover:border-gray-600'
             : 'bg-white border border-gray-200 hover:border-blue-300'
@@ -151,7 +151,7 @@ export const ProductCard: React.FC<{
       )}
 
       {/* Image Section */}
-      <div className="relative w-full aspect-square overflow-hidden">
+      <div className="relative w-full aspect-[4/3] sm:aspect-square overflow-hidden">
         {!imageResource && (
           <div
             className={`w-full h-full flex items-center justify-center ${
@@ -197,7 +197,7 @@ export const ProductCard: React.FC<{
       </div>
 
       {/* Content Section */}
-      <div className="p-3 sm:p-4 lg:p-6">
+      <div className="p-2 sm:p-3 lg:p-6">
         {/* Categories - Hide on mobile to save space */}
         {categories && categories.length > 0 && (
           <div className="mb-2 hidden sm:block">
@@ -264,7 +264,7 @@ export const ProductCard: React.FC<{
               </div>
             ) : priceInfo.originalPrice ? (
               // Show sale price
-              <div className="flex items-center gap-1 sm:gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
                 <span
                   className={`text-base sm:text-lg lg:text-xl font-bold ${isDarkTheme ? 'text-red-400' : 'text-red-600'}`}
                 >
@@ -294,7 +294,7 @@ export const ProductCard: React.FC<{
           {/* Stock Info - Smaller on mobile */}
           {!variants || variants.length === 0 ? (
             stock !== undefined && stock !== null && stock > 0 && stock <= 5 && (
-              <span className="text-xs text-orange-500 font-medium hidden sm:inline">เหลือ {stock}</span>
+            <span className="text-xs text-orange-500 font-medium hidden sm:inline">เหลือ {stock}</span>
             )
           ) : (
             <span className="text-xs text-blue-600 font-medium hidden sm:inline">

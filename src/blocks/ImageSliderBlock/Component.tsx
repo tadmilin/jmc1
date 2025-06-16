@@ -226,14 +226,30 @@ export const ImageSliderBlock: React.FC<{
     
     @media (max-width: 640px) {
       .brand-slider-title {
-        font-size: 2rem;
+        font-size: 1.75rem;
       }
       .brand-slide {
-        height: 150px;
+        height: 180px;
+      }
+      .slide-image-effect {
+        width: 80%;
+        height: 60%;
+        object-fit: contain;
+        object-position: center;
+        margin: auto;
+      }
+      .slide-inner-content {
+        padding: 1.5rem;
+        justify-content: center;
+        align-items: center;
       }
       .slide-title-overlay {
         font-size: 0.875rem;
         padding: 0.75rem;
+        background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+      }
+      .brand-swiper-container {
+        padding: 0 1rem;
       }
     }
   `
@@ -250,7 +266,7 @@ export const ImageSliderBlock: React.FC<{
         className="brand-swiper-container"
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={20}
-        slidesPerView={1.9}
+        slidesPerView={2}
         centeredSlides={false}
         navigation={showNavigation}
         pagination={showPagination ? { 

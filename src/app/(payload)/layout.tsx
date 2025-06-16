@@ -16,11 +16,11 @@ type Args = {
 const serverFunction: ServerFunctionClient = async function (args) {
   'use server'
   try {
-    return handleServerFunctions({
-      ...args,
-      config,
-      importMap,
-    })
+  return handleServerFunctions({
+    ...args,
+    config,
+    importMap,
+  })
   } catch (error) {
     console.error('Payload server function error:', error)
     throw error
@@ -30,10 +30,10 @@ const serverFunction: ServerFunctionClient = async function (args) {
 const Layout = ({ children }: Args) => {
   try {
     return (
-      <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}>
-        {children}
-      </RootLayout>
-    )
+  <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}>
+    {children}
+  </RootLayout>
+)
   } catch (error) {
     console.error('Payload layout error:', error)
     return (

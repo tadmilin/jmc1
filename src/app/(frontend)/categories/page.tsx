@@ -52,11 +52,11 @@ export default function CategoriesPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-6 lg:py-8">
-        {/* Header */}
-        <div className="mb-6 lg:mb-8">
+    <div className="container mx-auto px-4 py-6 lg:py-8">
+      {/* Header */}
+      <div className="mb-6 lg:mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold mb-3 lg:mb-4 text-gray-900">หมวดหมู่สินค้า</h1>
-          <p className="text-gray-600 text-sm sm:text-base">
+        <p className="text-gray-600 text-sm sm:text-base">
           {filteredCategories.length > 0 
             ? `พบหมวดหมู่ ${filteredCategories.length} หมวดหมู่` 
             : 'ไม่พบหมวดหมู่'
