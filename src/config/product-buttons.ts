@@ -2,9 +2,9 @@
 export const PRODUCT_BUTTON_CONFIG = {
   // Default fallback URLs
   defaults: {
-    quoteUrl: '/quote-request',
-    lineUrl: 'https://line.me/R/ti/p/@jmc-company',
-    phoneNumber: '02-123-4567',
+    quoteUrl: '/quotation',
+    lineUrl: 'https://line.me/R/ti/p/@308aoxno',
+    phoneNumber: '02-434-8319',
   },
   
   // Button labels
