@@ -328,6 +328,112 @@ export const Products: CollectionConfig = {
         }
       },
     },
+    {
+      type: 'collapsible',
+      label: 'ปุ่มติดต่อ',
+      admin: {
+        initCollapsed: true,
+        description: 'จัดการปุ่มต่างๆ ในหน้ารายละเอียดสินค้า',
+      },
+      fields: [
+        {
+          name: 'addLineButton',
+          type: 'group',
+          label: 'ปุ่ม Add LINE',
+          fields: [
+            {
+              name: 'enabled',
+              type: 'checkbox',
+              label: 'เปิดใช้งาน',
+              defaultValue: true,
+            },
+            {
+              name: 'label',
+              type: 'text',
+              label: 'ข้อความบนปุ่ม',
+              defaultValue: 'Add LINE',
+              admin: {
+                condition: (data, siblingData) => siblingData?.enabled,
+              },
+            },
+            {
+              name: 'lineUrl',
+              type: 'text',
+              label: 'LINE URL',
+              defaultValue: 'https://line.me/R/ti/p/@jmc-company',
+              admin: {
+                condition: (data, siblingData) => siblingData?.enabled,
+                description: 'ลิงก์ LINE Official Account เช่น https://line.me/R/ti/p/@yourlineID',
+              },
+            },
+          ],
+        },
+        {
+          name: 'callButton',
+          type: 'group',
+          label: 'ปุ่มโทร',
+          fields: [
+            {
+              name: 'enabled',
+              type: 'checkbox',
+              label: 'เปิดใช้งาน',
+              defaultValue: true,
+            },
+            {
+              name: 'label',
+              type: 'text',
+              label: 'ข้อความบนปุ่ม',
+              defaultValue: 'โทรหาเรา',
+              admin: {
+                condition: (data, siblingData) => siblingData?.enabled,
+              },
+            },
+            {
+              name: 'phoneNumber',
+              type: 'text',
+              label: 'เบอร์โทรศัพท์',
+              defaultValue: '02-123-4567',
+              admin: {
+                condition: (data, siblingData) => siblingData?.enabled,
+                description: 'เบอร์โทรศัพท์ เช่น 02-123-4567 หรือ 081-234-5678',
+              },
+            },
+          ],
+        },
+        {
+          name: 'quoteButton',
+          type: 'group',
+          label: 'ปุ่มขอเสนอราคา',
+          fields: [
+            {
+              name: 'enabled',
+              type: 'checkbox',
+              label: 'เปิดใช้งาน',
+              defaultValue: true,
+            },
+            {
+              name: 'label',
+              type: 'text',
+              label: 'ข้อความบนปุ่ม',
+              defaultValue: 'ขอเสนอราคา',
+              admin: {
+                condition: (data, siblingData) => siblingData?.enabled,
+              },
+            },
+            {
+              name: 'quoteUrl',
+              type: 'text',
+              label: 'ลิงก์หน้าขอเสนอราคา',
+              defaultValue: '/quote-request',
+              admin: {
+                condition: (data, siblingData) => siblingData?.enabled,
+                description: 'เส้นทางไปหน้าขอเสนอราคา เช่น /quote-request',
+              },
+            },
+          ],
+        },
+      ],
+    },
     ...slugField(),
     {
       name: 'publishedAt',

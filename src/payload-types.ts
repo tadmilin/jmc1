@@ -1110,6 +1110,30 @@ export interface Product {
       }[]
     | null;
   relatedProducts?: (string | Product)[] | null;
+  addLineButton?: {
+    enabled?: boolean | null;
+    label?: string | null;
+    /**
+     * ลิงก์ LINE Official Account เช่น https://line.me/R/ti/p/@yourlineID
+     */
+    lineUrl?: string | null;
+  };
+  callButton?: {
+    enabled?: boolean | null;
+    label?: string | null;
+    /**
+     * เบอร์โทรศัพท์ เช่น 02-123-4567 หรือ 081-234-5678
+     */
+    phoneNumber?: string | null;
+  };
+  quoteButton?: {
+    enabled?: boolean | null;
+    label?: string | null;
+    /**
+     * เส้นทางไปหน้าขอเสนอราคา เช่น /quote-request
+     */
+    quoteUrl?: string | null;
+  };
   slug?: string | null;
   slugLock?: boolean | null;
   publishedAt?: string | null;
@@ -1909,6 +1933,27 @@ export interface ProductsSelect<T extends boolean = true> {
         id?: T;
       };
   relatedProducts?: T;
+  addLineButton?:
+    | T
+    | {
+        enabled?: T;
+        label?: T;
+        lineUrl?: T;
+      };
+  callButton?:
+    | T
+    | {
+        enabled?: T;
+        label?: T;
+        phoneNumber?: T;
+      };
+  quoteButton?:
+    | T
+    | {
+        enabled?: T;
+        label?: T;
+        quoteUrl?: T;
+      };
   slug?: T;
   slugLock?: T;
   publishedAt?: T;
