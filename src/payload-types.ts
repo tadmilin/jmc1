@@ -1151,6 +1151,64 @@ export interface Product {
       appearance?: ('default' | 'outline') | null;
     };
   };
+  meta?: {
+    /**
+     * หัวข้อที่แสดงใน Google Search (แนะนำ 50-60 ตัวอักษร)
+     */
+    title?: string | null;
+    /**
+     * คำอธิบายที่แสดงใน Google Search (แนะนำ 150-160 ตัวอักษร)
+     */
+    description?: string | null;
+    /**
+     * คำสำคัญสำหรับการค้นหา (คั่นด้วยเครื่องหมายจุลภาค)
+     */
+    keywords?: string | null;
+  };
+  /**
+   * ข้อมูลที่แสดงเมื่อแชร์ลิงก์ใน Facebook, LINE, หรือโซเชียลอื่นๆ
+   */
+  openGraph?: {
+    /**
+     * หัวข้อที่แสดงเมื่อแชร์ (จะใช้ SEO Title หากไม่ได้กรอก)
+     */
+    title?: string | null;
+    /**
+     * คำอธิบายที่แสดงเมื่อแชร์ (จะใช้ Meta Description หากไม่ได้กรอก)
+     */
+    description?: string | null;
+    /**
+     * รูปภาพที่แสดงเมื่อแชร์ (แนะนำ 1200x630px) จะใช้รูปแรกของสินค้าหากไม่ได้เลือก
+     */
+    image?: (string | null) | Media;
+  };
+  /**
+   * ข้อมูลโครงสร้างสำหรับ Google Rich Snippets
+   */
+  structuredData?: {
+    /**
+     * ชื่อยี่ห้อหรือผู้ผลิตสินค้า
+     */
+    brand?: string | null;
+    /**
+     * รุ่นหรือโมเดลของสินค้า
+     */
+    model?: string | null;
+    /**
+     * รหัส GTIN, UPC, หรือ EAN ของสินค้า (ถ้ามี)
+     */
+    gtin?: string | null;
+    /**
+     * รหัสชิ้นส่วนจากผู้ผลิต
+     */
+    mpn?: string | null;
+    condition?: ('new' | 'used' | 'refurbished' | 'damaged') | null;
+    availability?: ('in_stock' | 'out_of_stock' | 'preorder' | 'discontinued') | null;
+    /**
+     * วันที่ราคานี้จะหมดอายุ (สำหรับ Google)
+     */
+    priceValidUntil?: string | null;
+  };
   slug?: string | null;
   slugLock?: boolean | null;
   publishedAt?: string | null;
@@ -1978,6 +2036,31 @@ export interface ProductsSelect<T extends boolean = true> {
               url?: T;
               appearance?: T;
             };
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        keywords?: T;
+      };
+  openGraph?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  structuredData?:
+    | T
+    | {
+        brand?: T;
+        model?: T;
+        gtin?: T;
+        mpn?: T;
+        condition?: T;
+        availability?: T;
+        priceValidUntil?: T;
       };
   slug?: T;
   slugLock?: T;

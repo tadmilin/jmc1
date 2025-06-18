@@ -4,6 +4,7 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { cache } from 'react'
 import ProductDetailClient from './page.client'
+import { generateProductSEO } from '@/utils/seo'
 
 type Args = {
   params: Promise<{
@@ -30,29 +31,53 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   if (!product) {
     return {
       title: 'ไม่พบสินค้า',
+      description: 'ไม่พบสินค้าที่คุณต้องการ',
     }
   }
 
-  const description = product.shortDescription || (typeof product.description === 'string' ? product.description : product.title)
+  // Generate SEO metadata using utility function
+  const seoData = generateProductSEO(product, process.env.NEXT_PUBLIC_SERVER_URL || '')
   
-  return {
-    title: `${product.title} | JMC`,
-    description: description,
+  const metadata: Metadata = {
+    title: `${seoData.title} | JMC`,
+    description: seoData.description,
+    keywords: seoData.keywords,
     openGraph: {
-      title: product.title,
-      description: description,
-      images: product.images?.[0]?.image ? [
-        {
-          url: typeof product.images[0].image === 'object' 
-            ? product.images[0].image.url || ''
-            : '',
-          width: 800,
-          height: 600,
-          alt: product.title,
-        }
-      ] : [],
+      title: seoData.openGraph.title,
+      description: seoData.openGraph.description,
+      type: 'website',
+      url: seoData.openGraph.url,
+      siteName: 'JMC Company',
+      locale: 'th_TH',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: seoData.openGraph.title,
+      description: seoData.openGraph.description,
     },
   }
+
+  // Add Open Graph and Twitter images if available
+  if (seoData.openGraph.image) {
+    metadata.openGraph!.images = [
+      {
+        url: seoData.openGraph.image,
+        width: 1200,
+        height: 630,
+        alt: seoData.title,
+      }
+    ]
+    metadata.twitter!.images = [seoData.openGraph.image]
+  }
+
+  // Add structured data
+  if (seoData.structuredData) {
+    metadata.other = {
+      'script:ld+json': JSON.stringify(seoData.structuredData)
+    }
+  }
+
+  return metadata
 }
 
 const queryProductBySlug = cache(async ({ slug }: { slug: string }) => {

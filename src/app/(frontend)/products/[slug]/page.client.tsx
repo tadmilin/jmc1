@@ -16,6 +16,8 @@ import {
   createProductParams,
   type LinkData 
 } from '@/utils/link-navigation'
+import { generateProductSEO } from '@/utils/seo'
+import StructuredData from '@/components/SEO/StructuredData'
 
 // Type for product variant
 type ProductVariant = {
@@ -51,6 +53,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const router = useRouter()
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null)
+  
+  // Generate SEO data for structured data
+  const seoData = generateProductSEO(product)
   
   // Reset image index when variant changes
   useEffect(() => {
@@ -148,6 +153,12 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   }
 
   return (
+    <>
+      {/* Structured Data for SEO */}
+      {seoData.structuredData && (
+        <StructuredData data={seoData.structuredData} />
+      )}
+      
     <div className="min-h-screen bg-white">
     <div className="container mx-auto px-4 py-8">
       {/* Back Button */}
@@ -422,5 +433,6 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         </div>
       </div>
     </div>
+    </>
   )
 } 
