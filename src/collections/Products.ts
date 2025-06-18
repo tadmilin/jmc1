@@ -361,7 +361,7 @@ export const Products: CollectionConfig = {
               name: 'lineUrl',
               type: 'text',
               label: 'LINE URL',
-              defaultValue: 'https://line.me/R/ti/p/@jmc-company',
+              defaultValue: 'https://line.me/R/ti/p/@308aoxno',
               admin: {
                 condition: (data, siblingData) => siblingData?.enabled,
                 description: 'ลิงก์ LINE Official Account เช่น https://line.me/R/ti/p/@yourlineID',
@@ -393,10 +393,10 @@ export const Products: CollectionConfig = {
               name: 'phoneNumber',
               type: 'text',
               label: 'เบอร์โทรศัพท์',
-              defaultValue: '02-123-4567',
+              defaultValue: '02-434-8319',
               admin: {
                 condition: (data, siblingData) => siblingData?.enabled,
-                description: 'เบอร์โทรศัพท์ เช่น 02-123-4567 หรือ 081-234-5678',
+                description: 'เบอร์โทรศัพท์ เช่น 02-434-8319 หรือ 081-234-5678',
               },
             },
           ],

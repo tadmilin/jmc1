@@ -1122,7 +1122,7 @@ export interface Product {
     enabled?: boolean | null;
     label?: string | null;
     /**
-     * เบอร์โทรศัพท์ เช่น 02-123-4567 หรือ 081-234-5678
+     * เบอร์โทรศัพท์ เช่น 02-434-8319 หรือ 081-234-5678
      */
     phoneNumber?: string | null;
   };
