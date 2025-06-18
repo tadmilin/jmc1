@@ -3,6 +3,7 @@
 import { PaintBucket, Palette, Lightbulb, Target } from 'lucide-react'
 import { PAINT_CONFIG } from '@/config/paint-calculator'
 import type { CalculationResult as CalculationResultType } from '@/types/calculator'
+import { ContainerRecommendation } from './ContainerRecommendation'
 
 interface CalculationResultProps {
   result: CalculationResultType
@@ -53,6 +54,20 @@ export function CalculationResult({ result }: CalculationResultProps) {
         </div>
       </div>
 
+            {/* แนะนำถังสี */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <ContainerRecommendation
+          title="แนะนำถังสีรองพื้น"
+          recommendations={paintResult.primerContainers}
+          totalGallons={paintResult.primerAmount}
+        />
+        <ContainerRecommendation
+          title="แนะนำถังสีจริง"
+          recommendations={paintResult.topcoatContainers}
+          totalGallons={paintResult.topcoatAmount}
+        />
+      </div>
+
       {/* รายละเอียดการแบ่งพื้นที่ */}
       {breakdown && (
         <div className="bg-gray-50 p-4 rounded-lg">
@@ -62,10 +77,10 @@ export function CalculationResult({ result }: CalculationResultProps) {
             <div className="space-y-2">
               <h5 className="text-sm font-medium text-black">พื้นที่ผนัง:</h5>
               {breakdown.walls.map((wall, index) => (
-                                  <div key={index} className="flex justify-between text-sm text-black">
-                    <span>{wall.name}</span>
-                    <span>{wall.area.toFixed(2)} ตร.ม.</span>
-                  </div>
+                <div key={index} className="flex justify-between text-sm text-black">
+                  <span>{wall.name}</span>
+                  <span>{wall.area.toFixed(2)} ตร.ม.</span>
+                </div>
               ))}
             </div>
           )}
@@ -73,10 +88,10 @@ export function CalculationResult({ result }: CalculationResultProps) {
           {breakdown.ceiling && (
             <div className="space-y-2">
               <h5 className="text-sm font-medium text-black">พื้นที่เพดาน:</h5>
-                              <div className="flex justify-between text-sm text-black">
-                  <span>เพดาน</span>
-                  <span>{breakdown.ceiling.area.toFixed(2)} ตร.ม.</span>
-                </div>
+              <div className="flex justify-between text-sm text-black">
+                <span>เพดาน</span>
+                <span>{breakdown.ceiling.area.toFixed(2)} ตร.ม.</span>
+              </div>
             </div>
           )}
         </div>

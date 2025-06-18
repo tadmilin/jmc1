@@ -1,5 +1,12 @@
-import { PAINT_CONFIG } from '@/config/paint-calculator'
-import type { CalculationInput, CalculationResult, PaintResult, WallData } from '@/types/calculator'
+import { PAINT_CONFIG, PAINT_CONTAINERS } from '@/config/paint-calculator'
+import type { 
+  CalculationInput, 
+  CalculationResult, 
+  PaintResult, 
+  WallData, 
+  PaintContainer, 
+  ContainerRecommendation 
+} from '@/types/calculator'
 
 /**
  * คำนวณพื้นที่ของผนัง
@@ -9,16 +16,68 @@ export function calculateWallArea(width: number, height: number): number {
 }
 
 /**
+ * คำนวณการผสมผสานถังสีที่เหมาะสม
+ */
+export function calculateOptimalContainers(requiredGallons: number): ContainerRecommendation[] {
+  const containers = [...PAINT_CONTAINERS.sizes].sort((a, b) => b.size - a.size) // เรียงจากใหญ่ไปเล็ก
+  const recommendations: ContainerRecommendation[] = []
+  let remainingGallons = requiredGallons
+
+  for (const container of containers) {
+    if (remainingGallons >= container.size) {
+      const quantity = Math.floor(remainingGallons / container.size)
+      if (quantity > 0) {
+        recommendations.push({
+          container,
+          quantity,
+          totalGallons: quantity * container.size
+        })
+        remainingGallons -= quantity * container.size
+        remainingGallons = Number(remainingGallons.toFixed(2))
+      }
+    }
+  }
+
+  // หากยังเหลือ ให้เลือกถังที่เล็กที่สุดที่ครอบคลุมได้
+  if (remainingGallons > 0) {
+    const smallestSuitable = containers
+      .reverse() // เรียงจากเล็กไปใหญ่
+      .find(container => container.size >= remainingGallons)
+    
+    if (smallestSuitable) {
+      const existing = recommendations.find(r => r.container.size === smallestSuitable.size)
+      if (existing) {
+        existing.quantity += 1
+        existing.totalGallons += smallestSuitable.size
+      } else {
+        recommendations.push({
+          container: smallestSuitable,
+          quantity: 1,
+          totalGallons: smallestSuitable.size
+        })
+      }
+    }
+  }
+
+  return recommendations.sort((a, b) => b.container.size - a.container.size)
+}
+
+/**
  * คำนวณปริมาณสีที่ต้องใช้
  */
 export function calculatePaintAmount(totalArea: number): PaintResult {
   const primerAmount = Number((totalArea / PAINT_CONFIG.PRIMER_COVERAGE).toFixed(1))
   const topcoatAmount = Number((totalArea / PAINT_CONFIG.TOPCOAT_COVERAGE).toFixed(1))
   
+  const primerContainers = calculateOptimalContainers(primerAmount)
+  const topcoatContainers = calculateOptimalContainers(topcoatAmount)
+  
   return {
     totalArea,
     primerAmount,
-    topcoatAmount
+    topcoatAmount,
+    primerContainers,
+    topcoatContainers
   }
 }
 

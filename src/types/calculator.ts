@@ -17,10 +17,26 @@ export interface CalculationInput {
   }
 }
 
+export interface PaintContainer {
+  size: number
+  name: string
+  coverage: { min: number; max: number }
+  image: string
+  description: string
+}
+
+export interface ContainerRecommendation {
+  container: PaintContainer
+  quantity: number
+  totalGallons: number
+}
+
 export interface PaintResult {
   totalArea: number
   primerAmount: number  // เกลอน สีรองพื้น ทา 1 รอบ
   topcoatAmount: number // เกลอน สีจริง ทา 2 รอบ
+  primerContainers: ContainerRecommendation[]
+  topcoatContainers: ContainerRecommendation[]
 }
 
 export interface CalculationResult {
