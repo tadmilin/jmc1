@@ -53,27 +53,6 @@ export default function CalculatorPage() {
               คำนวณสีรองพื้นและสีจริงได้แม่นยำ ประหยัดเวลาและค่าใช้จ่าย
             </p>
 
-                         {/* Features */}
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-               <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl hover:scale-105 hover:bg-white/90 transition-all duration-300 cursor-pointer group">
-                 <Calculator className="w-8 h-8 text-blue-600 mx-auto mb-3 group-hover:scale-110 transition-transform duration-300" />
-                 <h3 className="font-semibold text-gray-800 mb-2">คำนวณจากพื้นที่</h3>
-                 <p className="text-sm text-gray-600">ใส่ค่าพื้นที่ทั้งหมดเพื่อคำนวณแบบง่าย</p>
-               </div>
-               
-               <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl hover:scale-105 hover:bg-white/90 transition-all duration-300 cursor-pointer group">
-                 <Home className="w-8 h-8 text-green-600 mx-auto mb-3 group-hover:scale-110 transition-transform duration-300" />
-                 <h3 className="font-semibold text-gray-800 mb-2">คำนวณทีละผนัง</h3>
-                 <p className="text-sm text-gray-600">คำนวณแยกแต่ละผนังเพื่อความแม่นยำ</p>
-               </div>
-               
-               <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl hover:scale-105 hover:bg-white/90 transition-all duration-300 cursor-pointer group">
-                 <Palette className="w-8 h-8 text-purple-600 mx-auto mb-3 group-hover:scale-110 transition-transform duration-300" />
-                 <h3 className="font-semibold text-gray-800 mb-2">ผลลัพธ์แม่นยำ</h3>
-                 <p className="text-sm text-gray-600">ได้ปริมาณสีรองพื้นและสีจริงที่ต้องใช้</p>
-               </div>
-             </div>
-
             {/* Scroll Down Indicator */}
             <div className="animate-bounce-enhanced">
               <div className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center animate-pulse-scale">
