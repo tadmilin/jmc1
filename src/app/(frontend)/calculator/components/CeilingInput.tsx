@@ -9,10 +9,10 @@ interface CeilingInputProps {
 export function CeilingInput({ width, height, onChange }: CeilingInputProps) {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium">ขนาดเพดาน</h3>
+      <h3 className="text-lg font-medium text-black">ขนาดเพดาน</h3>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-black mb-1">
             ความกว้าง (ม.)
           </label>
           <input
@@ -20,14 +20,14 @@ export function CeilingInput({ width, height, onChange }: CeilingInputProps) {
             value={width || ''}
             onChange={(e) => onChange({ width: Number(e.target.value), height })}
             placeholder="0.00"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
             min="0"
             step="0.01"
             suppressHydrationWarning
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-black mb-1">
             ความยาว (ม.)
           </label>
           <input
@@ -35,7 +35,7 @@ export function CeilingInput({ width, height, onChange }: CeilingInputProps) {
             value={height || ''}
             onChange={(e) => onChange({ width, height: Number(e.target.value) })}
             placeholder="0.00"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
             min="0"
             step="0.01"
             suppressHydrationWarning

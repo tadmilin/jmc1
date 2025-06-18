@@ -13,7 +13,7 @@ export function CalculationResult({ result }: CalculationResultProps) {
 
   return (
     <div className="space-y-6">
-      <h3 className="text-xl font-semibold text-center">ผลการคำนวณ</h3>
+      <h3 className="text-xl font-semibold text-center text-black">ผลการคำนวณ</h3>
       
       {/* ผลลัพธ์หลัก */}
       <div className="bg-gradient-to-r from-blue-50 to-green-50 p-6 rounded-lg border-2 border-blue-200">
@@ -56,27 +56,27 @@ export function CalculationResult({ result }: CalculationResultProps) {
       {/* รายละเอียดการแบ่งพื้นที่ */}
       {breakdown && (
         <div className="bg-gray-50 p-4 rounded-lg">
-          <h4 className="font-medium text-gray-800 mb-3">รายละเอียดการคำนวณ</h4>
+          <h4 className="font-medium text-black mb-3">รายละเอียดการคำนวณ</h4>
           
           {breakdown.walls && breakdown.walls.length > 0 && (
             <div className="space-y-2">
-              <h5 className="text-sm font-medium text-gray-700">พื้นที่ผนัง:</h5>
+              <h5 className="text-sm font-medium text-black">พื้นที่ผนัง:</h5>
               {breakdown.walls.map((wall, index) => (
-                <div key={index} className="flex justify-between text-sm">
-                  <span>{wall.name}</span>
-                  <span>{wall.area.toFixed(2)} ตร.ม.</span>
-                </div>
+                                  <div key={index} className="flex justify-between text-sm text-black">
+                    <span>{wall.name}</span>
+                    <span>{wall.area.toFixed(2)} ตร.ม.</span>
+                  </div>
               ))}
             </div>
           )}
           
           {breakdown.ceiling && (
             <div className="space-y-2">
-              <h5 className="text-sm font-medium text-gray-700">พื้นที่เพดาน:</h5>
-              <div className="flex justify-between text-sm">
-                <span>เพดาน</span>
-                <span>{breakdown.ceiling.area.toFixed(2)} ตร.ม.</span>
-              </div>
+              <h5 className="text-sm font-medium text-black">พื้นที่เพดาน:</h5>
+                              <div className="flex justify-between text-sm text-black">
+                  <span>เพดาน</span>
+                  <span>{breakdown.ceiling.area.toFixed(2)} ตร.ม.</span>
+                </div>
             </div>
           )}
         </div>

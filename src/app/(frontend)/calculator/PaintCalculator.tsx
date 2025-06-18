@@ -78,7 +78,7 @@ export function PaintCalculator() {
       {/* แบบฟอร์มใส่ข้อมูล + รูปประกอบ */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* ฟอร์มใส่ข้อมูล */}
-        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm text-black">
           {renderInputForm()}
         </div>
         
@@ -109,7 +109,7 @@ export function PaintCalculator() {
 
       {/* แสดงผลลัพธ์ */}
       {result && (
-        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm text-black">
           <CalculationResult result={result} />
         </div>
       )}

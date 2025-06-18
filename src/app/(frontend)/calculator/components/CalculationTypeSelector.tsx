@@ -18,7 +18,7 @@ const TYPE_ICONS = {
 export function CalculationTypeSelector({ selectedType, onTypeChange }: CalculationTypeSelectorProps) {
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold">เลือกประเภทการคำนวณ</h2>
+      <h2 className="text-xl font-semibold text-black">เลือกประเภทการคำนวณ</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {Object.values(CALCULATION_TYPES).map((type) => {
           const IconComponent = TYPE_ICONS[type.id as keyof typeof TYPE_ICONS]
@@ -29,7 +29,7 @@ export function CalculationTypeSelector({ selectedType, onTypeChange }: Calculat
               className={`p-6 rounded-lg border-2 text-left transition-all ${
                 selectedType === type.id
                   ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                  : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 text-black'
               }`}
               suppressHydrationWarning
             >
@@ -40,7 +40,7 @@ export function CalculationTypeSelector({ selectedType, onTypeChange }: Calculat
                 />
                 <h3 className="font-medium">{type.label}</h3>
               </div>
-              <p className="text-sm text-gray-600">{type.description}</p>
+              <p className={`text-sm ${selectedType === type.id ? 'text-blue-600' : 'text-gray-600'}`}>{type.description}</p>
             </button>
           )
         })}

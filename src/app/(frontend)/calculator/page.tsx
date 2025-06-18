@@ -85,9 +85,11 @@ export default function CalculatorPage() {
       </section>
 
       {/* Calculator Content */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
-          <PaintCalculator />
+      <div className="bg-white min-h-screen">
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-4xl mx-auto text-black">
+            <PaintCalculator />
+          </div>
         </div>
       </div>
     </>
