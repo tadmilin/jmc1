@@ -163,6 +163,10 @@ export interface Category {
    * กำหนดลำดับการแสดง (เลขน้อยแสดงก่อน)
    */
   sortOrder?: number | null;
+  /**
+   * ลำดับที่จะแสดงในหน้าเว็บ (เลขน้อยแสดงก่อน) - ใช้สำหรับจัดลำดับเฉพาะหน้าเว็บ
+   */
+  displayOrder?: number | null;
   isActive?: boolean | null;
   slug?: string | null;
   slugLock?: boolean | null;
@@ -1430,6 +1434,7 @@ export interface CategoriesSelect<T extends boolean = true> {
   description?: T;
   image?: T;
   sortOrder?: T;
+  displayOrder?: T;
   isActive?: T;
   slug?: T;
   slugLock?: T;

@@ -51,7 +51,7 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
       try {
         setIsLoadingCategories(true)
         const response = await fetch(
-          `/api/categories?limit=${categoriesLimit}&depth=0&sort=sortOrder`,
+          `/api/categories?limit=${categoriesLimit}&depth=0&sort=displayOrder`,
         )
 
         if (!response.ok) throw new Error('ไม่สามารถดึงข้อมูลหมวดหมู่ได้')

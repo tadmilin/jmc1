@@ -1,8 +1,38 @@
 import type { CollectionConfig } from 'payload'
+import { revalidatePath, revalidateTag } from 'next/cache'
 
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
 import { slugField } from '@/fields/slug'
+
+// Revalidation hook for categories
+const revalidateCategory = ({ doc, req: { context } }) => {
+  if (!context.disableRevalidate) {
+    // Revalidate the specific category page
+    const path = `/categories/${doc.slug}`
+    revalidatePath(path)
+    
+    // Revalidate the main categories page
+    revalidatePath('/categories')
+    
+    // Revalidate any other pages that might use categories
+    revalidateTag('categories')
+  }
+}
+
+const revalidateDeleteCategory = ({ doc, req: { context } }) => {
+  if (!context.disableRevalidate) {
+    // Revalidate the specific category page
+    const path = `/categories/${doc.slug}`
+    revalidatePath(path)
+    
+    // Revalidate the main categories page
+    revalidatePath('/categories')
+    
+    // Revalidate any other pages that might use categories
+    revalidateTag('categories')
+  }
+}
 
 export const Categories: CollectionConfig = {
   slug: 'categories',
@@ -16,6 +46,10 @@ export const Categories: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'sortOrder'],
     group: 'เนื้อหา',
+  },
+  hooks: {
+    afterChange: [revalidateCategory],
+    afterDelete: [revalidateDeleteCategory],
   },
   fields: [
     {
@@ -48,6 +82,16 @@ export const Categories: CollectionConfig = {
       },
     },
     {
+      name: 'displayOrder',
+      type: 'number',
+      label: 'ลำดับแสดงผลหน้าเว็บ',
+      defaultValue: 999,
+      admin: {
+        description: 'ลำดับที่จะแสดงในหน้าเว็บ (เลขน้อยแสดงก่อน) - ใช้สำหรับจัดลำดับเฉพาะหน้าเว็บ',
+        position: 'sidebar',
+      },
+    },
+    {
       name: 'isActive',
       type: 'checkbox',
       label: 'เปิดใช้งาน',
@@ -58,5 +102,5 @@ export const Categories: CollectionConfig = {
     },
     ...slugField(),
   ],
-  defaultSort: 'sortOrder',
+  defaultSort: 'displayOrder',
 }

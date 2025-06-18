@@ -18,12 +18,12 @@ export default function CategoriesPage() {
     const fetchCategories = async () => {
       try {
         setLoading(true)
-        const response = await fetch('/api/categories?limit=100&depth=1&sort=sortOrder')
-        if (response.ok) {
-          const data = await response.json()
-          setCategories(data.docs || [])
-          setFilteredCategories(data.docs || [])
-        }
+        const response = await fetch('/api/categories?limit=100&depth=1&sort=displayOrder')
+                  if (response.ok) {
+            const data = await response.json()
+            setCategories(data.docs || [])
+            setFilteredCategories(data.docs || [])
+          }
       } catch (error) {
         console.error('Error fetching categories:', error)
       } finally {

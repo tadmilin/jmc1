@@ -108,7 +108,7 @@ const HeroActionSlotsRenderer: React.FC<{
   const cardBorderColor = isDarkTheme ? 'border-gray-700' : 'border-gray-200'
 
   // Helper function สำหรับ navigation ที่เร็วขึ้น
-  const handleNavigation = (link: any) => {
+  const handleNavigation = (link: CustomLinkType) => {
     if (!link) return
 
     if (link.type === 'custom' && link.url) {
@@ -289,7 +289,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
       try {
         setIsLoadingCategories(true)
         const response = await fetch(
-          `/api/categories?limit=${categoriesLimit}&depth=0&sort=sortOrder`,
+          `/api/categories?limit=${categoriesLimit}&depth=0&sort=displayOrder`,
         )
 
         if (!response.ok) throw new Error('ไม่สามารถดึงข้อมูลหมวดหมู่ได้')

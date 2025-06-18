@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useCallback } from 'react'
-import { useDropzone } from 'react-dropzone'
+import { useDropzone, type FileRejection } from 'react-dropzone'
 import { Button } from '@/components/ui/button'
 import { X, Upload, File, Image } from 'lucide-react'
 import { cn } from '@/utilities/ui'
@@ -30,15 +30,15 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   const [error, setError] = useState<string>('')
 
   const onDrop = useCallback(
-    (acceptedFiles: File[], rejectedFiles: any[]) => {
+    (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
     setError('')
 
     // Check for rejected files
     if (rejectedFiles.length > 0) {
       const rejection = rejectedFiles[0]
-      if (rejection.errors[0]?.code === 'file-too-large') {
+      if (rejection?.errors[0]?.code === 'file-too-large') {
         setError(`ไฟล์มีขนาดใหญ่เกินไป (สูงสุด ${maxFileSize / 1024 / 1024}MB)`)
-      } else if (rejection.errors[0]?.code === 'file-invalid-type') {
+      } else if (rejection?.errors[0]?.code === 'file-invalid-type') {
         setError('ประเภทไฟล์ไม่ถูกต้อง')
       }
       return

@@ -69,7 +69,7 @@ const queryCategoryBySlug = cache(async ({ slug }: { slug: string }) => {
   })
 
   return result.docs?.[0] || null
-})
+}, ['categories'])
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })

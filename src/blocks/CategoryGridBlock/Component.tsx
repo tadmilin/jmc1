@@ -4,10 +4,11 @@ import React, { useEffect, useState } from 'react'
 import { Category } from '@/payload-types'
 import { Media as MediaComponent } from '@/components/Media'
 import RichText from '@/components/RichText'
+import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 
 interface CategoryGridBlockProps {
   title?: string
-  description?: any
+  description?: DefaultTypedEditorState
   categorySelection?: 'all' | 'select'
   categories?: (string | Category)[]
   limit?: number
@@ -18,7 +19,7 @@ interface CategoryGridBlockProps {
 // สร้าง interface สำหรับ state ให้ชัดเจน
 interface BlockConfigState {
   title: string
-  description: any
+  description: DefaultTypedEditorState | null
   categorySelection: 'all' | 'select'
   categories: (string | Category)[]
   limit: number
@@ -86,7 +87,7 @@ export const CategoryGridBlock: React.FC<{
         }
 
         // เพิ่ม sort parameter เพื่อเรียงลำดับตามที่กำหนดใน dashboard
-        url += '&sort=sortOrder'
+        url += '&sort=displayOrder'  
 
         // เพิ่ม limit parameter
         url += `&limit=${blockConfig.limit}`
