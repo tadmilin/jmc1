@@ -4,6 +4,7 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { authenticated } from '../access/authenticated'
 import { anyone } from '../access/anyone'
 import { slugField } from '@/fields/slug'
+import { link } from '@/fields/link'
 
 export const Products: CollectionConfig = {
   slug: 'products',
@@ -420,16 +421,17 @@ export const Products: CollectionConfig = {
                 condition: (data, siblingData) => siblingData?.enabled,
               },
             },
-            {
-              name: 'quoteUrl',
-              type: 'text',
-              label: 'ลิงก์หน้าขอเสนอราคา',
-              defaultValue: '/quote-request',
-              admin: {
-                condition: (data, siblingData) => siblingData?.enabled,
-                description: 'เส้นทางไปหน้าขอเสนอราคา เช่น /quote-request',
+            link({
+              disableLabel: true,
+              overrides: {
+                name: 'quoteLink',
+                label: 'ลิงก์หน้าขอเสนอราคา',
+                admin: {
+                  condition: (data, siblingData) => siblingData?.enabled,
+                  description: 'เลือกหน้าหรือใส่ลิงก์สำหรับหน้าขอเสนอราคา',
+                },
               },
-            },
+            }),
           ],
         },
       ],

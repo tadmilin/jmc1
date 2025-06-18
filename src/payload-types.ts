@@ -1130,9 +1130,26 @@ export interface Product {
     enabled?: boolean | null;
     label?: string | null;
     /**
-     * เส้นทางไปหน้าขอเสนอราคา เช่น /quote-request
+     * เลือกหน้าหรือใส่ลิงก์สำหรับหน้าขอเสนอราคา
      */
-    quoteUrl?: string | null;
+    quoteLink?: {
+      type?: ('reference' | 'custom') | null;
+      newTab?: boolean | null;
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: string | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: string | Post;
+          } | null);
+      url?: string | null;
+      /**
+       * Choose how the link should be rendered.
+       */
+      appearance?: ('default' | 'outline') | null;
+    };
   };
   slug?: string | null;
   slugLock?: boolean | null;
@@ -1952,7 +1969,15 @@ export interface ProductsSelect<T extends boolean = true> {
     | {
         enabled?: T;
         label?: T;
-        quoteUrl?: T;
+        quoteLink?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              appearance?: T;
+            };
       };
   slug?: T;
   slugLock?: T;

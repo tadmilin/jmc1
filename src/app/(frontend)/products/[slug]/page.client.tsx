@@ -7,6 +7,15 @@ import { Separator } from '@/components/ui/separator'
 import { ArrowLeft, Share2 } from 'lucide-react'
 import type { Product, Media as MediaType } from '@/payload-types'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { PRODUCT_BUTTON_CONFIG } from '@/config/product-buttons'
+import { 
+  resolveLinkUrl, 
+  addQueryParams, 
+  openUrl, 
+  createProductParams,
+  type LinkData 
+} from '@/utils/link-navigation'
 
 // Type for product variant
 type ProductVariant = {
@@ -32,11 +41,14 @@ type ProductImage = {
   id?: string | null
 }
 
+
+
 interface ProductDetailClientProps {
   product: Product
 }
 
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
+  const router = useRouter()
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null)
   
@@ -61,6 +73,20 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       }
     }
   }, [product])
+
+  // Simplified navigation handler using utility functions
+  const navigateToLink = (linkData: LinkData | null | undefined, addParams: boolean = false) => {
+    let targetUrl = resolveLinkUrl(linkData, PRODUCT_BUTTON_CONFIG.defaults.quoteUrl)
+    
+    // Add product parameters if requested
+    if (addParams) {
+      const params = createProductParams(product, selectedVariant?.variantPrice)
+      targetUrl = addQueryParams(targetUrl, params)
+    }
+    
+    // Navigate using appropriate method
+    openUrl(targetUrl, linkData?.newTab || false, router)
+  }
 
   const {
     title,
@@ -320,13 +346,16 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   <Button
                     variant="outline"
                     size="lg"
-                    className="gap-2 bg-green-50 border-green-500 text-green-700 hover:bg-green-100"
-                    onClick={() => window.open(product.addLineButton?.lineUrl || 'https://line.me/R/ti/p/@jmc-company', '_blank')}
+                    className={PRODUCT_BUTTON_CONFIG.buttonStyles.line}
+                    onClick={() => window.open(
+                      product.addLineButton?.lineUrl || PRODUCT_BUTTON_CONFIG.defaults.lineUrl, 
+                      '_blank'
+                    )}
                   >
                     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.629 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
                     </svg>
-                    {product.addLineButton?.label || 'Add LINE'}
+                    {product.addLineButton?.label || PRODUCT_BUTTON_CONFIG.labels.addLine}
                   </Button>
                 )}
                 
@@ -335,13 +364,16 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   <Button
                     variant="outline"
                     size="lg"
-                    className="gap-2 bg-blue-50 border-blue-500 text-blue-700 hover:bg-blue-100"
-                    onClick={() => window.open(`tel:${product.callButton?.phoneNumber || '02-123-4567'}`, '_self')}
+                    className={PRODUCT_BUTTON_CONFIG.buttonStyles.call}
+                    onClick={() => window.open(
+                      `tel:${product.callButton?.phoneNumber || PRODUCT_BUTTON_CONFIG.defaults.phoneNumber}`, 
+                      '_self'
+                    )}
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
-                    {product.callButton?.label || 'โทรหาเรา'}
+                    {product.callButton?.label || PRODUCT_BUTTON_CONFIG.labels.call}
                   </Button>
                 )}
                 
@@ -350,29 +382,26 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   <Button
                     variant="outline"
                     size="lg"
-                    className="gap-2 bg-orange-50 border-orange-500 text-orange-700 hover:bg-orange-100"
-                    onClick={() => {
-                      const quoteUrl = product.quoteButton?.quoteUrl || '/quote-request'
-                      const params = new URLSearchParams({
-                        productId: product.id,
-                        productName: product.title,
-                        productPrice: (selectedVariant?.variantPrice || product.price).toString()
-                      })
-                      window.location.href = `${quoteUrl}?${params.toString()}`
-                    }}
+                    className={PRODUCT_BUTTON_CONFIG.buttonStyles.quote}
+                    onClick={() => navigateToLink(product.quoteButton?.quoteLink, true)}
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    {product.quoteButton?.label || 'ขอเสนอราคา'}
+                    {product.quoteButton?.label || PRODUCT_BUTTON_CONFIG.labels.quote}
                   </Button>
                 )}
               </div>
               
               {/* Share Button */}
-              <Button variant="outline" size="lg" onClick={handleShare} className="w-full gap-2">
+              <Button 
+                variant="outline" 
+                size="lg" 
+                onClick={handleShare} 
+                className={PRODUCT_BUTTON_CONFIG.buttonStyles.share}
+              >
                 <Share2 className="w-5 h-5" />
-                แชร์สินค้า
+                {PRODUCT_BUTTON_CONFIG.labels.share}
               </Button>
             </div>
           )}
