@@ -4,9 +4,33 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Media } from '@/components/Media'
 import { Separator } from '@/components/ui/separator'
-import { ArrowLeft, ShoppingCart, Share2, Minus, Plus } from 'lucide-react'
+import { ArrowLeft, Share2 } from 'lucide-react'
 import type { Product, Media as MediaType } from '@/payload-types'
 import Link from 'next/link'
+
+// Type for product variant
+type ProductVariant = {
+  variantName: string
+  variantPrice: number
+  variantSalePrice?: number | null
+  variantStock?: number | null
+  variantSku?: string | null
+  variantImages?: {
+    image: string | MediaType
+    alt?: string | null
+    id?: string | null
+  }[] | null
+  variantStatus?: ('active' | 'inactive' | 'out_of_stock') | null
+  isDefault?: boolean | null
+  id?: string | null
+}
+
+// Type for product image
+type ProductImage = {
+  image: string | MediaType
+  alt?: string | null
+  id?: string | null
+}
 
 interface ProductDetailClientProps {
   product: Product
@@ -14,13 +38,13 @@ interface ProductDetailClientProps {
 
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
-  const [selectedVariant, setSelectedVariant] = useState<any>(null)
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null)
   
   // Reset image index when variant changes
   useEffect(() => {
     setSelectedImageIndex(0)
   }, [selectedVariant])
-  const [quantity, setQuantity] = useState(1)
+
   const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
@@ -32,7 +56,9 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
       const defaultVariant = activeVariants.find(v => v.isDefault) || 
                             activeVariants.sort((a, b) => (a.variantPrice || 0) - (b.variantPrice || 0))[0] ||
                             product.variants[0]
-      setSelectedVariant(defaultVariant)
+      if (defaultVariant) {
+        setSelectedVariant(defaultVariant)
+      }
     }
   }, [product])
 
@@ -61,7 +87,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     ? selectedVariant.variantImages 
     : images
 
-  const isOnSale = salePrice && salePrice < price
+
   const discountPercent = isCurrentOnSale ? Math.round(((currentPrice - currentSalePrice) / currentPrice) * 100) : 0
   const isOutOfStock = selectedVariant 
     ? (selectedVariant.variantStatus === 'out_of_stock' || selectedVariant.variantStock === 0)
@@ -70,22 +96,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     ? (selectedVariant.variantStatus === 'inactive')
     : (status === 'inactive' || status === 'discontinued')
 
-  const handleQuantityChange = (change: number) => {
-    const newQuantity = quantity + change
-    if (newQuantity >= 1 && newQuantity <= (currentStock || 999)) {
-      setQuantity(newQuantity)
-    }
-  }
 
-  const handleAddToCart = () => {
-    // TODO: Implement add to cart functionality
-    console.log('Add to cart:', {
-      product: product.id,
-      variant: selectedVariant?.id,
-      quantity,
-    })
-    alert('เพิ่มสินค้าลงตะกร้าแล้ว!')
-  }
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -160,7 +171,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           {/* Thumbnail Images */}
           {currentImages && currentImages.length > 1 && (
             <div className="flex gap-2 overflow-x-auto">
-              {currentImages.map((imageItem, index) => (
+              {currentImages.map((imageItem: ProductImage, index: number) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImageIndex(index)}
@@ -295,112 +306,74 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               <Badge variant="secondary">ไม่พร้อมขาย</Badge>
             ) : (
               <Badge variant="outline" className="text-green-600 border-green-600">
-                มีสินค้า {currentStock > 0 ? `${currentStock} ชิ้น` : ''}
+                มีสินค้า {currentStock && currentStock > 0 ? `${currentStock} ชิ้น` : ''}
               </Badge>
             )}
           </div>
 
-          {/* Quantity & Add to Cart */}
+                    {/* Contact Buttons */}
           {!isOutOfStock && !isInactive && (
-            <div className="space-y-4">
-              {/* Quantity Selector */}
-              <div className="flex items-center gap-3">
-                <span className="font-medium text-gray-900">จำนวน:</span>
-                <div className="flex items-center border rounded-lg">
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                {/* Add LINE Button */}
+                {product.addLineButton?.enabled && (
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleQuantityChange(-1)}
-                    disabled={quantity <= 1}
+                    variant="outline"
+                    size="lg"
+                    className="gap-2 bg-green-50 border-green-500 text-green-700 hover:bg-green-100"
+                    onClick={() => window.open(product.addLineButton?.lineUrl || 'https://line.me/R/ti/p/@jmc-company', '_blank')}
                   >
-                    <Minus className="w-4 h-4" />
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.629 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+                    </svg>
+                    {product.addLineButton?.label || 'Add LINE'}
                   </Button>
-                  <span className="px-4 py-2 min-w-[60px] text-center">{quantity}</span>
+                )}
+                
+                {/* Call Button */}
+                {product.callButton?.enabled && (
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleQuantityChange(1)}
-                    disabled={quantity >= (currentStock || 999)}
+                    variant="outline"
+                    size="lg"
+                    className="gap-2 bg-blue-50 border-blue-500 text-blue-700 hover:bg-blue-100"
+                    onClick={() => window.open(`tel:${product.callButton?.phoneNumber || '02-123-4567'}`, '_self')}
                   >
-                    <Plus className="w-4 h-4" />
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                    {product.callButton?.label || 'โทรหาเรา'}
                   </Button>
-                </div>
+                )}
+                
+                {/* Quote Button */}
+                {product.quoteButton?.enabled && (
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="gap-2 bg-orange-50 border-orange-500 text-orange-700 hover:bg-orange-100"
+                    onClick={() => {
+                      const quoteUrl = product.quoteButton?.quoteUrl || '/quote-request'
+                      const params = new URLSearchParams({
+                        productId: product.id,
+                        productName: product.title,
+                        productPrice: (selectedVariant?.variantPrice || product.price).toString()
+                      })
+                      window.location.href = `${quoteUrl}?${params.toString()}`
+                    }}
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    {product.quoteButton?.label || 'ขอเสนอราคา'}
+                  </Button>
+                )}
               </div>
-
-                        {/* Action Buttons */}
-          <div className="space-y-3">
-            {/* Cart Button */}
-            <Button
-              onClick={handleAddToCart}
-              className="w-full gap-2"
-              size="lg"
-            >
-              <ShoppingCart className="w-5 h-5" />
-              เพิ่มลงตะกร้า
-            </Button>
-            
-            {/* Contact Buttons */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              {/* Add LINE Button */}
-              {product.addLineButton?.enabled && (
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="gap-2 bg-green-50 border-green-500 text-green-700 hover:bg-green-100"
-                  onClick={() => window.open(product.addLineButton?.lineUrl || 'https://line.me/R/ti/p/@jmc-company', '_blank')}
-                >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.629 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
-                  </svg>
-                  {product.addLineButton?.label || 'Add LINE'}
-                </Button>
-              )}
               
-              {/* Call Button */}
-              {product.callButton?.enabled && (
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="gap-2 bg-blue-50 border-blue-500 text-blue-700 hover:bg-blue-100"
-                  onClick={() => window.open(`tel:${product.callButton?.phoneNumber || '02-123-4567'}`, '_self')}
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                  </svg>
-                  {product.callButton?.label || 'โทรหาเรา'}
-                </Button>
-              )}
-              
-              {/* Quote Button */}
-              {product.quoteButton?.enabled && (
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="gap-2 bg-orange-50 border-orange-500 text-orange-700 hover:bg-orange-100"
-                  onClick={() => {
-                    const quoteUrl = product.quoteButton?.quoteUrl || '/quote-request'
-                    const params = new URLSearchParams({
-                      productId: product.id,
-                      productName: product.title,
-                      productPrice: (selectedVariant?.variantPrice || product.price).toString()
-                    })
-                    window.location.href = `${quoteUrl}?${params.toString()}`
-                  }}
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  {product.quoteButton?.label || 'ขอเสนอราคา'}
-                </Button>
-              )}
-            </div>
-            
-            {/* Share Button */}
-            <Button variant="outline" size="lg" onClick={handleShare} className="w-full gap-2">
-              <Share2 className="w-5 h-5" />
-              แชร์สินค้า
-            </Button>
-          </div>
+              {/* Share Button */}
+              <Button variant="outline" size="lg" onClick={handleShare} className="w-full gap-2">
+                <Share2 className="w-5 h-5" />
+                แชร์สินค้า
+              </Button>
             </div>
           )}
 
