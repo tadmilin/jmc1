@@ -12,9 +12,20 @@ export default function CalculatorPage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative min-h-[50vh] flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-green-50 overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
+      <section className="relative min-h-[50vh] flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url('/calculator/hero-background.webp')`,
+          }}
+        >
+          {/* Dark Overlay for better text readability */}
+          <div className="absolute inset-0 bg-black/40"></div>
+        </div>
+
+        {/* Fallback Background Pattern (if image doesn't load) */}
+        <div className="absolute inset-0 opacity-5 bg-gradient-to-br from-blue-50 via-white to-green-50">
           <div className="absolute inset-0" style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }} />
@@ -40,23 +51,23 @@ export default function CalculatorPage() {
         {/* Main Content */}
         <div className="container mx-auto px-4 py-16 text-center relative z-10">
           <div className="max-w-4xl mx-auto">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-100 rounded-full mb-6">
-              <Calculator className="w-10 h-10 text-blue-600" />
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full mb-6 border border-white/30">
+              <Calculator className="w-10 h-10 text-white" />
             </div>
             
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white drop-shadow-lg">
               คำนวณปริมาณสีทาบ้าน
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
               เครื่องมือคำนวณปริมาณสีอัจฉริยะ<br />
               คำนวณสีรองพื้นและสีจริงได้แม่นยำ ประหยัดเวลาและค่าใช้จ่าย
             </p>
 
             {/* Scroll Down Indicator */}
             <div className="animate-bounce-enhanced">
-              <div className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center animate-pulse-scale">
-                <div className="w-1 h-3 bg-gray-400 rounded-full mt-2"></div>
+              <div className="w-6 h-10 border-2 border-white/60 rounded-full flex justify-center animate-pulse-scale">
+                <div className="w-1 h-3 bg-white/60 rounded-full mt-2"></div>
               </div>
             </div>
           </div>
