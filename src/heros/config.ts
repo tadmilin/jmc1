@@ -282,7 +282,7 @@ export const hero: Field = {
       label: 'ช่องแอ็คชันฮีโร่ (Hero Action Slots)',
       type: 'array',
       minRows: 0,
-      maxRows: 6, // เปลี่ยนจาก 4 เป็น 6 ช่อง
+      maxRows: 8, // ขีดจำกัดสูงสุด - ระบบจะแสดงตามจำนวนจริงที่สร้างใน admin
       labels: {
         singular: 'ช่องแอ็คชัน',
         plural: 'ช่องแอ็คชัน',
@@ -317,7 +317,7 @@ export const hero: Field = {
       ],
       admin: {
         condition: (_, { type } = {}) => ['highImpact', 'mediumImpact', 'lowImpact'].includes(type), // ให้แสดงในทุก type ของ Hero ที่เหมาะสม
-        description: 'เพิ่มช่องที่มีไอคอน, หัวข้อ, คำอธิบาย และลิงก์ (แสดงผลด้านล่าง Hero หลัก)'
+        description: 'เพิ่มช่องที่มีไอคอน, หัวข้อ, คำอธิบาย และลิงก์ (แสดงผลด้านล่าง Hero หลัก) - หน้าเว็บจะแสดงตามจำนวนจริงที่สร้างไว้เท่านั้น'
       }
     },
     {
