@@ -75,6 +75,9 @@ export function ContainerRecommendation({
               <div className="flex items-center space-x-4 text-sm">
                 <span className="text-gray-700">
                   <strong>จำนวน:</strong> {rec.quantity} ถัง
+                  {rec.container.size === 0.25 && rec.quantity === 4 && (
+                    <span className="text-blue-600 ml-1">หรือ = 1 แกลลอน</span>
+                  )}
                 </span>
                 <span className="text-gray-700">
                   <strong>รวม:</strong> {rec.totalGallons} แกลลอน
