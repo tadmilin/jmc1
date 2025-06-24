@@ -58,6 +58,7 @@ export default async function Page() {
 
 export function generateMetadata(): Metadata {
   return {
-    title: `Payload Website Template Posts`,
+    title: `บทความ | JMC Company`,
+    description: 'บทความเกี่ยวกับท่อ PVC ข้อต่อ ปั๊มน้ำ และเทคนิคการใช้งาน',
   }
 }

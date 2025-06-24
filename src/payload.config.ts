@@ -19,6 +19,7 @@ import { QuoteRequests } from './collections/QuoteRequests'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
 import { CategoryShowcase } from './CategoryShowcase/config'
+import { SiteSettings } from './globals/SiteSettings'
 import { plugins } from './plugins'
 
 const filename = fileURLToPath(import.meta.url)
@@ -33,6 +34,9 @@ export default buildConfig({
   serverURL,
   admin: {
     user: Users.slug,
+    importMap: {
+      baseDir: path.resolve(dirname),
+    },
     meta: {
       titleSuffix: '- จงมีชัยค้าวัสดุ',
     },
@@ -60,7 +64,8 @@ export default buildConfig({
   },
 
   collections: [Categories, Media, Pages, Posts, Products, Users, QuoteRequests],
-  globals: [Header, Footer, CategoryShowcase],
+  globals: [Header, Footer, CategoryShowcase, SiteSettings],
+  cors: [serverURL].filter(Boolean),
   plugins: [
     ...plugins,
     // ใช้ Vercel Blob Storage เฉพาะใน production

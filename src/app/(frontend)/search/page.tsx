@@ -83,6 +83,7 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
 
 export function generateMetadata(): Metadata {
   return {
-    title: `Payload Website Template Search`,
+    title: `ค้นหาสินค้า | JMC Company`,
+    description: 'ค้นหาท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปา',
   }
 }
