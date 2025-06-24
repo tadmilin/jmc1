@@ -18,12 +18,25 @@ const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null, fallb
     const cardUrl = (image as any).sizes?.card?.url
     const originalUrl = image.url
 
+    let finalUrl = null
+    
     if (featureUrl) {
-      url = featureUrl.startsWith('http') ? featureUrl : serverUrl + featureUrl
+      finalUrl = featureUrl
     } else if (cardUrl) {
-      url = cardUrl.startsWith('http') ? cardUrl : serverUrl + cardUrl
+      finalUrl = cardUrl
     } else if (originalUrl) {
-      url = originalUrl.startsWith('http') ? originalUrl : serverUrl + originalUrl
+      finalUrl = originalUrl
+    }
+
+    if (finalUrl) {
+      // ถ้า URL เป็น absolute URL แล้ว ใช้เลย
+      if (finalUrl.startsWith('http')) {
+        url = finalUrl
+      } else {
+        // ถ้าเป็น relative URL ให้เพิ่ม server URL (อย่าลืมลบ slash ซ้ำ)
+        const cleanUrl = finalUrl.startsWith('/') ? finalUrl : `/${finalUrl}`
+        url = `${serverUrl}${cleanUrl}`
+      }
     }
     
     console.log('🖼️ Image URL processed:', {

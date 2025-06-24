@@ -7,12 +7,14 @@ const getImageURL = (image: any) => {
   if (!image) return null
   if (typeof image === 'string') return image
   if (typeof image === 'object' && image.url) {
+    const serverUrl = getServerSideURL()
     // ถ้า URL เป็น absolute URL แล้ว ใช้เลย
     if (image.url.startsWith('http')) {
       return image.url
     }
-    // ถ้าเป็น relative URL ให้เพิ่ม server URL
-    return `${getServerSideURL()}${image.url}`
+    // ถ้าเป็น relative URL ให้เพิ่ม server URL (อย่าลืมลบ slash ซ้ำ)
+    const url = image.url.startsWith('/') ? image.url : `/${image.url}`
+    return `${serverUrl}${url}`
   }
   return null
 }
