@@ -6,7 +6,14 @@ import { getCachedGlobal } from './getGlobals'
 const getImageURL = (image: any) => {
   if (!image) return null
   if (typeof image === 'string') return image
-  if (typeof image === 'object' && image.url) return image.url
+  if (typeof image === 'object' && image.url) {
+    // ถ้า URL เป็น absolute URL แล้ว ใช้เลย
+    if (image.url.startsWith('http')) {
+      return image.url
+    }
+    // ถ้าเป็น relative URL ให้เพิ่ม server URL
+    return `${getServerSideURL()}${image.url}`
+  }
   return null
 }
 
@@ -33,6 +40,14 @@ export const mergeOpenGraph = async (og?: Metadata['openGraph']): Promise<Metada
     // Try to get site settings from database
     const siteSettings = await getCachedGlobal('site-settings', 2)()
     
+    console.log('🔍 Site Settings loaded:', {
+      exists: !!siteSettings,
+      siteName: siteSettings?.siteName,
+      hasOgImage: !!siteSettings?.ogImage,
+      ogImageType: typeof siteSettings?.ogImage,
+      ogImageUrl: siteSettings?.ogImage?.url
+    })
+    
     if (siteSettings) {
       const siteName = siteSettings.siteName || defaultOpenGraph.siteName
       const siteTagline = siteSettings.siteTagline || 'ท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปา'
@@ -40,12 +55,14 @@ export const mergeOpenGraph = async (og?: Metadata['openGraph']): Promise<Metada
       
       const ogImageUrl = getImageURL(siteSettings.ogImage)
       
+      console.log('🖼️ OG Image URL processed:', ogImageUrl)
+      
       defaultOpenGraph = {
         type: 'website',
         description: siteDescription,
         images: ogImageUrl ? [
           {
-            url: ogImageUrl.startsWith('http') ? ogImageUrl : `${getServerSideURL()}${ogImageUrl}`,
+            url: ogImageUrl,
             width: 1200,
             height: 630,
             alt: `${siteName} - ${siteTagline}`,
@@ -54,9 +71,17 @@ export const mergeOpenGraph = async (og?: Metadata['openGraph']): Promise<Metada
         siteName: siteName,
         title: siteTagline ? `${siteName} - ${siteTagline}` : siteName,
       }
+      
+      console.log('✅ Final OG config:', {
+        title: defaultOpenGraph.title,
+        description: defaultOpenGraph.description,
+        imageUrl: defaultOpenGraph.images?.[0]?.url
+      })
+    } else {
+      console.log('⚠️ No site settings found, using defaults')
     }
   } catch (error) {
-    console.warn('Failed to load site settings for Open Graph, using defaults:', error)
+    console.error('❌ Failed to load site settings for Open Graph:', error)
   }
 
   return {

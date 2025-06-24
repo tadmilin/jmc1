@@ -13,9 +13,25 @@ const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null, fallb
   let url = fallbackUrl || serverUrl + '/jmc-og-image.svg'
 
   if (image && typeof image === 'object' && 'url' in image) {
-    const ogUrl = (image as any).sizes?.og?.url
+    // ใช้ feature size ถ้ามี (1024x768) หรือ card size (768x576) สำหรับ OG
+    const featureUrl = (image as any).sizes?.feature?.url
+    const cardUrl = (image as any).sizes?.card?.url
+    const originalUrl = image.url
 
-    url = ogUrl ? serverUrl + ogUrl : serverUrl + image.url
+    if (featureUrl) {
+      url = featureUrl.startsWith('http') ? featureUrl : serverUrl + featureUrl
+    } else if (cardUrl) {
+      url = cardUrl.startsWith('http') ? cardUrl : serverUrl + cardUrl
+    } else if (originalUrl) {
+      url = originalUrl.startsWith('http') ? originalUrl : serverUrl + originalUrl
+    }
+    
+    console.log('🖼️ Image URL processed:', {
+      hasFeature: !!featureUrl,
+      hasCard: !!cardUrl,
+      hasOriginal: !!originalUrl,
+      finalUrl: url
+    })
   }
 
   return url
@@ -36,6 +52,12 @@ export const generateMeta = async (args: {
     // Try to get site settings from database
     const siteSettings = await getCachedGlobal('site-settings', 2)()
     
+    console.log('📋 Generate Meta - Site Settings:', {
+      exists: !!siteSettings,
+      siteName: siteSettings?.siteName,
+      hasOgImage: !!siteSettings?.ogImage
+    })
+    
     if (siteSettings) {
       defaultSiteName = siteSettings.siteName || defaultSiteName
       const siteTagline = siteSettings.siteTagline
@@ -50,10 +72,11 @@ export const generateMeta = async (args: {
       // Get OG image from site settings
       if (siteSettings.ogImage) {
         defaultOgImageUrl = getImageURL(siteSettings.ogImage, defaultOgImageUrl)
+        console.log('🎯 Using OG image from settings:', defaultOgImageUrl)
       }
     }
   } catch (error) {
-    console.warn('Failed to load site settings for meta generation, using defaults:', error)
+    console.error('❌ Failed to load site settings for meta generation:', error)
   }
 
   const ogImage = getImageURL(doc?.meta?.image, defaultOgImageUrl)
@@ -61,6 +84,12 @@ export const generateMeta = async (args: {
   const title = doc?.meta?.title
     ? doc?.meta?.title + ` | ${defaultSiteName}`
     : defaultTitle
+
+  console.log('🏁 Final Meta:', {
+    title,
+    description: doc?.meta?.description || defaultDescription,
+    ogImage
+  })
 
   return {
     description: doc?.meta?.description || defaultDescription,
