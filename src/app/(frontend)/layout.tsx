@@ -13,6 +13,8 @@ import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraphSync } from '@/utilities/mergeOpenGraph'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import { draftMode } from 'next/headers'
+import StructuredData from '@/components/SEO/StructuredData'
+import { generateOrganizationSchema, generateWebSiteSchema } from '@/utils/organization-schema'
 
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
@@ -20,12 +22,23 @@ import { getServerSideURL } from '@/utilities/getURL'
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
 
+  // Generate global structured data
+  const organizationSchema = generateOrganizationSchema()
+  const websiteSchema = generateWebSiteSchema()
+
   return (
     <html className={cn(GeistSans.variable, GeistMono.variable)} lang="th" suppressHydrationWarning>
       <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="robots" content="index, follow" />
         <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+
+        {/* Global Structured Data */}
+        <StructuredData data={organizationSchema} />
+        <StructuredData data={websiteSchema} />
       </head>
       <body>
         <Providers>
@@ -47,8 +60,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 export const metadata: Metadata = {
   metadataBase: new URL(getServerSideURL()),
   title: 'JMC Company - ท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปา',
-  description: 'บริษัท เจเอ็มซี จำกัด ผู้จำหน่ายท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปาคุณภาพสูง ราคาย่อมเยา พร้อมคำนวณสีฟรี',
+  description:
+    'บริษัท เจเอ็มซี จำกัด ผู้จำหน่ายท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปาคุณภาพสูง ราคาย่อมเยา พร้อมคำนวณสีฟรี',
   keywords: 'ท่อ PVC, ข้อต่อ, ปั๊มน้ำ, อุปกรณ์ประปา, คำนวณสี, JMC',
+  robots: 'index, follow',
   openGraph: mergeOpenGraphSync(),
   twitter: {
     card: 'summary_large_image',

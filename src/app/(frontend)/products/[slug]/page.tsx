@@ -14,7 +14,7 @@ type Args = {
 
 export default async function ProductPage({ params: paramsPromise }: Args) {
   const { slug } = await paramsPromise
-  
+
   const product = await queryProductBySlug({ slug })
 
   if (!product) {
@@ -37,11 +37,14 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 
   // Generate SEO metadata using utility function
   const seoData = generateProductSEO(product, process.env.NEXT_PUBLIC_SERVER_URL || '')
-  
+
   const metadata: Metadata = {
     title: `${seoData.title} | JMC`,
     description: seoData.description,
     keywords: seoData.keywords,
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_SERVER_URL || ''}/products/${product.slug}`,
+    },
     openGraph: {
       title: seoData.openGraph.title,
       description: seoData.openGraph.description,
@@ -65,7 +68,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
         width: 1200,
         height: 630,
         alt: seoData.title,
-      }
+      },
     ]
     metadata.twitter!.images = [seoData.openGraph.image]
   }
@@ -73,7 +76,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   // Add structured data
   if (seoData.structuredData) {
     metadata.other = {
-      'script:ld+json': JSON.stringify(seoData.structuredData)
+      'script:ld+json': JSON.stringify(seoData.structuredData),
     }
   }
 
@@ -103,7 +106,7 @@ const queryProductBySlug = cache(async ({ slug }: { slug: string }) => {
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
-  
+
   const products = await payload.find({
     collection: 'products',
     limit: 1000,
@@ -118,7 +121,9 @@ export async function generateStaticParams() {
     },
   })
 
-  return products.docs?.map(({ slug }) => ({
-    slug,
-  })) || []
-} 
+  return (
+    products.docs?.map(({ slug }) => ({
+      slug,
+    })) || []
+  )
+}

@@ -7,7 +7,10 @@ import { getServerSideURL } from './getURL'
 import { getCachedGlobal } from './getGlobals'
 
 // Helper function to get image URL from media object
-const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null, fallbackUrl?: string) => {
+const getImageURL = (
+  image?: Media | Config['db']['defaultIDType'] | null,
+  fallbackUrl?: string,
+) => {
   const serverUrl = getServerSideURL()
 
   let url = fallbackUrl || serverUrl + '/jmc-og-image.svg'
@@ -19,7 +22,7 @@ const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null, fallb
     const originalUrl = image.url
 
     let finalUrl = null
-    
+
     if (featureUrl) {
       finalUrl = featureUrl
     } else if (cardUrl) {
@@ -38,12 +41,12 @@ const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null, fallb
         url = `${serverUrl}${cleanUrl}`
       }
     }
-    
+
     console.log('🖼️ Image URL processed:', {
       hasFeature: !!featureUrl,
       hasCard: !!cardUrl,
       hasOriginal: !!originalUrl,
-      finalUrl: url
+      finalUrl: url,
     })
   }
 
@@ -57,31 +60,32 @@ export const generateMeta = async (args: {
 
   // Default fallback values
   let defaultTitle = 'JMC Company - ท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปา'
-  let defaultDescription = 'บริษัท เจเอ็มซี จำกัด ผู้จำหน่ายท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปาคุณภาพสูง ราคาย่อมเยา'
+  let defaultDescription =
+    'บริษัท เจเอ็มซี จำกัด ผู้จำหน่ายท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปาคุณภาพสูง ราคาย่อมเยา'
   let defaultSiteName = 'JMC Company'
   let defaultOgImageUrl = getServerSideURL() + '/jmc-og-image.svg'
 
   try {
     // Try to get site settings from database
     const siteSettings = await getCachedGlobal('site-settings', 2)()
-    
+
     console.log('📋 Generate Meta - Site Settings:', {
       exists: !!siteSettings,
       siteName: siteSettings?.siteName,
-      hasOgImage: !!siteSettings?.ogImage
+      hasOgImage: !!siteSettings?.ogImage,
     })
-    
+
     if (siteSettings) {
       defaultSiteName = siteSettings.siteName || defaultSiteName
       const siteTagline = siteSettings.siteTagline
       defaultDescription = siteSettings.siteDescription || defaultDescription
-      
+
       if (siteTagline) {
         defaultTitle = `${defaultSiteName} - ${siteTagline}`
       } else {
         defaultTitle = defaultSiteName
       }
-      
+
       // Get OG image from site settings
       if (siteSettings.ogImage) {
         defaultOgImageUrl = getImageURL(siteSettings.ogImage, defaultOgImageUrl)
@@ -94,18 +98,23 @@ export const generateMeta = async (args: {
 
   const ogImage = getImageURL(doc?.meta?.image, defaultOgImageUrl)
 
-  const title = doc?.meta?.title
-    ? doc?.meta?.title + ` | ${defaultSiteName}`
-    : defaultTitle
+  const title = doc?.meta?.title ? doc?.meta?.title + ` | ${defaultSiteName}` : defaultTitle
 
   console.log('🏁 Final Meta:', {
     title,
     description: doc?.meta?.description || defaultDescription,
-    ogImage
+    ogImage,
   })
+
+  const canonicalUrl = Array.isArray(doc?.slug)
+    ? `${getServerSideURL()}/${doc?.slug.join('/')}`
+    : getServerSideURL()
 
   return {
     description: doc?.meta?.description || defaultDescription,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: await mergeOpenGraph({
       description: doc?.meta?.description || defaultDescription,
       images: ogImage
