@@ -70,7 +70,7 @@ const FramedContentRenderer: React.FC<{ blocks: SpecificHeroBlock[] | null | und
           case 'heroContentText':
             return (
               <div key={key} className="prose prose-sm md:prose-base prose-invert">
-                <RichText data={block.text} enableGutter={false} />
+                <RichText data={block.text} enableGutter={false} className="hero-content" />
               </div>
             )
           case 'heroContentImage':
@@ -101,7 +101,7 @@ const HeroActionSlotsRenderer: React.FC<{
 }> = ({ slots, colorTheme }) => {
   // Debug: แสดงจำนวน slots ที่ได้รับจริง
   console.log('Hero Action Slots received:', slots?.length || 0, slots)
-  
+
   if (!slots || slots.length === 0) return null
 
   const isDarkTheme = colorTheme === 'dark'
@@ -575,7 +575,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
             <div className="space-y-6">
               {richText && (
                 <RichText
-                  className={`text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r ${
+                  className={`hero-content text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r ${
                     colorTheme === 'dark'
                       ? 'from-blue-300 to-indigo-300'
                       : 'from-blue-600 to-indigo-600'
@@ -657,7 +657,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
               <div className="space-y-6">
                 {richText && (
                   <RichText
-                    className={`text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r ${
+                    className={`hero-content text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r ${
                       colorTheme === 'dark'
                         ? 'from-blue-300 to-indigo-300'
                         : 'from-blue-600 to-indigo-600'

@@ -46,6 +46,42 @@ export function generateContactPageSchema() {
         {
           '@type': 'City',
           name: 'ตลิ่งชัน',
+          description: 'พื้นที่บริการหลัก - ที่ตั้งร้าน',
+        },
+        {
+          '@type': 'City',
+          name: 'ปิ่นเกล้า',
+          description: 'ส่งฟรี วัสดุก่อสร้าง ปิ่นเกล้า',
+        },
+        {
+          '@type': 'City',
+          name: 'จรัญสนิทวงศ์',
+          description: 'ส่งฟรี วัสดุก่อสร้าง จรัญ',
+        },
+        {
+          '@type': 'City',
+          name: 'บางขุนนนท์',
+          description: 'ส่งฟรี วัสดุก่อสร้าง บางขุนนนท์',
+        },
+        {
+          '@type': 'City',
+          name: 'บรมราชชนนี',
+          description: 'ส่งฟรี วัสดุก่อสร้าง บรม',
+        },
+        {
+          '@type': 'City',
+          name: 'สวนผัก',
+          description: 'ส่งฟรี วัสดุก่อสร้าง สวนผัก',
+        },
+        {
+          '@type': 'City',
+          name: 'พระราม 5',
+          description: 'ส่งฟรี วัสดุก่อสร้าง พระราม5',
+        },
+        {
+          '@type': 'City',
+          name: 'บางกรวย',
+          description: 'ส่งฟรี วัสดุก่อสร้าง บางกรวย',
         },
         {
           '@type': 'City',

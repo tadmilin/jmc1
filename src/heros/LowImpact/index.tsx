@@ -41,6 +41,7 @@ export const LowImpactHero: React.FC<Page['hero']> = ({
             <RichText
               className="text-lg md:text-xl text-gray-800"
               data={richText}
+              className="hero-content"
               enableGutter={false}
             />
           )}

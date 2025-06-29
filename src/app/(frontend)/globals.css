@@ -198,6 +198,182 @@ html[data-theme='light'] {
 }
 
 /* Pulse Scale Animation */
+
+/* Rich Text Content Styling - Modern & Clean */
+.payload-richtext {
+  @apply leading-relaxed text-gray-800;
+}
+
+.payload-richtext h1,
+.payload-richtext h2,
+.payload-richtext h3,
+.payload-richtext h4,
+.payload-richtext h5,
+.payload-richtext h6 {
+  @apply font-bold text-gray-900 leading-tight mb-4 mt-6;
+}
+
+.payload-richtext h1 {
+  @apply text-3xl md:text-4xl lg:text-5xl mb-6 mt-0;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  line-height: 1.2;
+}
+
+.payload-richtext h2 {
+  @apply text-2xl md:text-3xl lg:text-4xl text-blue-600;
+  line-height: 1.3;
+}
+
+.payload-richtext h3 {
+  @apply text-xl md:text-2xl lg:text-3xl text-blue-700;
+  line-height: 1.4;
+}
+
+.payload-richtext h4 {
+  @apply text-lg md:text-xl lg:text-2xl text-gray-800;
+}
+
+.payload-richtext h5 {
+  @apply text-base md:text-lg lg:text-xl text-gray-700;
+}
+
+.payload-richtext h6 {
+  @apply text-sm md:text-base lg:text-lg text-gray-600;
+}
+
+.payload-richtext p {
+  @apply text-base md:text-lg leading-7 md:leading-8 mb-4 text-gray-700;
+  font-weight: 400;
+  max-width: 65ch;
+}
+
+.payload-richtext p:first-child {
+  @apply text-lg md:text-xl leading-8 md:leading-9 text-gray-800 font-medium;
+  max-width: 60ch;
+}
+
+.payload-richtext p:last-child {
+  @apply mb-0;
+}
+
+.payload-richtext strong,
+.payload-richtext b {
+  @apply font-semibold text-gray-900;
+}
+
+.payload-richtext em,
+.payload-richtext i {
+  @apply italic text-gray-700;
+}
+
+.payload-richtext ul,
+.payload-richtext ol {
+  @apply mb-6 pl-6 space-y-2;
+}
+
+.payload-richtext ul li {
+  @apply relative text-gray-700 leading-7;
+}
+
+.payload-richtext ul li::before {
+  content: "•";
+  @apply absolute -left-4 text-blue-500 font-bold text-lg;
+}
+
+.payload-richtext ol li {
+  @apply text-gray-700 leading-7;
+  counter-increment: list-counter;
+}
+
+.payload-richtext ol {
+  counter-reset: list-counter;
+}
+
+.payload-richtext ol li::before {
+  content: counter(list-counter) ".";
+  @apply absolute -left-6 text-blue-600 font-semibold;
+}
+
+.payload-richtext blockquote {
+  @apply border-l-4 border-blue-500 pl-6 py-4 my-6 bg-blue-50 rounded-r-lg;
+}
+
+.payload-richtext blockquote p {
+  @apply text-gray-700 italic mb-0 font-medium;
+}
+
+.payload-richtext a {
+  @apply text-blue-600 hover:text-blue-800 underline underline-offset-2 hover:underline-offset-4 transition-all duration-200 font-medium;
+}
+
+.payload-richtext a:hover {
+  @apply bg-blue-50 px-1 py-0.5 rounded;
+}
+
+/* Mobile Responsive Typography */
+@media (max-width: 640px) {
+  .payload-richtext h1 {
+    @apply text-2xl leading-tight;
+  }
+  
+  .payload-richtext h2 {
+    @apply text-xl leading-tight;
+  }
+  
+  .payload-richtext p {
+    @apply text-base leading-6;
+    max-width: none;
+  }
+  
+  .payload-richtext p:first-child {
+    @apply text-lg leading-7;
+  }
+}
+
+/* Content Block Specific Styling */
+.payload-richtext.content-block {
+  @apply space-y-6;
+}
+
+.payload-richtext.content-block p {
+  @apply max-w-none;
+}
+
+/* Hero Content Styling */
+.payload-richtext.hero-content h1 {
+  @apply text-4xl md:text-5xl lg:text-6xl font-bold mb-6;
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  line-height: 1.1;
+}
+
+.payload-richtext.hero-content p {
+  @apply text-lg md:text-xl lg:text-2xl leading-relaxed text-gray-600 max-w-4xl;
+}
+
+/* Modern spacing and layout */
+.payload-richtext > * + * {
+  @apply mt-6;
+}
+
+.payload-richtext > h1 + *,
+.payload-richtext > h2 + *,
+.payload-richtext > h3 + * {
+  @apply mt-4;
+}
+
+/* Enhanced readability */
+.payload-richtext {
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 @keyframes pulse-scale {
   0%, 100% {
     transform: scale(1);

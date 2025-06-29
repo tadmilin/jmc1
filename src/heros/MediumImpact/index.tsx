@@ -300,7 +300,7 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
           <div className="text-center max-w-4xl mx-auto">
             {richText && (
               <RichText
-                className={`text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r ${colorTheme === 'dark' ? 'from-blue-300 to-indigo-300' : 'from-blue-600 to-indigo-600'} bg-clip-text text-transparent mb-6`}
+                className={`hero-content text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r ${colorTheme === 'dark' ? 'from-blue-300 to-indigo-300' : 'from-blue-600 to-indigo-600'} bg-clip-text text-transparent mb-6`}
                 data={richText}
                 enableGutter={false}
               />
@@ -394,7 +394,7 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
             >
               {richText && (
                 <RichText
-                  className={`text-3xl md:text-4xl lg:text-5xl font-bold leading-tight bg-gradient-to-r ${colorTheme === 'dark' ? 'from-blue-300 to-indigo-300' : 'from-blue-600 to-indigo-600'} bg-clip-text text-transparent mb-6`}
+                  className={`hero-content text-3xl md:text-4xl lg:text-5xl font-bold leading-tight bg-gradient-to-r ${colorTheme === 'dark' ? 'from-blue-300 to-indigo-300' : 'from-blue-600 to-indigo-600'} bg-clip-text text-transparent mb-6`}
                   data={richText}
                   enableGutter={false}
                 />
