@@ -2,7 +2,6 @@ import React from 'react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { generateMeta } from '@/utilities/generateMeta'
-import { HighImpact } from '@/heros/HighImpact'
 import { generateContactPageSchema } from '@/utils/contact-about-schema'
 
 const serviceAreas = {
@@ -89,7 +88,14 @@ export async function generateMetadata({ params }: ServiceAreaPageProps): Promis
 
   if (!areaData) {
     return generateMeta({
-      title: 'ไม่พบหน้าที่ค้นหา - จงมีชัยค้าวัสดุ',
+      doc: {
+        title: 'ไม่พบหน้าที่ค้นหา - จงมีชัยค้าวัสดุ',
+        meta: {
+          title: 'ไม่พบหน้าที่ค้นหา - จงมีชัยค้าวัสดุ',
+          description: 'ไม่พบหน้าที่ค้นหา กรุณาตรวจสอบ URL อีกครั้ง',
+        },
+      },
+      pageType: 'page',
     })
   }
 
@@ -97,9 +103,15 @@ export async function generateMetadata({ params }: ServiceAreaPageProps): Promis
   const description = `🏆 ${areaData.description} ส่งฟรี ${areaData.distance} ภายใน ${areaData.deliveryTime} โทร 02-434-8319`
 
   return generateMeta({
-    title,
-    description,
-    keywords: `วัสดุก่อสร้าง${areaData.name}, วัสดุก่อสร้าง ${areaData.name}, ร้านวัสดุก่อสร้าง${areaData.name}, ร้านวัสดุก่อสร้าง ${areaData.name}, อิฐ ${areaData.name}, หิน ${areaData.name}, ปูน ${areaData.name}, ทราย ${areaData.name}, ท่อ PVC ${areaData.name}, วัสดุก่อสร้าง ${areaData.fullName}, ${areaData.searchName} วัสดุก่อสร้าง, วัสดุก่อสร้างใกล้${areaData.name}, วัสดุก่อสร้าง ใกล้ ${areaData.name}, ส่งฟรี ${areaData.name}, ราคาถูก ${areaData.name}`,
+    doc: {
+      title,
+      slug: `service-areas/${params.area}`,
+      meta: {
+        title,
+        description,
+      },
+    },
+    pageType: 'page',
   })
 }
 
@@ -108,75 +120,6 @@ export default async function ServiceArea({ params }: ServiceAreaPageProps) {
 
   if (!areaData) {
     notFound()
-  }
-
-  const heroProps = {
-    richText: [
-      {
-        children: [
-          {
-            text: `🏆 วัสดุก่อสร้าง ${areaData.name} อันดับ 1`,
-          },
-        ],
-        type: 'h1',
-      },
-      {
-        children: [
-          {
-            text: `ร้านวัสดุก่อสร้างใกล้${areaData.name} ส่งฟรี ${areaData.distance} ภายใน ${areaData.deliveryTime}`,
-          },
-        ],
-        type: 'p',
-      },
-      {
-        children: [
-          {
-            text: '✅ อิฐแดง อิฐมอญ คุณภาพเยี่ยม',
-          },
-        ],
-        type: 'li',
-      },
-      {
-        children: [
-          {
-            text: '✅ ปูนซีเมนต์ ปูนก่อ ปูนฉาบ',
-          },
-        ],
-        type: 'li',
-      },
-      {
-        children: [
-          {
-            text: '✅ ทรายก่อสร้าง ทรายหยาบ ทรายละเอียด',
-          },
-        ],
-        type: 'li',
-      },
-      {
-        children: [
-          {
-            text: '✅ หินคลุก หิน 1 หิน 2 หิน 3',
-          },
-        ],
-        type: 'li',
-      },
-      {
-        children: [
-          {
-            text: '✅ ท่อ PVC ข้อต่อ อุปกรณ์ประปา',
-          },
-        ],
-        type: 'li',
-      },
-      {
-        children: [
-          {
-            text: '📞 สั่งเลย: 02-434-8319',
-          },
-        ],
-        type: 'p',
-      },
-    ],
   }
 
   const schemaMarkup = generateContactPageSchema()
@@ -189,7 +132,48 @@ export default async function ServiceArea({ params }: ServiceAreaPageProps) {
           __html: JSON.stringify(schemaMarkup),
         }}
       />
-      <HighImpact {...heroProps} />
+      {/* Simple Hero Section */}
+      <section className="bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-800 text-white py-20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+              🏆 วัสดุก่อสร้าง {areaData.name} อันดับ 1
+            </h1>
+            <p className="text-xl md:text-2xl mb-8 opacity-90">
+              ร้านวัสดุก่อสร้างใกล้{areaData.name} ส่งฟรี {areaData.distance} ภายใน{' '}
+              {areaData.deliveryTime}
+            </p>
+            <div className="grid md:grid-cols-2 gap-4 mb-8 text-left max-w-2xl mx-auto">
+              <div className="space-y-2">
+                <p className="flex items-center">
+                  <span className="mr-2">✅</span> อิฐแดง อิฐมอญ คุณภาพเยี่ยม
+                </p>
+                <p className="flex items-center">
+                  <span className="mr-2">✅</span> ปูนซีเมนต์ ปูนก่อ ปูนฉาบ
+                </p>
+                <p className="flex items-center">
+                  <span className="mr-2">✅</span> ทรายก่อสร้าง ทรายหยาบ ทรายละเอียด
+                </p>
+              </div>
+              <div className="space-y-2">
+                <p className="flex items-center">
+                  <span className="mr-2">✅</span> หินคลุก หิน 1 หิน 2 หิน 3
+                </p>
+                <p className="flex items-center">
+                  <span className="mr-2">✅</span> ท่อ PVC ข้อต่อ อุปกรณ์ประปา
+                </p>
+                <p className="flex items-center">
+                  <span className="mr-2">✅</span> ส่งฟรี ราคาโรงงาน
+                </p>
+              </div>
+            </div>
+            <div className="bg-white bg-opacity-20 rounded-xl p-6 inline-block">
+              <p className="text-3xl font-bold mb-2">📞 สั่งเลย: 02-434-8319</p>
+              <p className="text-lg opacity-90">ปรึกษาฟรี คำนวณปริมาณให้</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
