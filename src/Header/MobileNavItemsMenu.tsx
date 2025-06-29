@@ -115,6 +115,31 @@ export const MobileNavItemsMenu: React.FC<MobileNavItemsMenuProps> = ({ navItems
               )
             })}
 
+            {/* เพิ่มลิงก์เกี่ยวกับเรา - hardcode เพื่อ SEO */}
+            <li>
+              <button
+                onClick={() =>
+                  handleItemClick({ type: 'reference', url: '/about', label: 'เกี่ยวกับเรา' })
+                }
+                className="flex items-center justify-between w-full p-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 text-lg font-medium border border-transparent hover:border-blue-200 bg-transparent cursor-pointer text-left"
+              >
+                เกี่ยวกับเรา
+                <svg
+                  className="w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
+            </li>
+
             {/* เพิ่มลิงก์ติดต่อ - hardcode เพื่อ SEO */}
             <li>
               <button

@@ -82,6 +82,22 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
             )
           })}
 
+          {/* เพิ่มลิงก์เกี่ยวกับเรา - hardcode เพื่อ SEO */}
+          <li className="py-1">
+            {isClient ? (
+              <button
+                onClick={() =>
+                  handleNavigation({ type: 'reference', url: '/about', label: 'เกี่ยวกับเรา' })
+                }
+                className="font-medium text-gray-700 hover:text-blue-600 transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 hover:after:w-full after:transition-all after:duration-300 bg-transparent border-none cursor-pointer"
+              >
+                เกี่ยวกับเรา
+              </button>
+            ) : (
+              <span className="font-medium text-gray-700">เกี่ยวกับเรา</span>
+            )}
+          </li>
+
           {/* เพิ่มลิงก์ติดต่อ - hardcode เพื่อ SEO */}
           <li className="py-1">
             {isClient ? (
