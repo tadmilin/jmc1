@@ -4,6 +4,7 @@ import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { Archive } from '../../blocks/ArchiveBlock/config'
 import { CallToAction } from '../../blocks/CallToAction/config'
+import { Code } from '../../blocks/Code/config'
 import { Content } from '../../blocks/Content/config'
 import { FormBlock } from '../../blocks/Form/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
@@ -19,13 +20,7 @@ import { populatePublishedAt } from '../../hooks/populatePublishedAt'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { revalidateDelete, revalidatePage } from './hooks/revalidatePage'
 
-import {
-  MetaDescriptionField,
-  MetaImageField,
-  MetaTitleField,
-  OverviewField,
-  PreviewField,
-} from '@payloadcms/plugin-seo/fields'
+// SEO plugin imports removed - using manual SEO fields instead
 
 export const Pages: CollectionConfig<'pages'> = {
   slug: 'pages',
@@ -88,6 +83,7 @@ export const Pages: CollectionConfig<'pages'> = {
               type: 'blocks',
               blocks: [
                 CallToAction,
+                Code,
                 Content,
                 MediaBlock,
                 Archive,
@@ -111,27 +107,39 @@ export const Pages: CollectionConfig<'pages'> = {
           name: 'meta',
           label: 'SEO',
           fields: [
-            OverviewField({
-              titlePath: 'meta.title',
-              descriptionPath: 'meta.description',
-              imagePath: 'meta.image',
-            }),
-            MetaTitleField({
-              hasGenerateFn: true,
-            }),
-            MetaImageField({
+            {
+              name: 'title',
+              type: 'text',
+              label: 'SEO Title',
+              admin: {
+                description: 'หัวข้อที่จะแสดงใน Google Search (ควรไม่เกิน 60 ตัวอักษร)',
+              },
+            },
+            {
+              name: 'description',
+              type: 'textarea',
+              label: 'SEO Description',
+              admin: {
+                description: 'คำอธิบายที่จะแสดงใน Google Search (ควรไม่เกิน 160 ตัวอักษร)',
+              },
+            },
+            {
+              name: 'keywords',
+              type: 'text',
+              label: 'SEO Keywords',
+              admin: {
+                description: 'คำค้นหาสำคัญ (คั่นด้วยเครื่องหมายจุลภาค)',
+              },
+            },
+            {
+              name: 'image',
+              type: 'relationship',
               relationTo: 'media',
-            }),
-
-            MetaDescriptionField({}),
-            PreviewField({
-              // if the `generateUrl` function is configured
-              hasGenerateFn: true,
-
-              // field paths to match the target field for data
-              titlePath: 'meta.title',
-              descriptionPath: 'meta.description',
-            }),
+              label: 'SEO Image',
+              admin: {
+                description: 'รูปภาพที่จะแสดงเมื่อแชร์ในโซเชียล',
+              },
+            },
           ],
         },
       ],

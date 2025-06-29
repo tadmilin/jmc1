@@ -10,6 +10,10 @@ export const Code: Block = {
       defaultValue: 'typescript',
       options: [
         {
+          label: 'HTML',
+          value: 'html',
+        },
+        {
           label: 'Typescript',
           value: 'typescript',
         },

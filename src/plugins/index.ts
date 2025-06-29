@@ -15,20 +15,34 @@ import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
 
 const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
-  return doc?.title ? `${doc.title} | JMC Company` : 'JMC Company - ท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปา'
+  try {
+    if (doc?.title && typeof doc.title === 'string') {
+      return `${doc.title} | จงมีชัยค้าวัสดุ`
+    }
+  } catch (error) {
+    console.error('Error generating title:', error)
+  }
+  return 'จงมีชัยค้าวัสดุ - วัสดุก่อสร้างใกล้ฉัน วัสดุก่อสร้างครบวงจร ส่งไว ราคาถูก'
 }
 
 const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
-  const baseUrl = getServerSideURL()
-  
-  if (doc?.slug) {
-    if (Array.isArray(doc.slug)) {
-      return `${baseUrl}/${doc.slug.join('/')}`
+  try {
+    const baseUrl = getServerSideURL()
+
+    if (doc?.slug) {
+      if (Array.isArray(doc.slug)) {
+        return `${baseUrl}/${doc.slug.join('/')}`
+      }
+      if (typeof doc.slug === 'string') {
+        return `${baseUrl}/${doc.slug}`
+      }
     }
-    return `${baseUrl}/${doc.slug}`
+
+    return baseUrl
+  } catch (error) {
+    console.error('Error generating URL:', error)
+    return 'https://jmc111.vercel.app'
   }
-  
-  return baseUrl
 }
 
 export const plugins: Plugin[] = [

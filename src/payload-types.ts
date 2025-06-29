@@ -108,11 +108,13 @@ export interface Config {
     header: Header;
     footer: Footer;
     'category-showcase': CategoryShowcase;
+    'site-settings': SiteSetting;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
     'category-showcase': CategoryShowcaseSelect<false> | CategoryShowcaseSelect<true>;
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
   };
   locale: null;
   user: User & {
@@ -2478,6 +2480,72 @@ export interface CategoryShowcase {
   createdAt?: string | null;
 }
 /**
+ * จัดการข้อมูล SEO และการตั้งค่าทั่วไปของเว็บไซต์
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: string;
+  /**
+   * ชื่อที่จะแสดงใน browser tab และเป็นชื่อเว็บไซต์หลัก
+   */
+  siteName: string;
+  /**
+   * คำโปรยที่จะแสดงต่อจากชื่อเว็บไซต์
+   */
+  siteTagline?: string | null;
+  /**
+   * คำอธิบายที่จะแสดงใน Google Search และเมื่อแชร์ลิงก์ (แนะนำ 150-160 ตัวอักษร)
+   */
+  siteDescription?: string | null;
+  /**
+   * คำสำคัญสำหรับการค้นหา (คั่นด้วยเครื่องหมายจุลภาค)
+   */
+  siteKeywords?: string | null;
+  /**
+   * รูปภาพที่จะแสดงเมื่อแชร์ลิงก์ใน Facebook, LINE, Twitter (แนะนำ 1200x630px)
+   */
+  ogImage?: (string | null) | Media;
+  companyName?: string | null;
+  /**
+   * ที่อยู่ของบริษัท
+   */
+  address?: string | null;
+  /**
+   * เบอร์โทรศัพท์หลัก
+   */
+  phone?: string | null;
+  /**
+   * อีเมลติดต่อหลัก
+   */
+  email?: string | null;
+  businessHours?: string | null;
+  /**
+   * ลิงก์ Facebook Page
+   */
+  facebook?: string | null;
+  /**
+   * LINE ID หรือ LINE URL
+   */
+  line?: string | null;
+  /**
+   * Twitter username (รวม @)
+   */
+  twitterHandle?: string | null;
+  /**
+   * URL ของ favicon (ไอคอนที่แสดงใน browser tab)
+   */
+  faviconUrl?: string | null;
+  /**
+   * Google Analytics Tracking ID (GA4)
+   */
+  googleAnalyticsId?: string | null;
+  enableSiteMap?: boolean | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
@@ -2554,6 +2622,31 @@ export interface CategoryShowcaseSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  siteName?: T;
+  siteTagline?: T;
+  siteDescription?: T;
+  siteKeywords?: T;
+  ogImage?: T;
+  companyName?: T;
+  address?: T;
+  phone?: T;
+  email?: T;
+  businessHours?: T;
+  facebook?: T;
+  line?: T;
+  twitterHandle?: T;
+  faviconUrl?: T;
+  googleAnalyticsId?: T;
+  enableSiteMap?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
