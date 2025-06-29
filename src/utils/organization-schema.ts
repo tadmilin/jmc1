@@ -78,21 +78,21 @@ export function generateOrganizationSchema(): OrganizationSchema {
   return {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
-    name: 'บริษัท เจเอ็มซี จำกัด',
-    alternateName: 'JMC Company',
+    name: 'ร้านวัสดุก่อสร้าง จงมีชัยค้าวัสดุ ตลิ่งชัน ใกล้ฉัน',
+    alternateName: 'จงมีชัยค้าวัสดุ',
     description:
-      'ผู้จำหน่ายท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปาคุณภาพสูง ราคาย่อมเยา พร้อมบริการคำนวณสีฟรี',
+      'ร้านวัสดุก่อสร้างราคาถูกครบวงจร ตลิ่งชัน ปากซอยชักพระ6 ใกล้ฉัน อิฐ หิน ปูน ทราย เหล็ก ประปา ไฟฟ้า ช่าง ส่งไว',
     url: baseUrl,
     logo: `${baseUrl}/jmc-og-image.svg`,
     image: [`${baseUrl}/jmc-og-image.svg`],
-    telephone: '+66-XX-XXX-XXXX', // TODO: Update with real phone number
-    email: 'info@jmc.co.th', // TODO: Update with real email
+    telephone: '02-434-8319', // TODO: Update with real phone number
+    email: 'tadeyes1@gmail.com', // TODO: Update with real email
     address: {
       '@type': 'PostalAddress',
-      streetAddress: 'XXX ถนนXXX', // TODO: Update with real address
+      streetAddress: '38,40 ถนนชักพระ เขตตลิ่งชัน แขวงตลิ่งชัน ซอยชักพระ6 กรุงเทพ 10170', // TODO: Update with real address
       addressLocality: 'กรุงเทพมหานคร',
       addressRegion: 'กรุงเทพมหานคร',
-      postalCode: '10XXX', // TODO: Update with real postal code
+      postalCode: '10170', // TODO: Update with real postal code
       addressCountry: 'TH',
     },
     geo: {
@@ -103,8 +103,8 @@ export function generateOrganizationSchema(): OrganizationSchema {
     openingHoursSpecification: [
       {
         '@type': 'OpeningHoursSpecification',
-        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-        opens: '08:00',
+        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        opens: '07:00',
         closes: '17:00',
       },
     ],
@@ -112,16 +112,15 @@ export function generateOrganizationSchema(): OrganizationSchema {
     paymentAccepted: ['Cash', 'Credit Card', 'Bank Transfer'],
     currenciesAccepted: 'THB',
     areaServed: ['Thailand'],
-    serviceType: ['ท่อ PVC', 'ข้อต่อ', 'ปั๊มน้ำ', 'อุปกรณ์ประปา', 'คำนวณสี'],
+    serviceType: ['วัสดุก่อสร้าง', 'อุปกรณ์ก่อสร้าง', 'คำนวณสี', 'ประปา', 'ปูน', 'เหล็ก', 'อิฐ', 'หิน', 'ทราย', 'ไฟฟ้า', 'ช่าง'],
     founder: {
       '@type': 'Person',
-      name: 'JMC Founder', // TODO: Update with real founder name
+      name: 'ทัด', // TODO: Update with real founder name
     },
     foundingDate: '2000-01-01', // TODO: Update with real founding date
     sameAs: [
-      // TODO: Add social media profiles
-      // 'https://www.facebook.com/jmccompany',
-      // 'https://line.me/ti/p/@jmccompany',
+      'https://www.facebook.com/jmc1990lekmor',
+      'https://page.line.me/308aoxno'
     ],
   }
 }
@@ -135,13 +134,13 @@ export function generateWebSiteSchema(): WebSiteSchema {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'JMC Company',
-    alternateName: 'บริษัท เจเอ็มซี จำกัด',
+    name: 'ร้านวัสดุก่อสร้าง จงมีชัยค้าวัสดุ ตลิ่งชัน ใกล้ฉัน',
+    alternateName: 'จงมีชัยค้าวัสดุ',
     url: baseUrl,
-    description: 'ผู้จำหน่ายท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปาคุณภาพสูง',
+    description: 'ร้านวัสดุก่อสร้างราคาถูกครบวงจร ตลิ่งชัน ปากซอยชักพระ6 ใกล้ฉัน อิฐ หิน ปูน ทราย เหล็ก ประปา ไฟฟ้า ช่าง ส่งไว',
     publisher: {
       '@type': 'Organization',
-      name: 'JMC Company',
+      name: 'จงมีชัยค้าวัสดุ',
       logo: {
         '@type': 'ImageObject',
         url: `${baseUrl}/jmc-og-image.svg`,

@@ -4,7 +4,7 @@ import type { Product, Media } from '@/payload-types'
 export type SEOMetadata = {
   title: string
   description: string
-  keywords?: string
+  keywords?: string | null
   openGraph: {
     title: string
     description: string
@@ -54,22 +54,23 @@ export type ProductStructuredData = {
 export function generateProductSEO(product: Product, baseUrl: string = ''): SEOMetadata {
   // Fallback values
   const defaultTitle = product.title
-  const defaultDescription = product.shortDescription || 
-                             (product.description ? stripHtml(product.description) : product.title)
-  
+  const defaultDescription =
+    product.shortDescription ||
+    (product.description ? stripHtml(JSON.stringify(product.description)) : product.title)
+
   // Meta tags
   const seoTitle = product.meta?.title || defaultTitle
   const seoDescription = product.meta?.description || defaultDescription
-  const keywords = product.meta?.keywords
-  
+  const keywords = product.meta?.keywords || null
+
   // Open Graph
   const ogTitle = product.openGraph?.title || seoTitle
   const ogDescription = product.openGraph?.description || seoDescription
   const ogImage = getImageUrl(product.openGraph?.image || getFirstProductImage(product))
-  
+
   // Structured Data
   const structuredData = generateProductStructuredData(product, baseUrl)
-  
+
   return {
     title: seoTitle,
     description: seoDescription,
@@ -88,15 +89,20 @@ export function generateProductSEO(product: Product, baseUrl: string = ''): SEOM
 /**
  * Generates structured data (JSON-LD) for a product
  */
-export function generateProductStructuredData(product: Product, baseUrl: string = ''): ProductStructuredData {
+export function generateProductStructuredData(
+  product: Product,
+  baseUrl: string = '',
+): ProductStructuredData {
   const currentPrice = getCurrentPrice(product)
   const images = getProductImages(product)
-  
+
   const structuredData: ProductStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.title,
-    description: product.shortDescription || stripHtml(product.description || ''),
+    description:
+      product.shortDescription ||
+      stripHtml(product.description ? JSON.stringify(product.description) : ''),
     image: images,
     sku: product.sku || undefined,
     offers: {
@@ -111,7 +117,7 @@ export function generateProductStructuredData(product: Product, baseUrl: string 
       },
     },
   }
-  
+
   // Add optional fields
   if (product.structuredData?.brand) {
     structuredData.brand = {
@@ -119,23 +125,25 @@ export function generateProductStructuredData(product: Product, baseUrl: string 
       name: product.structuredData.brand,
     }
   }
-  
+
   if (product.structuredData?.model) {
     structuredData.model = product.structuredData.model
   }
-  
+
   if (product.structuredData?.gtin) {
     structuredData.gtin = product.structuredData.gtin
   }
-  
+
   if (product.structuredData?.mpn) {
     structuredData.mpn = product.structuredData.mpn
   }
-  
+
   if (product.structuredData?.priceValidUntil) {
-    structuredData.offers.priceValidUntil = new Date(product.structuredData.priceValidUntil).toISOString().split('T')[0]
+    structuredData.offers.priceValidUntil = new Date(product.structuredData.priceValidUntil)
+      .toISOString()
+      .split('T')[0]
   }
-  
+
   return structuredData
 }
 
@@ -154,10 +162,8 @@ function getCurrentPrice(product: Product): number {
  */
 function getProductImages(product: Product): string[] {
   if (!product.images || product.images.length === 0) return []
-  
-  return product.images
-    .map(img => getImageUrl(img.image))
-    .filter(Boolean) as string[]
+
+  return product.images.map((img) => getImageUrl(img.image)).filter(Boolean) as string[]
 }
 
 /**
@@ -182,10 +188,10 @@ function getImageUrl(image: string | Media | undefined): string | undefined {
  */
 function mapAvailability(availability: string): string {
   const mappings: Record<string, string> = {
-    'in_stock': 'https://schema.org/InStock',
-    'out_of_stock': 'https://schema.org/OutOfStock',
-    'preorder': 'https://schema.org/PreOrder',
-    'discontinued': 'https://schema.org/Discontinued',
+    in_stock: 'https://schema.org/InStock',
+    out_of_stock: 'https://schema.org/OutOfStock',
+    preorder: 'https://schema.org/PreOrder',
+    discontinued: 'https://schema.org/Discontinued',
   }
   return mappings[availability] || 'https://schema.org/InStock'
 }
@@ -195,10 +201,10 @@ function mapAvailability(availability: string): string {
  */
 function mapCondition(condition: string): string {
   const mappings: Record<string, string> = {
-    'new': 'https://schema.org/NewCondition',
-    'used': 'https://schema.org/UsedCondition',
-    'refurbished': 'https://schema.org/RefurbishedCondition',
-    'damaged': 'https://schema.org/DamagedCondition',
+    new: 'https://schema.org/NewCondition',
+    used: 'https://schema.org/UsedCondition',
+    refurbished: 'https://schema.org/RefurbishedCondition',
+    damaged: 'https://schema.org/DamagedCondition',
   }
   return mappings[condition] || 'https://schema.org/NewCondition'
 }
@@ -216,4 +222,4 @@ function stripHtml(html: string): string {
 export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text
   return text.substring(0, maxLength - 3).trim() + '...'
-} 
+}

@@ -7,6 +7,7 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
 import PageClient from './page.client'
+import { generateMeta } from '@/utilities/generateMeta'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -56,9 +57,6 @@ export default async function Page() {
   )
 }
 
-export function generateMetadata(): Metadata {
-  return {
-    title: `บทความ | JMC Company`,
-    description: 'บทความเกี่ยวกับท่อ PVC ข้อต่อ ปั๊มน้ำ และเทคนิคการใช้งาน',
-  }
+export async function generateMetadata(): Promise<Metadata> {
+  return generateMeta({ doc: null, pageType: 'post' })
 }

@@ -59,14 +59,36 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
 export const metadata: Metadata = {
   metadataBase: new URL(getServerSideURL()),
-  title: 'JMC Company - ท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปา',
+  title: 'ร้านวัสดุก่อสร้าง ตลิ่งชัน ใกล้ฉัน | จงมีชัยค้าวัสดุ ',
   description:
-    'บริษัท เจเอ็มซี จำกัด ผู้จำหน่ายท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปาคุณภาพสูง ราคาย่อมเยา พร้อมคำนวณสีฟรี',
-  keywords: 'ท่อ PVC, ข้อต่อ, ปั๊มน้ำ, อุปกรณ์ประปา, คำนวณสี, JMC',
-  robots: 'index, follow',
-  openGraph: mergeOpenGraphSync(),
+    'จงมีชัยค้าวัสดุ ตลิ่งชัน ปากซอยชักพระ6 ร้านวัสดุก่อสร้างครบวงจร ราคาถูก ส่งด่วนถึงไซต์งาน อิฐ หิน ปูน ทราย เหล็ก ประปา ไฟฟ้า ช่าง ครบจบที่เดียว',
+  keywords: 'วัสดุก่อสร้าง,วัสดุก่อสร้างใกล้ฉัน, ราคาถูก, ตลิ่งชัน, ปากซอยชักพระ6, ประปา,ไฟฟ้า, เหล็ก, ปั๊มน้ำ,ปูน,ทรายคิว ,หินคิว ,ทราย ,หิน ,รถปูน ,ประตู,หน้าต่าง อุปกรณ์ประปา, เครื่องผสมสี, ร้านวัสดุก่อสร้างใกล้ฉัน',
+  robots: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1',
+
+  openGraph: {
+    title: 'ร้านวัสดุก่อสร้าง ตลิ่งชัน ใกล้ฉัน | JMC',
+    description:
+      'จงมีชัยค้าวัสดุ ร้านวัสดุก่อสร้างครบวงจร ตลิ่งชัน ราคาถูก ส่งไว ปากซอยชักพระ6 โทรเลย!',
+    url: getServerSideURL(),
+    siteName: 'JMC จงมีชัยค้าวัสดุ ปากซอยชักพระ6',
+    images: [
+      {
+        url: `${getServerSideURL()}/jmc-og-image.svg`,
+        width: 1200,
+        height: 630,
+        alt: 'ร้านวัสดุก่อสร้าง ตลิ่งชัน ใกล้ฉัน JMC',
+      },
+    ],
+    locale: 'th_TH',
+    type: 'website',
+  },
   twitter: {
     card: 'summary_large_image',
+    site: '@jmccompany',
     creator: '@jmccompany',
+    title: 'ร้านวัสดุก่อสร้าง ตลิ่งชัน ใกล้ฉัน | JMC',
+    description:
+      'วัสดุก่อสร้างครบวงจร ราคาถูก ตลิ่งชัน ปากซอยชักพระ6 ส่งไวถึงไซต์งาน',
+    images: [`${getServerSideURL()}/jmc-og-image.svg`],
   },
 }

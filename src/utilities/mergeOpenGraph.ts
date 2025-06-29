@@ -1,31 +1,39 @@
 import type { Metadata } from 'next'
-import { getServerSideURL } from './getURL'
-import { getCachedGlobal } from './getGlobals'
 
-// Helper function to get image URL from media object
-const getImageURL = (image: any) => {
-  if (!image) return null
-  if (typeof image === 'string') return image
-  if (typeof image === 'object' && image.url) {
-    const serverUrl = getServerSideURL()
-    // ถ้า URL เป็น absolute URL แล้ว ใช้เลย
-    if (image.url.startsWith('http')) {
-      return image.url
-    }
-    // ถ้าเป็น relative URL ให้เพิ่ม server URL (อย่าลืมลบ slash ซ้ำ)
-    const url = image.url.startsWith('/') ? image.url : `/${image.url}`
-    return `${serverUrl}${url}`
-  }
-  return null
+import type { Media } from '../payload-types'
+
+import { getServerSideURL } from './getURL'
+import { getPayload } from 'payload'
+import configPromise from '@payload-config'
+
+// Type for site settings
+interface SiteSettings {
+  siteName?: string
+  siteTagline?: string
+  siteDescription?: string
+  ogImage?: Media | string
 }
 
-// Default fallback values
-const getDefaultOpenGraph = () => ({
-  type: 'website' as const,
-  description: 'บริษัท เจเอ็มซี จำกัด ผู้จำหน่ายท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปาคุณภาพสูง ราคาย่อมเยา',
+// Helper function to get image URL from media object
+const getImageURL = (image?: Media | string | null, fallbackUrl?: string): string => {
+  if (!image) return fallbackUrl || getServerSideURL() + '/jmc-og-image.svg'
+
+  if (typeof image === 'string') return image
+
+  if (typeof image === 'object' && 'url' in image && image.url) {
+    return image.url.startsWith('http') ? image.url : getServerSideURL() + image.url
+  }
+
+  return fallbackUrl || getServerSideURL() + '/jmc-og-image.svg'
+}
+
+const defaultOpenGraph: Metadata['openGraph'] = {
+  type: 'website',
+  description:
+    'บริษัท เจเอ็มซี จำกัด ผู้จำหน่ายท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปาคุณภาพสูง ราคาย่อมเยา',
   images: [
     {
-      url: `${getServerSideURL()}/jmc-og-image.svg`,
+      url: getServerSideURL() + '/jmc-og-image.svg',
       width: 1200,
       height: 630,
       alt: 'JMC Company - ท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปา',
@@ -33,73 +41,69 @@ const getDefaultOpenGraph = () => ({
   ],
   siteName: 'JMC Company',
   title: 'JMC Company - ท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปา',
-})
+}
 
-export const mergeOpenGraph = async (og?: Metadata['openGraph']): Promise<Metadata['openGraph']> => {
-  let defaultOpenGraph = getDefaultOpenGraph()
-  
+export const mergeOpenGraph = async (
+  og?: Metadata['openGraph'],
+): Promise<Metadata['openGraph']> => {
   try {
-    // Try to get site settings from database
-    const siteSettings = await getCachedGlobal('site-settings', 2)()
-    
-    console.log('🔍 Site Settings loaded:', {
+    const payload = await getPayload({ config: configPromise })
+    const result = await payload.findGlobal({
+      slug: 'site-settings' as unknown as 'header',
+      depth: 1,
+    })
+
+    const siteSettings = result as SiteSettings
+
+    console.log('🔍 Merge OG - Site Settings:', {
       exists: !!siteSettings,
       siteName: siteSettings?.siteName,
       hasOgImage: !!siteSettings?.ogImage,
       ogImageType: typeof siteSettings?.ogImage,
-      ogImageUrl: siteSettings?.ogImage?.url
+      ogImageUrl:
+        siteSettings?.ogImage &&
+        typeof siteSettings.ogImage === 'object' &&
+        'url' in siteSettings.ogImage
+          ? siteSettings.ogImage.url
+          : 'N/A',
     })
-    
+
     if (siteSettings) {
       const siteName = siteSettings.siteName || defaultOpenGraph.siteName
       const siteTagline = siteSettings.siteTagline || 'ท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปา'
       const siteDescription = siteSettings.siteDescription || defaultOpenGraph.description
-      
+
       const ogImageUrl = getImageURL(siteSettings.ogImage)
-      
-      console.log('🖼️ OG Image URL processed:', ogImageUrl)
-      
-      defaultOpenGraph = {
-        type: 'website',
-        description: siteDescription,
-        images: ogImageUrl ? [
+
+      return {
+        ...defaultOpenGraph,
+        ...og,
+        siteName,
+        title: og?.title || `${siteName} - ${siteTagline}`,
+        description: og?.description || siteDescription,
+        images: og?.images || [
           {
             url: ogImageUrl,
             width: 1200,
             height: 630,
-            alt: `${siteName} - ${siteTagline}`,
+            alt: (og?.title || `${siteName} - ${siteTagline}`) as string,
           },
-        ] : defaultOpenGraph.images,
-        siteName: siteName,
-        title: siteTagline ? `${siteName} - ${siteTagline}` : siteName,
+        ],
       }
-      
-      console.log('✅ Final OG config:', {
-        title: defaultOpenGraph.title,
-        description: defaultOpenGraph.description,
-        imageUrl: defaultOpenGraph.images?.[0]?.url
-      })
-    } else {
-      console.log('⚠️ No site settings found, using defaults')
     }
   } catch (error) {
-    console.error('❌ Failed to load site settings for Open Graph:', error)
+    console.error('❌ Failed to load site settings for OpenGraph:', error)
   }
 
   return {
     ...defaultOpenGraph,
     ...og,
-    images: og?.images ? og.images : defaultOpenGraph.images,
   }
 }
 
-// Synchronous version for backwards compatibility
 export const mergeOpenGraphSync = (og?: Metadata['openGraph']): Metadata['openGraph'] => {
-  const defaultOpenGraph = getDefaultOpenGraph()
-  
   return {
     ...defaultOpenGraph,
     ...og,
-    images: og?.images ? og.images : defaultOpenGraph.images,
   }
 }
