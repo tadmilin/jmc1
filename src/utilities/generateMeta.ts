@@ -19,6 +19,8 @@ interface SiteSettings {
   phone?: string
   email?: string
   businessHours?: string
+  line?: string
+  facebook?: string
 }
 
 // Extended Media type with sizes
@@ -248,10 +250,6 @@ export const generateMeta = async (args: {
   const { doc, pageType = 'page' } = args
 
   // Default fallback values optimized for Google Algorithm 2025 - Multi-area targeting
-  const defaultTitle =
-    'จงมีชัยค้าวัสดุ ตลิ่งชัน อันดับ1 วัสดุก่อสร้างใกล้ฉัน ราคาถูกที่สุด ส่งฟรี ปิ่นเกล้า จรัญ บางขุนนนท์ บรม สวนผัก พระราม5 บางกรวย'
-  let defaultDescription =
-    '🏆 ร้านวัสดุก่อสร้าง อันดับ1 ตลิ่งชัน ปากซอยชักพระ6 ใกล้ฉันที่สุด! ส่งฟรี ปิ่นเกล้า จรัญ บางขุนนนท์ บรม สวนผัก พระราม5 บางกรวย อิฐ หิน ปูน ทราย ท่อ PVC ปั๊มน้ำ ราคาโรงงาน บริการมืออาชีพ รับประกันคุณภาพ โทร 02-434-8319'
   let defaultSiteName = 'จงมีชัยค้าวัสดุ'
   let defaultKeywords =
     'วัสดุก่อสร้าง, ตลิ่งชัน, ใกล้ฉัน, ปากซอยชักพระ6, จงมีชัยค้าวัสดุ, ปิ่นเกล้า, จรัญ, บางขุนนนท์, บรม, สวนผัก, พระราม5, บางกรวย'
@@ -261,33 +259,39 @@ export const generateMeta = async (args: {
   try {
     // Try to get site settings from database
     const payload = await getPayload({ config: configPromise })
-    // Type assertion for site-settings global slug
-    const result = await (payload.findGlobal as any)({
+    // Get site-settings global - suppress type warning
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result = await (payload as any).findGlobal({
       slug: 'site-settings',
       depth: 1,
     })
 
     siteSettings = result as SiteSettings
 
-    console.log('📋 Generate Meta - Site Settings:', {
-      exists: !!siteSettings,
-      siteName: siteSettings?.siteName,
-      hasOgImage: !!siteSettings?.ogImage,
-    })
+    if (process.env.NODE_ENV === 'development') {
+      console.log('📋 Generate Meta - Site Settings:', {
+        exists: !!siteSettings,
+        siteName: siteSettings?.siteName,
+        hasOgImage: !!siteSettings?.ogImage,
+      })
+    }
 
     if (siteSettings) {
       defaultSiteName = siteSettings.siteName || defaultSiteName
-      defaultDescription = siteSettings.siteDescription || defaultDescription
       defaultKeywords = siteSettings.siteKeywords || defaultKeywords
 
       // Get OG image from site settings
       if (siteSettings.ogImage) {
         defaultOgImageUrl = getImageURL(siteSettings.ogImage, defaultOgImageUrl)
-        console.log('🎯 Using OG image from settings:', defaultOgImageUrl)
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🎯 Using OG image from settings:', defaultOgImageUrl)
+        }
       }
     }
   } catch (error) {
-    console.error('❌ Failed to load site settings for meta generation:', error)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌ Failed to load site settings for meta generation:', error)
+    }
   }
 
   // Extract page slug for specific page handling
@@ -316,13 +320,15 @@ export const generateMeta = async (args: {
 
   const ogImage = getImageURL(doc?.meta?.image, defaultOgImageUrl)
 
-  console.log('🎯 Google Algorithm 2025 Optimized Meta:', {
-    title: optimizedTitle,
-    description: optimizedDescription,
-    keywords: optimizedKeywords,
-    pageType,
-    ogImage,
-  })
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🎯 Google Algorithm 2025 Optimized Meta:', {
+      title: optimizedTitle,
+      description: optimizedDescription,
+      keywords: optimizedKeywords,
+      pageType,
+      ogImage,
+    })
+  }
 
   // Generate canonical URL
   const canonicalUrl = Array.isArray(doc?.slug)

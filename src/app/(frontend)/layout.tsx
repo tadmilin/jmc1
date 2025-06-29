@@ -15,6 +15,7 @@ import { getCachedGlobal } from '@/utilities/getGlobals'
 import { draftMode } from 'next/headers'
 import StructuredData from '@/components/SEO/StructuredData'
 import { generateOrganizationSchema, generateWebSiteSchema } from '@/utils/organization-schema'
+import FloatingButtons from '@/components/FloatingButtons'
 
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
@@ -52,6 +53,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Header />
           {children}
           <Footer />
+          <FloatingButtons />
         </Providers>
       </body>
     </html>

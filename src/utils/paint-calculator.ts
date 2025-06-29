@@ -4,7 +4,6 @@ import type {
   CalculationResult, 
   PaintResult, 
   WallData, 
-  PaintContainer, 
   ContainerRecommendation 
 } from '@/types/calculator'
 
@@ -95,7 +94,7 @@ export function calculateTotalWallsArea(walls: WallData[]): number {
  */
 export function calculatePaint(input: CalculationInput): CalculationResult {
   let totalArea = 0
-  let breakdown: CalculationResult['breakdown'] = {}
+  const breakdown: CalculationResult['breakdown'] = {}
 
   switch (input.type) {
     case 'total-area':

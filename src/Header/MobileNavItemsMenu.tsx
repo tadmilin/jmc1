@@ -7,6 +7,9 @@ interface MobileNavItemsMenuProps {
   onClose: () => void
 }
 
+// Type definitions for navigation links
+type NavigationLink = NonNullable<Header['navItems']>[number]['link']
+
 const XIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" {...props}>
     <path d="M6.225 4.811a.75.75 0 00-1.06 1.06L10.94 12l-5.775 6.129a.75.75 0 101.06 1.06L12 13.06l5.775 6.129a.75.75 0 101.06-1.06L13.06 12l5.775-6.129a.75.75 0 00-1.06-1.06L12 10.94 6.225 4.811z" />
@@ -14,7 +17,7 @@ const XIcon = (props: React.SVGProps<SVGSVGElement>) => (
 )
 
 // Helper function สำหรับ navigation
-const handleNavigation = (link: any) => {
+const handleNavigation = (link: NavigationLink) => {
   if (!link) return
 
   if (link.type === 'custom' && link.url) {
@@ -31,9 +34,10 @@ const handleNavigation = (link: any) => {
     if (typeof value === 'string') {
       // If value is just an ID, construct URL
       url = `/${relationTo}/${value}`
-    } else if (typeof value === 'object' && value.slug) {
+    } else if (typeof value === 'object' && value !== null && 'slug' in value) {
       // If value is an object with slug
-      url = relationTo === 'pages' ? `/${value.slug}` : `/${relationTo}/${value.slug}`
+      const slug = typeof value.slug === 'string' ? value.slug : ''
+      url = relationTo === 'pages' ? `/${slug}` : `/${relationTo}/${slug}`
     }
 
     if (url) {
@@ -63,7 +67,7 @@ export const MobileNavItemsMenu: React.FC<MobileNavItemsMenuProps> = ({ navItems
     }
   }, [onClose])
 
-  const handleItemClick = (link: any) => {
+  const handleItemClick = (link: NavigationLink) => {
     handleNavigation(link)
     onClose()
   }
