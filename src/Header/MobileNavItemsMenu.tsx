@@ -115,11 +115,11 @@ export const MobileNavItemsMenu: React.FC<MobileNavItemsMenuProps> = ({ navItems
               )
             })}
 
-            {/* เพิ่มลิงก์เกี่ยวกับเรา - hardcode เพื่อ SEO */}
+            {/* เพิ่มลิงก์เกี่ยวกับเรา - ชี้ไป CMS page */}
             <li>
               <button
                 onClick={() =>
-                  handleItemClick({ type: 'reference', url: '/about', label: 'เกี่ยวกับเรา' })
+                  handleItemClick({ type: 'reference', url: '/aboutus', label: 'เกี่ยวกับเรา' })
                 }
                 className="flex items-center justify-between w-full p-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 text-lg font-medium border border-transparent hover:border-blue-200 bg-transparent cursor-pointer text-left"
               >
@@ -140,11 +140,11 @@ export const MobileNavItemsMenu: React.FC<MobileNavItemsMenuProps> = ({ navItems
               </button>
             </li>
 
-            {/* เพิ่มลิงก์ติดต่อ - hardcode เพื่อ SEO */}
+            {/* เพิ่มลิงก์ติดต่อ - ชี้ไป CMS page */}
             <li>
               <button
                 onClick={() =>
-                  handleItemClick({ type: 'reference', url: '/contact', label: 'ติดต่อเรา' })
+                  handleItemClick({ type: 'reference', url: '/contactus-', label: 'ติดต่อเรา' })
                 }
                 className="flex items-center justify-between w-full p-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 text-lg font-medium border border-transparent hover:border-blue-200 bg-transparent cursor-pointer text-left"
               >

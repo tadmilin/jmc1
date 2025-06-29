@@ -15,7 +15,7 @@ type Args = {
 
 export default async function ProductPage({ params: paramsPromise }: Args) {
   const { slug } = await paramsPromise
-
+  
   const product = await queryProductBySlug({ slug })
 
   if (!product) {
@@ -57,7 +57,7 @@ const queryProductBySlug = cache(async ({ slug }: { slug: string }) => {
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
-
+  
   const products = await payload.find({
     collection: 'products',
     limit: 1000,
@@ -74,7 +74,7 @@ export async function generateStaticParams() {
 
   return (
     products.docs?.map(({ slug }) => ({
-      slug,
-    })) || []
+    slug,
+  })) || []
   )
-}
+} 

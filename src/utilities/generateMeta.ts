@@ -95,10 +95,25 @@ const generateOptimizedTitle = (
   pageTitle?: string,
   _siteName?: string,
   pageType?: 'home' | 'page' | 'product' | 'category' | 'post',
+  pageSlug?: string,
 ): string => {
   const businessName = 'จงมีชัยค้าวัสดุ'
   const localKeywords = 'ตลิ่งชัน ปากซอยชักพระ6'
   const primaryKeywords = 'วัสดุก่อสร้าง ใกล้ฉัน'
+
+  // Special handling for contact page
+  if (pageSlug === 'contactus-' || pageSlug === 'contact') {
+    return pageTitle
+      ? `${pageTitle} - ร้านวัสดุก่อสร้าง ตลิ่งชัน ปากซอยชักพระ6 ใกล้ฉัน | JMC`
+      : 'ติดต่อเรา - ร้านวัสดุก่อสร้าง ตลิ่งชัน ปากซอยชักพระ6 ใกล้ฉัน | จงมีชัยค้าวัสดุ'
+  }
+
+  // Special handling for about page
+  if (pageSlug === 'aboutus' || pageSlug === 'about') {
+    return pageTitle
+      ? `${pageTitle} - ร้านวัสดุก่อสร้าง ตลิ่งชัน ปากซอยชักพระ6 ใกล้ฉัน | JMC`
+      : 'เกี่ยวกับเรา - ร้านวัสดุก่อสร้าง ตลิ่งชัน ปากซอยชักพระ6 ใกล้ฉัน | จงมีชัยค้าวัสดุ'
+  }
 
   // Default titles optimized for Google 2025
   const defaultTitles = {
@@ -127,11 +142,28 @@ const generateOptimizedDescription = (
   pageDescription?: string,
   pageType?: 'home' | 'page' | 'product' | 'category' | 'post',
   pageTitle?: string,
+  pageSlug?: string,
 ): string => {
   const baseDescription =
     'จงมีชัยค้าวัสดุ ตลิ่งชัน ปากซอยชักพระ6 ร้านวัสดุก่อสร้างครบวงจร ราคาถูก ส่งด่วนถึงไซต์งาน'
   const semanticKeywords = 'อิฐ หิน ปูน ทราย เหล็ก ประปา ไฟฟ้า ช่าง ครบจบที่เดียว'
   const trustSignals = 'บริการมืออาชีพ รับประกันคุณภาพ'
+
+  // Special handling for contact page
+  if (pageSlug === 'contactus-' || pageSlug === 'contact') {
+    return (
+      pageDescription ||
+      'ติดต่อร้านวัสดุก่อสร้าง จงมีชัยค้าวัสดุ ตลิ่งชัน ปากซอยชักพระ6 โทร 02-434-8319 เปิด จ-ส 07:00-17:00 น. ดูแผนที่ร้าน ข้อมูลติดต่อครบถ้วน'
+    )
+  }
+
+  // Special handling for about page
+  if (pageSlug === 'aboutus' || pageSlug === 'about') {
+    return (
+      pageDescription ||
+      'เกี่ยวกับจงมีชัยค้าวัสดุ ก่อตั้งปี 2020 ร้านวัสดุก่อสร้างครบวงจร ตลิ่งชัน ปากซอยชักพระ6 ให้บริการชุมชน มีประสบการณ์กว่า 35 ปี ราคาถูก คุณภาพเยี่ยม'
+    )
+  }
 
   if (pageDescription) {
     // เพิ่ม local keywords และ trust signals
@@ -232,17 +264,22 @@ export const generateMeta = async (args: {
     console.error('❌ Failed to load site settings for meta generation:', error)
   }
 
-  // Google Algorithm 2025 optimized meta generation
+  // Extract page slug for specific page handling
+  const pageSlug = Array.isArray(doc?.slug) ? doc.slug.join('/') : doc?.slug
+
+  // Google Algorithm 2025 optimized meta generation with local SEO
   const optimizedTitle = generateOptimizedTitle(
     doc?.meta?.title || undefined,
     defaultSiteName,
     pageType,
+    pageSlug || undefined,
   )
 
   const optimizedDescription = generateOptimizedDescription(
     doc?.meta?.description || undefined,
     pageType,
     doc?.meta?.title || (typeof doc?.title === 'string' ? doc.title : undefined),
+    pageSlug || undefined,
   )
 
   const optimizedKeywords = generateKeywords(
