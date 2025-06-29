@@ -33,8 +33,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="robots" content="index, follow" />
         <InitTheme />
-        <link href="/favicon.ico" rel="icon" sizes="32x32" />
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+        <link href="/jmc-og-image.svg" rel="apple-touch-icon" />
+        <meta name="theme-color" content="#1E40AF" />
 
         {/* Global Structured Data */}
         <StructuredData data={organizationSchema} />
@@ -62,7 +63,8 @@ export const metadata: Metadata = {
   title: 'ร้านวัสดุก่อสร้าง ตลิ่งชัน ใกล้ฉัน | จงมีชัยค้าวัสดุ ',
   description:
     'จงมีชัยค้าวัสดุ ตลิ่งชัน ปากซอยชักพระ6 ร้านวัสดุก่อสร้างครบวงจร ราคาถูก ส่งด่วนถึงไซต์งาน อิฐ หิน ปูน ทราย เหล็ก ประปา ไฟฟ้า ช่าง ครบจบที่เดียว',
-  keywords: 'วัสดุก่อสร้าง,วัสดุก่อสร้างใกล้ฉัน, ราคาถูก, ตลิ่งชัน, ปากซอยชักพระ6, ประปา,ไฟฟ้า, เหล็ก, ปั๊มน้ำ,ปูน,ทรายคิว ,หินคิว ,ทราย ,หิน ,รถปูน ,ประตู,หน้าต่าง อุปกรณ์ประปา, เครื่องผสมสี, ร้านวัสดุก่อสร้างใกล้ฉัน',
+  keywords:
+    'วัสดุก่อสร้าง,วัสดุก่อสร้างใกล้ฉัน, ราคาถูก, ตลิ่งชัน, ปากซอยชักพระ6, ประปา,ไฟฟ้า, เหล็ก, ปั๊มน้ำ,ปูน,ทรายคิว ,หินคิว ,ทราย ,หิน ,รถปูน ,ประตู,หน้าต่าง อุปกรณ์ประปา, เครื่องผสมสี, ร้านวัสดุก่อสร้างใกล้ฉัน',
   robots: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1',
 
   openGraph: {
@@ -87,8 +89,7 @@ export const metadata: Metadata = {
     site: '@jmccompany',
     creator: '@jmccompany',
     title: 'ร้านวัสดุก่อสร้าง ตลิ่งชัน ใกล้ฉัน | JMC',
-    description:
-      'วัสดุก่อสร้างครบวงจร ราคาถูก ตลิ่งชัน ปากซอยชักพระ6 ส่งไวถึงไซต์งาน',
+    description: 'วัสดุก่อสร้างครบวงจร ราคาถูก ตลิ่งชัน ปากซอยชักพระ6 ส่งไวถึงไซต์งาน',
     images: [`${getServerSideURL()}/jmc-og-image.svg`],
   },
 }
