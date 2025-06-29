@@ -93,9 +93,8 @@ const getImageURL = (
 // Google Algorithm 2025 - Enhanced title generation with local keywords
 const generateOptimizedTitle = (
   pageTitle?: string,
-  siteName?: string,
+  _siteName?: string,
   pageType?: 'home' | 'page' | 'product' | 'category' | 'post',
-  slug?: string | string[],
 ): string => {
   const businessName = 'จงมีชัยค้าวัสดุ'
   const localKeywords = 'ตลิ่งชัน ปากซอยชักพระ6'
@@ -205,8 +204,8 @@ export const generateMeta = async (args: {
     // Try to get site settings from database
     const payload = await getPayload({ config: configPromise })
     // Type assertion for site-settings global slug
-    const result = await payload.findGlobal({
-      slug: 'site-settings' as any,
+    const result = await (payload.findGlobal as any)({
+      slug: 'site-settings',
       depth: 1,
     })
 
@@ -238,19 +237,18 @@ export const generateMeta = async (args: {
     doc?.meta?.title || undefined,
     defaultSiteName,
     pageType,
-    doc?.slug || undefined,
   )
 
   const optimizedDescription = generateOptimizedDescription(
     doc?.meta?.description || undefined,
     pageType,
-    doc?.meta?.title || doc?.title || undefined,
+    doc?.meta?.title || (typeof doc?.title === 'string' ? doc.title : undefined),
   )
 
   const optimizedKeywords = generateKeywords(
     defaultKeywords,
     pageType,
-    doc?.meta?.title || doc?.title,
+    doc?.meta?.title || (typeof doc?.title === 'string' ? doc.title : undefined),
   )
 
   const ogImage = getImageURL(doc?.meta?.image, defaultOgImageUrl)
