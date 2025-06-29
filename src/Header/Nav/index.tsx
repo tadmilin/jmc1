@@ -76,13 +76,27 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                     {link.label}
                   </button>
                 ) : (
-                  <span className="font-medium text-gray-700">
-                    {link.label}
-                  </span>
+                  <span className="font-medium text-gray-700">{link.label}</span>
                 )}
               </li>
             )
           })}
+
+          {/* เพิ่มลิงก์ติดต่อ - hardcode เพื่อ SEO */}
+          <li className="py-1">
+            {isClient ? (
+              <button
+                onClick={() =>
+                  handleNavigation({ type: 'reference', url: '/contact', label: 'ติดต่อเรา' })
+                }
+                className="font-medium text-gray-700 hover:text-blue-600 transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-blue-600 hover:after:w-full after:transition-all after:duration-300 bg-transparent border-none cursor-pointer"
+              >
+                ติดต่อเรา
+              </button>
+            ) : (
+              <span className="font-medium text-gray-700">ติดต่อเรา</span>
+            )}
+          </li>
         </ul>
 
         {/* สำหรับมือถือ - Hamburger menu */}
