@@ -41,6 +41,14 @@ export type OrganizationSchema = {
   }
   foundingDate: string
   sameAs: string[]
+  aggregateRating: {
+    '@type': 'AggregateRating'
+    ratingValue: string
+    reviewCount: string
+    bestRating: string
+    worstRating: string
+  }
+  openingHours: string
 }
 
 export type WebSiteSchema = {
@@ -78,27 +86,27 @@ export function generateOrganizationSchema(): OrganizationSchema {
   return {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
-    name: 'ร้านวัสดุก่อสร้าง จงมีชัยค้าวัสดุ ตลิ่งชัน ใกล้ฉัน',
-    alternateName: 'จงมีชัยค้าวัสดุ',
+    name: 'จงมีชัยค้าวัสดุ',
+    alternateName: 'ร้านวัสดุก่อสร้าง จงมีชัยค้าวัสดุ ตลิ่งชัน ใกล้ฉัน',
     description:
       'ร้านวัสดุก่อสร้างราคาถูกครบวงจร ตลิ่งชัน ปากซอยชักพระ6 ใกล้ฉัน อิฐ หิน ปูน ทราย เหล็ก ประปา ไฟฟ้า ช่าง ส่งไว',
     url: baseUrl,
     logo: `${baseUrl}/jmc-og-image.svg`,
     image: [`${baseUrl}/jmc-og-image.svg`],
-    telephone: '02-434-8319', // TODO: Update with real phone number
-    email: 'tadeyes1@gmail.com', // TODO: Update with real email
+    telephone: '02-434-8319',
+    email: 'tadeyes1@gmail.com',
     address: {
       '@type': 'PostalAddress',
-      streetAddress: '38,40 ถนนชักพระ เขตตลิ่งชัน แขวงตลิ่งชัน ซอยชักพระ6 กรุงเทพ 10170', // TODO: Update with real address
-      addressLocality: 'กรุงเทพมหานคร',
+      streetAddress: '38,40 ปาก ซอยชักพระ6 ถนนชักพระ',
+      addressLocality: 'ตลิ่งชัน',
       addressRegion: 'กรุงเทพมหานคร',
-      postalCode: '10170', // TODO: Update with real postal code
+      postalCode: '10170',
       addressCountry: 'TH',
     },
     geo: {
       '@type': 'GeoCoordinates',
-      latitude: 13.7563, // TODO: Update with real coordinates
-      longitude: 100.5018,
+      latitude: 13.780839074740534, // พิกัดที่ถูกต้องของร้าน - ต้องใส่พิกัดจริงจาก Google Maps
+      longitude: 100.4622982337261, // พิกัดที่ถูกต้องของร้าน - ต้องใส่พิกัดจริงจาก Google Maps
     },
     openingHoursSpecification: [
       {
@@ -107,21 +115,58 @@ export function generateOrganizationSchema(): OrganizationSchema {
         opens: '07:00',
         closes: '17:00',
       },
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Sunday'],
+        opens: '08:00',
+        closes: '16:00',
+      },
     ],
     priceRange: '฿฿',
-    paymentAccepted: ['Cash', 'Credit Card', 'Bank Transfer'],
+    paymentAccepted: ['Cash', 'Credit Card', 'Bank Transfer', 'Promptpay'],
     currenciesAccepted: 'THB',
-    areaServed: ['Thailand'],
-    serviceType: ['วัสดุก่อสร้าง', 'อุปกรณ์ก่อสร้าง', 'คำนวณสี', 'ประปา', 'ปูน', 'เหล็ก', 'อิฐ', 'หิน', 'ทราย', 'ไฟฟ้า', 'ช่าง'],
+    areaServed: [
+      'ตลิ่งชัน',
+      'บางพลัด',
+      'บางกอกน้อย',
+      'ธนบุรี',
+      'บางกอกใหญ่',
+      'กรุงเทพมหานคร',
+      'นนทบุรี',
+      'ปทุมธานี',
+    ],
+    serviceType: [
+      'วัสดุก่อสร้าง',
+      'อุปกรณ์ก่อสร้าง',
+      'คำนวณสี',
+      'ปูนกาว',
+      'เหล็ก',
+      'อิฐ',
+      'หิน',
+      'ทราย',
+      'อุปกรณ์ประปา',
+      'อุปกรณ์ไฟฟ้า',
+      'สีทาบ้าน',
+      'ช่างรับเหมา',
+    ],
     founder: {
       '@type': 'Person',
-      name: 'ทัด', // TODO: Update with real founder name
+      name: 'คุณทัด จงมีชัย',
     },
-    foundingDate: '2000-01-01', // TODO: Update with real founding date
+    foundingDate: '1990-01-01',
     sameAs: [
       'https://www.facebook.com/jmc1990lekmor',
-      'https://page.line.me/308aoxno'
+      'https://page.line.me/308aoxno',
+      'https://share.google/TxjtGXd6tcJBmaMCd', // ใส่ URL ของ Google Maps ที่แท้จริง
     ],
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.6',
+      reviewCount: '9',
+      bestRating: '5',
+      worstRating: '1',
+    },
+    openingHours: 'Mo-Sa 07:00-17:00, Su 08:00-16:00',
   }
 }
 
@@ -137,7 +182,8 @@ export function generateWebSiteSchema(): WebSiteSchema {
     name: 'ร้านวัสดุก่อสร้าง จงมีชัยค้าวัสดุ ตลิ่งชัน ใกล้ฉัน',
     alternateName: 'จงมีชัยค้าวัสดุ',
     url: baseUrl,
-    description: 'ร้านวัสดุก่อสร้างราคาถูกครบวงจร ตลิ่งชัน ปากซอยชักพระ6 ใกล้ฉัน อิฐ หิน ปูน ทราย เหล็ก ประปา ไฟฟ้า ช่าง ส่งไว',
+    description:
+      'ร้านวัสดุก่อสร้างราคาถูกครบวงจร ตลิ่งชัน ปากซอยชักพระ6 ใกล้ฉัน อิฐ หิน ปูน ทราย เหล็ก ประปา ไฟฟ้า ช่าง ส่งไว',
     publisher: {
       '@type': 'Organization',
       name: 'จงมีชัยค้าวัสดุ',

@@ -8,7 +8,6 @@ export const SiteSettings: GlobalConfig = {
     read: () => true,
   },
   admin: {
-    group: 'การตั้งค่า',
     description: 'จัดการข้อมูล SEO และการตั้งค่าทั่วไปของเว็บไซต์',
   },
   fields: [
@@ -24,7 +23,7 @@ export const SiteSettings: GlobalConfig = {
               label: 'ชื่อเว็บไซต์',
               type: 'text',
               required: true,
-              defaultValue: 'JMC Company',
+              defaultValue: 'จงมีชัยค้าวัสดุ',
               admin: {
                 description: 'ชื่อที่จะแสดงใน browser tab และเป็นชื่อเว็บไซต์หลัก',
               },
@@ -33,7 +32,7 @@ export const SiteSettings: GlobalConfig = {
               name: 'siteTagline',
               label: 'คำโปรย (Tagline)',
               type: 'text',
-              defaultValue: 'ท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปา',
+              defaultValue: 'ร้านวัสดุก่อสร้าง ตลิ่งชัน ใกล้ฉัน ปากซอยชักพระ6',
               admin: {
                 description: 'คำโปรยที่จะแสดงต่อจากชื่อเว็บไซต์',
               },
@@ -43,16 +42,19 @@ export const SiteSettings: GlobalConfig = {
               label: 'คำอธิบายเว็บไซต์',
               type: 'textarea',
               maxLength: 160,
-              defaultValue: 'บริษัท เจเอ็มซี จำกัด ผู้จำหน่ายท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปาคุณภาพสูง ราคาย่อมเยา พร้อมคำนวณสีฟรี',
+              defaultValue:
+                'จงมีชัยค้าวัสดุ ตลิ่งชัน ปากซอยชักพระ6 ร้านวัสดุก่อสร้างครบวงจร ราคาถูก ส่งด่วนถึงไซต์งาน อิฐ หิน ปูน ทราย เหล็ก ประปา ไฟฟ้า ช่าง ครบจบที่เดียว',
               admin: {
-                description: 'คำอธิบายที่จะแสดงใน Google Search และเมื่อแชร์ลิงก์ (แนะนำ 150-160 ตัวอักษร)',
+                description:
+                  'คำอธิบายที่จะแสดงใน Google Search และเมื่อแชร์ลิงก์ (แนะนำ 150-160 ตัวอักษร)',
               },
             },
             {
               name: 'siteKeywords',
               label: 'คำสำคัญ (Keywords)',
               type: 'text',
-              defaultValue: 'ท่อ PVC, ข้อต่อ, ปั๊มน้ำ, อุปกรณ์ประปา, คำนวณสี, JMC',
+              defaultValue:
+                'วัสดุก่อสร้าง, ตลิ่งชัน, ใกล้ฉัน, ปากซอยชักพระ6, จงมีชัยค้าวัสดุ, อิฐ หิน ปูน ทราย, เหล็ก, ประปา, ไฟฟ้า',
               admin: {
                 description: 'คำสำคัญสำหรับการค้นหา (คั่นด้วยเครื่องหมายจุลภาค)',
               },
@@ -63,7 +65,8 @@ export const SiteSettings: GlobalConfig = {
               type: 'upload',
               relationTo: 'media',
               admin: {
-                description: 'รูปภาพที่จะแสดงเมื่อแชร์ลิงก์ใน Facebook, LINE, Twitter (แนะนำ 1200x630px)',
+                description:
+                  'รูปภาพที่จะแสดงเมื่อแชร์ลิงก์ใน Facebook, LINE, Twitter (แนะนำ 1200x630px)',
               },
             },
           ],
@@ -76,7 +79,7 @@ export const SiteSettings: GlobalConfig = {
               name: 'companyName',
               label: 'ชื่อบริษัทเต็ม',
               type: 'text',
-              defaultValue: 'บริษัท เจเอ็มซี จำกัด',
+              defaultValue: 'จงมีชัยค้าวัสดุ',
             },
             {
               name: 'address',
@@ -106,7 +109,7 @@ export const SiteSettings: GlobalConfig = {
               name: 'businessHours',
               label: 'เวลาทำการ',
               type: 'text',
-              defaultValue: 'เปิดบริการทุกวัน 8:00 - 17:00 น.',
+              defaultValue: 'จันทร์-เสาร์ 07:00-17:00 น., อาทิตย์ 08:00-16:00 น.',
             },
           ],
         },
@@ -134,7 +137,7 @@ export const SiteSettings: GlobalConfig = {
               name: 'twitterHandle',
               label: 'Twitter Handle',
               type: 'text',
-              defaultValue: '@jmccompany',
+              defaultValue: '@jmcmaterials',
               admin: {
                 description: 'Twitter username (รวม @)',
               },
@@ -175,4 +178,4 @@ export const SiteSettings: GlobalConfig = {
   hooks: {
     afterChange: [revalidateSiteSettings],
   },
-} 
+}

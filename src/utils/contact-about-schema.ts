@@ -31,8 +31,8 @@ export function generateContactPageSchema() {
       },
       geo: {
         '@type': 'GeoCoordinates',
-        latitude: 13.7563,
-        longitude: 100.5018,
+        latitude: 13.780839074740534,
+        longitude: 100.4622982337261,
       },
       openingHoursSpecification: [
         {
@@ -164,8 +164,8 @@ export function generateAboutPageSchema() {
       },
       geo: {
         '@type': 'GeoCoordinates',
-        latitude: 13.7563,
-        longitude: 100.5018,
+        latitude: 13.780839074740534,
+        longitude: 100.4622982337261,
       },
       areaServed: [
         {

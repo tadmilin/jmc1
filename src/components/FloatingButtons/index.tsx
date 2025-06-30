@@ -32,8 +32,8 @@ const FloatingButtons: React.FC = () => {
         // Fallback values
         setSettings({
           phone: '02-434-8319',
-          line: '@jmcmaterials',
-          facebook: 'https://facebook.com/jmcmaterials',
+          line: '@308aoxno',
+          facebook: 'https://www.facebook.com/jmc1990lekmor',
         })
       }
     }
@@ -49,14 +49,14 @@ const FloatingButtons: React.FC = () => {
   }
 
   const handleLineChat = () => {
-    const lineId = settings?.line || '@jmcmaterials'
+    const lineId = settings?.line || '@308aoxno'
     // Clean LINE ID (remove @ if exists)
     const cleanLineId = lineId.startsWith('@') ? lineId.substring(1) : lineId
     window.open(`https://line.me/ti/p/@${cleanLineId}`, '_blank', 'noopener,noreferrer')
   }
 
   const handleFacebookPage = () => {
-    const facebookUrl = settings?.facebook || 'https://facebook.com/jmcmaterials'
+    const facebookUrl = settings?.facebook || 'https://www.facebook.com/jmc1990lekmor'
     window.open(facebookUrl, '_blank', 'noopener,noreferrer')
   }
 
@@ -87,8 +87,8 @@ const FloatingButtons: React.FC = () => {
         <button
           onClick={handleLineChat}
           className="group relative flex items-center justify-center w-14 h-14 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-green-300"
-          aria-label={`LINE Chat ${settings?.line || '@jmcmaterials'}`}
-          title={`LINE Chat ${settings?.line || '@jmcmaterials'}`}
+          aria-label={`LINE Chat ${settings?.line || '@308aoxno'}`}
+          title={`LINE Chat ${settings?.line || '@308aoxno'}`}
         >
           {/* LINE Icon */}
           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -97,7 +97,7 @@ const FloatingButtons: React.FC = () => {
 
           {/* LINE ID Tooltip */}
           <div className="absolute right-16 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">
-            💬 LINE: {settings?.line || '@jmcmaterials'}
+            💬 LINE: {settings?.line || '@308aoxno'}
             <div className="absolute top-1/2 left-full transform -translate-y-1/2 border-l-4 border-l-gray-900 border-y-4 border-y-transparent"></div>
           </div>
         </button>

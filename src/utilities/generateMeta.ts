@@ -424,8 +424,8 @@ export const generateMeta = async (args: {
       'application-name': defaultSiteName,
       'geo.region': 'TH-10',
       'geo.placename': 'ตลิ่งชัน, กรุงเทพมหานคร',
-      'geo.position': '13.7563;100.5018',
-      ICBM: '13.7563, 100.5018',
+      'geo.position': '13.780839074740534;100.4622982337261',
+      ICBM: '13.780839074740534, 100.4622982337261',
       // Local Business Schema signals
       'business-type': 'construction materials store',
       'business-hours': siteSettings?.businessHours || 'Mo-Sat 07:00-17:00',
