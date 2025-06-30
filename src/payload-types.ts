@@ -424,6 +424,7 @@ export interface Page {
   };
   layout: (
     | CallToActionBlock
+    | CodeBlock
     | ContentBlock
     | MediaBlock
     | ArchiveBlock
@@ -436,12 +437,22 @@ export interface Page {
     | QuoteRequestFormBlock
   )[];
   meta?: {
+    /**
+     * หัวข้อที่จะแสดงใน Google Search (ควรไม่เกิน 60 ตัวอักษร)
+     */
     title?: string | null;
     /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     * คำอธิบายที่จะแสดงใน Google Search (ควรไม่เกิน 160 ตัวอักษร)
+     */
+    description?: string | null;
+    /**
+     * คำค้นหาสำคัญ (คั่นด้วยเครื่องหมายจุลภาค)
+     */
+    keywords?: string | null;
+    /**
+     * รูปภาพที่จะแสดงเมื่อแชร์ในโซเชียล
      */
     image?: (string | null) | Media;
-    description?: string | null;
   };
   publishedAt?: string | null;
   slug?: string | null;
@@ -563,6 +574,17 @@ export interface CallToActionBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'cta';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CodeBlock".
+ */
+export interface CodeBlock {
+  language?: ('html' | 'typescript' | 'javascript' | 'css') | null;
+  code: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'code';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1708,6 +1730,7 @@ export interface PagesSelect<T extends boolean = true> {
     | T
     | {
         cta?: T | CallToActionBlockSelect<T>;
+        code?: T | CodeBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
         mediaBlock?: T | MediaBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;
@@ -1723,8 +1746,9 @@ export interface PagesSelect<T extends boolean = true> {
     | T
     | {
         title?: T;
-        image?: T;
         description?: T;
+        keywords?: T;
+        image?: T;
       };
   publishedAt?: T;
   slug?: T;
@@ -1754,6 +1778,16 @@ export interface CallToActionBlockSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CodeBlock_select".
+ */
+export interface CodeBlockSelect<T extends boolean = true> {
+  language?: T;
+  code?: T;
   id?: T;
   blockName?: T;
 }
@@ -2697,17 +2731,6 @@ export interface BannerBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'banner';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CodeBlock".
- */
-export interface CodeBlock {
-  language?: ('typescript' | 'javascript' | 'css') | null;
-  code: string;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'code';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
