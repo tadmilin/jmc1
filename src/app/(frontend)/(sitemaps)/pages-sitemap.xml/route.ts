@@ -40,6 +40,13 @@ const getPagesSitemap = unstable_cache(
         loc: `${SITE_URL}/posts`,
         lastmod: dateFallback,
       },
+      // Local SEO Pages
+      {
+        loc: `${SITE_URL}/วัสดุก่อสร้าง-ใกล้ฉัน`,
+        lastmod: dateFallback,
+        priority: 0.9,
+        changefreq: 'weekly',
+      },
     ]
 
     const sitemap = results.docs
