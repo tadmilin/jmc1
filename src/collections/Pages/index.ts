@@ -10,6 +10,7 @@ import { FormBlock } from '../../blocks/Form/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
 import { ImageSliderBlock } from '../../blocks/ImageSliderBlock/config'
 import { CategoryGridBlock } from '../../blocks/CategoryGridBlock/config'
+import { ContentGridBlock } from '../../blocks/ContentGridBlock/config'
 import { GoogleMapBlock } from '../../blocks/GoogleMapBlock/config'
 import { ServiceFeaturesBlock } from '../../blocks/ServiceFeaturesBlock/config'
 import { ProductsBlock } from '../../blocks/ProductsBlock/config'
@@ -90,6 +91,7 @@ export const Pages: CollectionConfig<'pages'> = {
                 FormBlock,
                 ImageSliderBlock,
                 CategoryGridBlock,
+                ContentGridBlock,
                 GoogleMapBlock,
                 ServiceFeaturesBlock,
                 ProductsBlock,

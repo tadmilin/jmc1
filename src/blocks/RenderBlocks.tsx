@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 // Remove dynamic import of ImageSliderBlock here
 // import dynamic from 'next/dynamic'
@@ -15,6 +15,7 @@ import { GoogleMapBlock } from './GoogleMapBlock/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { ImageSliderBlock } from './ImageSliderBlock/Component'
 import { CategoryGridBlock } from './CategoryGridBlock/Component'
+import { ContentGridBlock } from './ContentGridBlock/Component'
 import { ProductsBlock } from './ProductsBlock/Component'
 import { RelatedPosts } from './RelatedPosts/Component'
 import { SaleProductsSliderBlock } from './SaleProductsSliderBlock/Component'
@@ -35,6 +36,7 @@ const blockComponents = {
   mediaBlock: MediaBlock,
   imageSlider: ImageSliderBlock,
   categoryGrid: CategoryGridBlock,
+  contentGrid: ContentGridBlock,
   productsBlock: ProductsBlock,
   relatedPosts: RelatedPosts,
   saleProductsSliderBlock: SaleProductsSliderBlock,
@@ -63,7 +65,13 @@ export const RenderBlocks: React.FC<{
 
             if (Block) {
               // กรณีที่ต้องส่งในรูปแบบพิเศษ (ส่งผ่าน block prop)
-              if (blockType === 'categoryGrid' || blockType === 'imageSlider' || blockType === 'googleMap' || blockType === 'serviceFeatures') {
+              if (
+                blockType === 'categoryGrid' ||
+                blockType === 'contentGrid' ||
+                blockType === 'imageSlider' ||
+                blockType === 'googleMap' ||
+                blockType === 'serviceFeatures'
+              ) {
                 return (
                   <div key={index}>
                     {/* @ts-expect-error there may be some mismatch between the expected types here */}
@@ -81,7 +89,7 @@ export const RenderBlocks: React.FC<{
                   </div>
                 )
               }
-              
+
               // กรณี ProductsBlock ส่ง colorTheme เพิ่มเติม
               if (blockType === 'productsBlock') {
                 return (
@@ -91,7 +99,7 @@ export const RenderBlocks: React.FC<{
                   </div>
                 )
               }
-              
+
               // กรณี SaleProductsSliderBlock ส่ง colorTheme เพิ่มเติม
               if ((blockType as string) === 'saleProductsSliderBlock') {
                 return (
@@ -101,7 +109,7 @@ export const RenderBlocks: React.FC<{
                   </div>
                 )
               }
-              
+
               // กรณี ArchiveBlock ส่ง colorTheme เพิ่มเติม
               if (blockType === 'archive') {
                 return (
@@ -111,7 +119,7 @@ export const RenderBlocks: React.FC<{
                   </div>
                 )
               }
-              
+
               // กรณีอื่นๆ ใช้การส่งแบบเดิม
               return (
                 <div key={index}>

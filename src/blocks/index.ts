@@ -4,6 +4,7 @@ import { Archive as ArchiveBlock } from './ArchiveBlock/config'
 import { Banner } from './Banner/config'
 import { CallToAction } from './CallToAction/config'
 import { CategoryGridBlock } from './CategoryGridBlock/config'
+import { ContentGridBlock } from './ContentGridBlock/config'
 import { Content } from './Content/config'
 import { FormBlock as Form } from './Form/config'
 import { GoogleMapBlock } from './GoogleMapBlock/config'
@@ -20,6 +21,7 @@ export const blocks: Block[] = [
   Banner,
   CallToAction,
   CategoryGridBlock,
+  ContentGridBlock,
   Code,
   Content,
   Form,
@@ -30,4 +32,4 @@ export const blocks: Block[] = [
   RelatedPostsBlock,
   SaleProductsSliderBlock,
   ServiceFeaturesBlock,
-] 
+]
