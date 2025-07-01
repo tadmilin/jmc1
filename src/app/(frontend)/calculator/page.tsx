@@ -4,7 +4,8 @@ import { PaintCalculator } from './PaintCalculator'
 
 export const metadata: Metadata = {
   title: 'คำนวณปริมาณสี | ร้านเจเอ็มซี - วัสดุก่อสร้าง',
-  description: 'คำนวณปริมาณสีที่ใช้ในการทาบ้าน ทั้งสีรองพื้นและสีจริง สำหรับผนัง เพดาน หรือพื้นที่ทั้งหมด',
+  description:
+    'คำนวณปริมาณสีที่ใช้ในการทาบ้าน ทั้งสีรองพื้นและสีจริง สำหรับผนัง เพดาน หรือพื้นที่ทั้งหมด',
   keywords: 'คำนวณสี, สีทาบ้าน, สีรองพื้น, ปริมาณสี, เกลอน, วัสดุก่อสร้าง',
 }
 
@@ -14,7 +15,7 @@ export default function CalculatorPage() {
       {/* Hero Section */}
       <section className="relative min-h-[50vh] flex items-center justify-center overflow-hidden">
         {/* Background Image */}
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: `url('/calculator/hero-background.webp')`,
@@ -26,9 +27,12 @@ export default function CalculatorPage() {
 
         {/* Fallback Background Pattern (if image doesn't load) */}
         <div className="absolute inset-0 opacity-5 bg-gradient-to-br from-blue-50 via-white to-green-50">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }} />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            }}
+          />
         </div>
 
         {/* Floating Elements */}
@@ -54,13 +58,14 @@ export default function CalculatorPage() {
             <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full mb-6 border border-white/30">
               <Calculator className="w-10 h-10 text-white" />
             </div>
-            
+
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white drop-shadow-lg">
-              คำนวณปริมาณสีทาบ้าน
+              คำนวณปริมาณสี | ร้านวัสดุก่อสร้าง ตลิ่งชัน ปากซอยชักพระ6
             </h1>
-            
+
             <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
-              เครื่องมือคำนวณปริมาณสีอัจฉริยะ<br />
+              เครื่องมือคำนวณปริมาณสีอัจฉริยะ
+              <br />
               คำนวณสีรองพื้นและสีจริงได้แม่นยำ ประหยัดเวลาและค่าใช้จ่าย
             </p>
 
@@ -84,4 +89,4 @@ export default function CalculatorPage() {
       </div>
     </>
   )
-} 
+}
