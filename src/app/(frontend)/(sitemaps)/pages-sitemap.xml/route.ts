@@ -42,7 +42,7 @@ const getPagesSitemap = unstable_cache(
       },
       // Local SEO Pages
       {
-        loc: `${SITE_URL}/วัสดุก่อสร้าง-ใกล้ฉัน`,
+        loc: `${SITE_URL}/construction-materials-near-me`,
         lastmod: dateFallback,
         priority: 0.9,
         changefreq: 'weekly',
