@@ -23,6 +23,13 @@ import { getServerSideURL } from '@/utilities/getURL'
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
 
+  // Fetch header data เพื่อเอา logo มาใช้เป็น favicon
+  const headerData = (await getCachedGlobal('header', 1)()) as any
+  const logoImageUrl = headerData?.logo?.logoImage?.url || '/favicon.svg'
+
+  // เพิ่ม cache busting version
+  const faviconUrl = logoImageUrl.includes('http') ? logoImageUrl : `${logoImageUrl}?v=3`
+
   // Generate global structured data
   const organizationSchema = generateOrganizationSchema()
   const websiteSchema = generateWebSiteSchema()
@@ -34,12 +41,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="robots" content="index, follow" />
         <InitTheme />
-        {/* Multiple favicon formats with cache busting */}
-        <link href="/favicon.svg?v=2" rel="icon" type="image/svg+xml" />
-        <link href="/favicon.svg?v=2" rel="shortcut icon" type="image/svg+xml" />
-        <link href="/jmc-og-image.svg?v=2" rel="apple-touch-icon" sizes="180x180" />
-        <link href="/favicon.svg?v=2" rel="icon" type="image/svg+xml" sizes="32x32" />
-        <link href="/favicon.svg?v=2" rel="icon" type="image/svg+xml" sizes="16x16" />
+        {/* Dynamic favicon จากรูปที่อัพโหลดใน Admin Dashboard */}
+        <link href={faviconUrl} rel="icon" type="image/png" />
+        <link href={faviconUrl} rel="shortcut icon" type="image/png" />
+        <link href={faviconUrl} rel="apple-touch-icon" sizes="180x180" />
+        <link href={faviconUrl} rel="icon" sizes="32x32" />
+        <link href={faviconUrl} rel="icon" sizes="16x16" />
         <meta name="theme-color" content="#1E40AF" />
         <meta name="msapplication-TileColor" content="#1E40AF" />
         <meta name="msapplication-config" content="none" />
