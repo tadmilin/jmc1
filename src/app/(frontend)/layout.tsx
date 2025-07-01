@@ -34,9 +34,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="robots" content="index, follow" />
         <InitTheme />
-        <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
-        <link href="/jmc-og-image.svg" rel="apple-touch-icon" />
+        {/* Multiple favicon formats with cache busting */}
+        <link href="/favicon.svg?v=2" rel="icon" type="image/svg+xml" />
+        <link href="/favicon.svg?v=2" rel="shortcut icon" type="image/svg+xml" />
+        <link href="/jmc-og-image.svg?v=2" rel="apple-touch-icon" sizes="180x180" />
+        <link href="/favicon.svg?v=2" rel="icon" type="image/svg+xml" sizes="32x32" />
+        <link href="/favicon.svg?v=2" rel="icon" type="image/svg+xml" sizes="16x16" />
         <meta name="theme-color" content="#1E40AF" />
+        <meta name="msapplication-TileColor" content="#1E40AF" />
+        <meta name="msapplication-config" content="none" />
 
         {/* Global Structured Data */}
         <StructuredData data={organizationSchema} />
