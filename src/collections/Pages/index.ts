@@ -135,9 +135,20 @@ export const Pages: CollectionConfig<'pages'> = {
               name: 'image',
               type: 'relationship',
               relationTo: 'media',
-              label: 'SEO Image',
+              label: 'SEO Image หลัก',
               admin: {
-                description: 'รูปภาพที่จะแสดงเมื่อแชร์ในโซเชียล',
+                description: 'รูปภาพหลักที่จะแสดงเมื่อแชร์ในโซเชียล',
+              },
+            },
+            {
+              name: 'images',
+              type: 'relationship',
+              relationTo: 'media',
+              hasMany: true,
+              label: 'รูปภาพเพิ่มเติม (สำหรับ Google Images)',
+              admin: {
+                description:
+                  'เพิ่มรูปภาพหลายรูปเพื่อให้ Google แสดงใน Search Results (แนะนำ 3-8 รูป)',
               },
             },
           ],

@@ -178,4 +178,4 @@ export const SiteSettings: GlobalConfig = {
   hooks: {
     afterChange: [revalidateSiteSettings],
   },
-}
+} 

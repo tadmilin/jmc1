@@ -102,7 +102,7 @@ const HeroActionSlotsRenderer: React.FC<{
 }> = ({ slots, colorTheme }) => {
   // Debug: แสดงจำนวน slots ที่ได้รับจริง
   console.log('Hero Action Slots received:', slots?.length || 0, slots)
-
+  
   if (!slots || slots.length === 0) return null
 
   const isDarkTheme = colorTheme === 'dark'

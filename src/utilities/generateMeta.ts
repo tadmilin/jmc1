@@ -326,6 +326,45 @@ export const generateMeta = async (args: {
 
   const ogImage = getImageURL(doc?.meta?.image, defaultOgImageUrl)
 
+  // สร้าง array ของรูปภาพสำหรับ Open Graph และ Google Images
+  const allImages: Array<{
+    url: string
+    width: number
+    height: number
+    alt: string
+    type: string
+  }> = []
+
+  // เพิ่มรูปหลัก
+  if (ogImage) {
+    allImages.push({
+      url: ogImage,
+      width: 1200,
+      height: 630,
+      alt: doc?.meta?.title || optimizedTitle,
+      type: 'image/jpeg',
+    })
+  }
+
+  // เพิ่มรูปเพิ่มเติมจาก meta.images
+  if (doc?.meta && (doc.meta as any)?.images && Array.isArray((doc.meta as any).images)) {
+    ;(doc.meta as any).images.forEach((image: any, index: number) => {
+      if (image && typeof image === 'object') {
+        const imageUrl = getImageURL(image, undefined)
+        if (imageUrl && imageUrl !== ogImage) {
+          // หลีกเลี่ยงรูปซ้ำ
+          allImages.push({
+            url: imageUrl,
+            width: 1200,
+            height: 630,
+            alt: `${doc?.meta?.title || optimizedTitle} - รูปที่ ${index + 2}`,
+            type: 'image/jpeg',
+          })
+        }
+      }
+    })
+  }
+
   if (process.env.NODE_ENV === 'development') {
     console.log('🎯 Google Algorithm 2025 Optimized Meta:', {
       title: optimizedTitle,
@@ -375,17 +414,7 @@ export const generateMeta = async (args: {
     openGraph: await mergeOpenGraph({
       title: optimizedTitle,
       description: optimizedDescription,
-      images: ogImage
-        ? [
-            {
-              url: ogImage,
-              width: 1200,
-              height: 630,
-              alt: doc?.meta?.title || optimizedTitle,
-              type: 'image/jpeg',
-            },
-          ]
-        : undefined,
+      images: allImages.length > 0 ? allImages : undefined,
       url: Array.isArray(doc?.slug) ? doc?.slug.join('/') : doc?.slug || '/',
       siteName: defaultSiteName,
       locale: 'th_TH',
@@ -406,7 +435,7 @@ export const generateMeta = async (args: {
       card: 'summary_large_image',
       title: optimizedTitle,
       description: optimizedDescription,
-      images: ogImage ? [ogImage] : undefined,
+      images: allImages.length > 0 ? allImages.map((img) => img.url) : undefined,
       creator: '@jmccompany',
       site: '@jmccompany',
     },

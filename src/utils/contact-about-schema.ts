@@ -302,3 +302,4 @@ export function generatePageSchemas(pageType: 'contact' | 'about') {
 
   return schemas
 }
+ 
