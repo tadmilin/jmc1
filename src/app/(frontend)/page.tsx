@@ -3,6 +3,7 @@ import { generateMeta } from '@/utilities/generateMeta'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import type { Metadata } from 'next'
+import Link from 'next/link'
 
 export default PageTemplate
 
