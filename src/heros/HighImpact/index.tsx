@@ -1,5 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
+import Image from 'next/image'
 
 import type {
   Page,
@@ -101,7 +102,7 @@ const HeroActionSlotsRenderer: React.FC<{
 }> = ({ slots, colorTheme }) => {
   // Debug: แสดงจำนวน slots ที่ได้รับจริง
   console.log('Hero Action Slots received:', slots?.length || 0, slots)
-  
+
   if (!slots || slots.length === 0) return null
 
   const isDarkTheme = colorTheme === 'dark'
@@ -396,7 +397,25 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
         </div>
       )
     }
-    return null
+
+    // Fallback: แสดงรูปภาพเริ่มต้นถ้าไม่มี media หรือ slideImages
+    return (
+      <div className="relative rounded-xl overflow-hidden shadow-2xl w-full mb-2 aspect-video md:aspect-[16/9] bg-gradient-to-br from-blue-600 to-indigo-600">
+        <Image
+          src="/jmc-og-image.svg"
+          alt="จงมีชัยค้าวัสดุ - ร้านวัสดุก่อสร้าง ตลิ่งชัน"
+          fill
+          className="object-contain p-8"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/90 to-indigo-600/90 flex items-center justify-center">
+          <div className="text-center text-white">
+            <h3 className="text-2xl md:text-3xl font-bold mb-2">จงมีชัยค้าวัสดุ</h3>
+            <p className="text-lg opacity-90">ร้านวัสดุก่อสร้าง ตลิ่งชัน ปากซอยชักพระ6</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   // Reinstated CategoriesDropdown Component for the left sidebar

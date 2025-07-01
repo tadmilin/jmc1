@@ -19,19 +19,22 @@ export const Logo: React.FC<LogoProps> = ({
   logoData,
 }) => {
   // ใช้ข้อมูลจาก logoData หรือค่าเริ่มต้น
-  const companyName = logoData?.companyName || 'JMC'
-  const companySubtitle = logoData?.companySubtitle || 'จงมั่นคงค้าวัสดุ'
+  const companyName = logoData?.companyName || 'จงมีชัยค้าวัสดุ'
+  const companySubtitle = logoData?.companySubtitle || 'ร้านวัสดุก่อสร้าง ตลิ่งชัน'
   const logoBackgroundColor = logoData?.logoBackgroundColor || '#1E40AF'
   const companyNameColor = logoData?.companyNameColor || '#1E40AF'
   const logoImage = logoData?.logoImage
 
+  // ใช้ favicon.svg เป็น fallback image
+  const fallbackLogoUrl = '/favicon.svg'
+
   return (
     <div className={`flex items-center ${className || ''}`}>
-      {/* แสดงรูปโลโก้ที่อัปโหลด หรือ SVG เริ่มต้น */}
+      {/* แสดงรูปโลโก้ที่อัปโหลด หรือใช้ favicon.svg */}
       <div className="relative w-10 h-10 md:w-12 md:h-12 mr-3">
-        {logoImage && typeof logoImage === 'object' ? (
+        {logoImage && typeof logoImage === 'object' && logoImage.url ? (
           <Image
-            src={logoImage.url || ''}
+            src={logoImage.url}
             alt={logoImage.alt || companyName}
             fill
             className="object-contain"
@@ -39,29 +42,15 @@ export const Logo: React.FC<LogoProps> = ({
             loading={loading}
           />
         ) : (
-          <svg
-            className="w-full h-full"
-            width="40"
-            height="40"
-            viewBox="0 0 40 40"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect width="40" height="40" rx="8" fill={logoBackgroundColor} />
-            <path
-              d="M12 20C12 15.5817 15.5817 12 20 12C24.4183 12 28 15.5817 28 20C28 24.4183 24.4183 28 20 28"
-              stroke="white"
-              strokeWidth="3"
-              strokeLinecap="round"
-            />
-            <path
-              d="M20 28H12V20"
-              stroke="white"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <Image
+            src={fallbackLogoUrl}
+            alt={companyName}
+            width={48}
+            height={48}
+            className="w-full h-full object-contain"
+            priority={priority === 'high'}
+            loading={loading}
+          />
         )}
       </div>
 
