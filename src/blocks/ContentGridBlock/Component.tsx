@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import { Media as MediaComponent } from '@/components/Media'
 import RichText from '@/components/RichText'
 import Link from 'next/link'
@@ -20,6 +20,7 @@ export const ContentGridBlock: React.FC<{
   const [contentData, setContentData] = useState<ContentItem[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   // Default values
   const {
@@ -35,8 +36,10 @@ export const ContentGridBlock: React.FC<{
     moreButtonLink,
   } = block || {}
 
-  // Process custom items
-  const processCustomItems = useCallback((): ContentItem[] => {
+  // Memoize processed custom items to prevent re-computation
+  const processedCustomItems = useMemo((): ContentItem[] => {
+    if (contentType !== 'custom') return []
+
     return customItems.map((item, index) => ({
       id: `custom-${index}`,
       title: item.title,
@@ -45,66 +48,88 @@ export const ContentGridBlock: React.FC<{
       url: item.linkType === 'internal' ? getUrl(item.internalLink) : item.externalLink || '#',
       buttonText: item.buttonText || DEFAULT_VALUES.BUTTON_TEXT.CUSTOM,
     }))
-  }, [customItems])
+  }, [customItems, contentType])
+
+  // Memoize category IDs to prevent re-computation
+  const categoryIds = useMemo(() => getIds(categories), [categories])
 
   // Fetch posts from API
-  const fetchPosts = useCallback(async (): Promise<ContentItem[]> => {
-    try {
-      const categoryIds = getIds(categories)
-      let url = `/api/posts?depth=${API_CONFIG.DEPTH}&limit=${limit}&sort=${API_CONFIG.SORT}`
+  const fetchPosts = useCallback(
+    async (signal: AbortSignal): Promise<ContentItem[]> => {
+      try {
+        let url = `/api/posts?depth=${API_CONFIG.DEPTH}&limit=${limit}&sort=${API_CONFIG.SORT}`
+        url += createCategoriesWhereClause(categoryIds)
 
-      url += createCategoriesWhereClause(categoryIds)
+        const response = await fetch(url, { signal })
 
-      const response = await fetch(url)
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+        }
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+        const data: ApiResponse<Post> = await response.json()
+
+        return data.docs.map((post: Post) => ({
+          id: post.id,
+          title: post.title,
+          description: post.meta?.description || post.excerpt,
+          image: post.meta?.image || post.featuredImage,
+          url: `/posts/${post.slug}`,
+          buttonText: DEFAULT_VALUES.BUTTON_TEXT.POSTS,
+        }))
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          throw err
+        }
+        console.error('Error fetching posts:', err)
+        throw new Error(ERROR_MESSAGES.POSTS_FETCH_ERROR)
       }
-
-      const data: ApiResponse<Post> = await response.json()
-
-      return data.docs.map((post: Post) => ({
-        id: post.id,
-        title: post.title,
-        description: post.meta?.description || post.excerpt,
-        image: post.meta?.image || post.featuredImage,
-        url: `/posts/${post.slug}`,
-        buttonText: DEFAULT_VALUES.BUTTON_TEXT.POSTS,
-      }))
-    } catch (err) {
-      console.error('Error fetching posts:', err)
-      throw new Error(ERROR_MESSAGES.POSTS_FETCH_ERROR)
-    }
-  }, [categories, limit])
+    },
+    [categoryIds, limit],
+  )
 
   // Fetch products from API
-  const fetchProducts = useCallback(async (): Promise<ContentItem[]> => {
-    try {
-      const url = `/api/products?depth=${API_CONFIG.DEPTH}&limit=${limit}&sort=${API_CONFIG.SORT}`
-      const response = await fetch(url)
+  const fetchProducts = useCallback(
+    async (signal: AbortSignal): Promise<ContentItem[]> => {
+      try {
+        const url = `/api/products?depth=${API_CONFIG.DEPTH}&limit=${limit}&sort=${API_CONFIG.SORT}`
+        const response = await fetch(url, { signal })
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+        }
+
+        const data: ApiResponse<Product> = await response.json()
+
+        return data.docs.map((product: Product) => ({
+          id: product.id,
+          title: product.title,
+          description: product.meta?.description || product.summary,
+          image: product.meta?.image || product.image,
+          url: `/products/${product.slug}`,
+          buttonText: DEFAULT_VALUES.BUTTON_TEXT.PRODUCTS,
+        }))
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          throw err
+        }
+        console.error('Error fetching products:', err)
+        throw new Error(ERROR_MESSAGES.PRODUCTS_FETCH_ERROR)
       }
+    },
+    [limit],
+  )
 
-      const data: ApiResponse<Product> = await response.json()
-
-      return data.docs.map((product: Product) => ({
-        id: product.id,
-        title: product.title,
-        description: product.meta?.description || product.summary,
-        image: product.meta?.image || product.image,
-        url: `/products/${product.slug}`,
-        buttonText: DEFAULT_VALUES.BUTTON_TEXT.PRODUCTS,
-      }))
-    } catch (err) {
-      console.error('Error fetching products:', err)
-      throw new Error(ERROR_MESSAGES.PRODUCTS_FETCH_ERROR)
-    }
-  }, [limit])
-
-  // Main fetch function
+  // Main fetch function with abort controller
   const fetchContent = useCallback(async () => {
+    // Abort any previous request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
+
+    // Create new abort controller
+    abortControllerRef.current = new AbortController()
+    const signal = abortControllerRef.current.signal
+
     setIsLoading(true)
     setError(null)
 
@@ -113,33 +138,70 @@ export const ContentGridBlock: React.FC<{
 
       switch (contentType) {
         case 'custom':
-          items = processCustomItems()
+          items = processedCustomItems
           break
         case 'posts':
-          items = await fetchPosts()
+          items = await fetchPosts(signal)
           break
         case 'products':
-          items = await fetchProducts()
+          items = await fetchProducts(signal)
           break
         default:
-          items = processCustomItems()
+          items = processedCustomItems
       }
 
-      setContentData(items)
+      if (!signal.aborted) {
+        setContentData(items)
+      }
     } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        return // Request was aborted, don't set error
+      }
+
       const errorMessage = err instanceof Error ? err.message : ERROR_MESSAGES.GENERAL_ERROR
       console.error('Content fetch error:', err)
-      setError(errorMessage)
-      setContentData([])
-    } finally {
-      setIsLoading(false)
-    }
-  }, [contentType, processCustomItems, fetchPosts, fetchProducts])
 
-  // Fetch content when dependencies change
+      if (!signal.aborted) {
+        setError(errorMessage)
+        setContentData([])
+      }
+    } finally {
+      if (!signal.aborted) {
+        setIsLoading(false)
+      }
+    }
+  }, [contentType, processedCustomItems, fetchPosts, fetchProducts])
+
+  // Cleanup abort controller on unmount
   useEffect(() => {
-    fetchContent()
-  }, [fetchContent])
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+    }
+  }, [])
+
+  // Fetch content when key dependencies change (NOT fetchContent itself)
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchContent()
+    }, 100) // Small debounce to prevent rapid calls
+
+    return () => {
+      clearTimeout(timeoutId)
+    }
+  }, [
+    contentType,
+    customItems.length,
+    categories.length,
+    limit,
+    // For posts/products, only track relevant dependencies
+    ...(contentType === 'posts' ? [categoryIds.join(',')] : []),
+    // For custom content, track customItems more carefully
+    ...(contentType === 'custom'
+      ? [customItems.map((item) => `${item.title}-${item.linkType}`).join(',')]
+      : []),
+  ])
 
   // Get grid classes based on columns setting
   const gridClasses = getGridCss(columns)

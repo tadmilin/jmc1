@@ -23,6 +23,9 @@ export const ContentGridBlock: Block = {
       type: 'text',
       label: 'หัวข้อหลัก',
       defaultValue: 'รวมเรื่องน่ารู้คู่คนรักบ้าน',
+      admin: {
+        description: 'หัวข้อหลักที่จะแสดงด้านบนของ grid',
+      },
     },
     {
       name: 'subtitle',
@@ -38,12 +41,16 @@ export const ContentGridBlock: Block = {
         ],
       }),
       label: 'คำอธิบายใต้หัวข้อ',
+      admin: {
+        description: 'คำอธิบายเพิ่มเติมใต้หัวข้อหลัก (ตัวเลือก)',
+      },
     },
     {
       name: 'contentType',
       type: 'radio',
       label: 'ประเภทเนื้อหา',
       defaultValue: 'custom',
+      required: true,
       options: [
         {
           label: 'เนื้อหาที่กำหนดเอง',
@@ -58,6 +65,10 @@ export const ContentGridBlock: Block = {
           value: 'products',
         },
       ],
+      admin: {
+        description: 'เลือกประเภทของเนื้อหาที่ต้องการแสดง',
+        layout: 'vertical',
+      },
     },
     {
       name: 'customItems',
@@ -66,7 +77,19 @@ export const ContentGridBlock: Block = {
       minRows: 1,
       maxRows: 12,
       admin: {
-        condition: (data) => data?.contentType === 'custom',
+        condition: (data, siblingData) => {
+          // Check both data and siblingData for contentType
+          const contentType = data?.contentType || siblingData?.contentType
+          console.log('CustomItems condition check:', { contentType, data, siblingData })
+          return contentType === 'custom'
+        },
+        description: 'เพิ่มรายการเนื้อหาที่ต้องการแสดงใน grid',
+        initCollapsed: false,
+        components: {
+          RowLabel: ({ data, index }) => {
+            return data?.title || `รายการที่ ${index + 1}`
+          },
+        },
       },
       fields: [
         {
@@ -74,11 +97,17 @@ export const ContentGridBlock: Block = {
           type: 'text',
           label: 'หัวข้อ',
           required: true,
+          admin: {
+            description: 'หัวข้อของเนื้อหา',
+          },
         },
         {
           name: 'description',
           type: 'textarea',
           label: 'คำอธิบายสั้นๆ',
+          admin: {
+            description: 'คำอธิบายย่อของเนื้อหา (ตัวเลือก)',
+          },
         },
         {
           name: 'image',
@@ -86,12 +115,16 @@ export const ContentGridBlock: Block = {
           relationTo: 'media',
           label: 'รูปภาพ',
           required: true,
+          admin: {
+            description: 'รูปภาพที่จะแสดงในการ์ด',
+          },
         },
         {
           name: 'linkType',
           type: 'radio',
           label: 'ประเภทลิงก์',
           defaultValue: 'internal',
+          required: true,
           options: [
             {
               label: 'ลิงก์ภายใน',
@@ -102,6 +135,9 @@ export const ContentGridBlock: Block = {
               value: 'external',
             },
           ],
+          admin: {
+            layout: 'horizontal',
+          },
         },
         {
           name: 'internalLink',
@@ -109,7 +145,10 @@ export const ContentGridBlock: Block = {
           relationTo: ['pages', 'posts'],
           label: 'เลือกหน้าที่ต้องการลิงก์',
           admin: {
-            condition: (_, siblingData) => siblingData?.linkType === 'internal',
+            condition: (_, siblingData) => {
+              return siblingData?.linkType === 'internal'
+            },
+            description: 'เลือกหน้าหรือบทความที่ต้องการลิงก์ไป',
           },
         },
         {
@@ -117,7 +156,19 @@ export const ContentGridBlock: Block = {
           type: 'text',
           label: 'URL ภายนอก',
           admin: {
-            condition: (_, siblingData) => siblingData?.linkType === 'external',
+            condition: (_, siblingData) => {
+              return siblingData?.linkType === 'external'
+            },
+            description: 'ใส่ URL เต็ม เช่น https://example.com',
+          },
+          validate: (value, { siblingData }) => {
+            if (siblingData?.linkType === 'external' && !value) {
+              return 'กรุณาใส่ URL ภายนอก'
+            }
+            if (siblingData?.linkType === 'external' && value && !value.startsWith('http')) {
+              return 'URL ต้องขึ้นต้นด้วย http:// หรือ https://'
+            }
+            return true
           },
         },
         {
@@ -125,6 +176,9 @@ export const ContentGridBlock: Block = {
           type: 'text',
           label: 'ข้อความปุ่ม',
           defaultValue: 'อ่านเพิ่มเติม',
+          admin: {
+            description: 'ข้อความที่แสดงบนปุ่ม',
+          },
         },
       ],
     },
@@ -135,7 +189,11 @@ export const ContentGridBlock: Block = {
       hasMany: true,
       label: 'เลือกหมวดหมู่ (สำหรับดึงจากบทความ)',
       admin: {
-        condition: (data) => data?.contentType === 'posts',
+        condition: (data, siblingData) => {
+          const contentType = data?.contentType || siblingData?.contentType
+          return contentType === 'posts'
+        },
+        description: 'กรองบทความตามหมวดหมู่ที่เลือก (ถ้าไม่เลือกจะแสดงทุกหมวดหมู่)',
       },
     },
     {
@@ -146,7 +204,11 @@ export const ContentGridBlock: Block = {
       min: 1,
       max: 12,
       admin: {
-        condition: (data) => data?.contentType !== 'custom',
+        condition: (data, siblingData) => {
+          const contentType = data?.contentType || siblingData?.contentType
+          return contentType !== 'custom'
+        },
+        description: 'จำนวนรายการสูงสุดที่จะแสดงใน grid',
       },
     },
     {
@@ -172,12 +234,18 @@ export const ContentGridBlock: Block = {
           value: '4',
         },
       ],
+      admin: {
+        description: 'จำนวนคอลัมน์ที่จะแสดงในแต่ละแถว',
+      },
     },
     {
       name: 'showMoreButton',
       type: 'checkbox',
       label: 'แสดงปุ่ม "ดูทั้งหมด"',
       defaultValue: false,
+      admin: {
+        description: 'แสดงปุ่มลิงก์ไปหน้าอื่นที่ด้านล่าง grid',
+      },
     },
     {
       name: 'moreButtonText',
@@ -185,7 +253,11 @@ export const ContentGridBlock: Block = {
       label: 'ข้อความปุ่ม "ดูทั้งหมด"',
       defaultValue: 'ดูทั้งหมด',
       admin: {
-        condition: (data) => data?.showMoreButton === true,
+        condition: (data, siblingData) => {
+          const showMore = data?.showMoreButton || siblingData?.showMoreButton
+          return showMore === true
+        },
+        description: 'ข้อความที่แสดงบนปุ่ม "ดูทั้งหมด"',
       },
     },
     {
@@ -194,7 +266,11 @@ export const ContentGridBlock: Block = {
       relationTo: ['pages', 'posts'],
       label: 'ลิงก์ปุ่ม "ดูทั้งหมด"',
       admin: {
-        condition: (data) => data?.showMoreButton === true,
+        condition: (data, siblingData) => {
+          const showMore = data?.showMoreButton || siblingData?.showMoreButton
+          return showMore === true
+        },
+        description: 'หน้าที่จะลิงก์ไปเมื่อคลิกปุ่ม "ดูทั้งหมด"',
       },
     },
   ],
