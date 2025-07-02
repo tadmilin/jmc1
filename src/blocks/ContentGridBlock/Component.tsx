@@ -71,8 +71,8 @@ export const ContentGridBlock: React.FC<{
         return data.docs.map((post: Post) => ({
           id: post.id,
           title: post.title,
-          description: post.meta?.description || post.excerpt,
-          image: post.meta?.image || post.featuredImage,
+          description: post.excerpt || post.meta?.description,
+          image: post.heroImage || post.meta?.image,
           url: `/posts/${post.slug}`,
           buttonText: DEFAULT_VALUES.BUTTON_TEXT.POSTS,
         }))

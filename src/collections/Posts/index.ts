@@ -41,7 +41,9 @@ export const Posts: CollectionConfig<'posts'> = {
   defaultPopulate: {
     title: true,
     slug: true,
+    excerpt: true,
     categories: true,
+    heroImage: true,
     meta: {
       image: true,
       description: true,
@@ -78,6 +80,15 @@ export const Posts: CollectionConfig<'posts'> = {
       name: 'title',
       type: 'text',
       required: true,
+    },
+    {
+      name: 'excerpt',
+      type: 'textarea',
+      label: 'คำอธิบายสั้นๆ',
+      admin: {
+        description: 'คำอธิบายย่อของบทความที่จะแสดงใน grid และหน้าแรก (แนะนำ 150-200 ตัวอักษร)',
+        rows: 3,
+      },
     },
     {
       type: 'tabs',
