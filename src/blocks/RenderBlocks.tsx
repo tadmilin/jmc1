@@ -89,7 +89,7 @@ export const RenderBlocks: React.FC<{
                   </div>
                 )
               }
-
+              
               // กรณี ProductsBlock ส่ง colorTheme เพิ่มเติม
               if (blockType === 'productsBlock') {
                 return (
@@ -99,7 +99,7 @@ export const RenderBlocks: React.FC<{
                   </div>
                 )
               }
-
+              
               // กรณี SaleProductsSliderBlock ส่ง colorTheme เพิ่มเติม
               if ((blockType as string) === 'saleProductsSliderBlock') {
                 return (
@@ -109,7 +109,7 @@ export const RenderBlocks: React.FC<{
                   </div>
                 )
               }
-
+              
               // กรณี ArchiveBlock ส่ง colorTheme เพิ่มเติม
               if (blockType === 'archive') {
                 return (
@@ -119,7 +119,7 @@ export const RenderBlocks: React.FC<{
                   </div>
                 )
               }
-
+              
               // กรณีอื่นๆ ใช้การส่งแบบเดิม
               return (
                 <div key={index}>
