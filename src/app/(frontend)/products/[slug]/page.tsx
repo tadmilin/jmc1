@@ -4,7 +4,6 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { cache } from 'react'
 import ProductDetailClient from './page.client'
-import { generateProductSEO } from '@/utils/seo'
 import { generateMeta } from '@/utilities/generateMeta'
 
 type Args = {
