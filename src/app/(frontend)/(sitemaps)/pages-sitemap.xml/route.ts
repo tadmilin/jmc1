@@ -5,33 +5,21 @@ import { unstable_cache } from 'next/cache'
 const getPagesSitemap = unstable_cache(
   async () => {
     try {
-      const payload = await getPayload({ config })
       const SITE_URL =
         process.env.NEXT_PUBLIC_SERVER_URL ||
         process.env.VERCEL_PROJECT_PRODUCTION_URL ||
         'https://jmc111.vercel.app'
 
-      const results = await payload.find({
-        collection: 'pages',
-        overrideAccess: false,
-        draft: false,
-        depth: 0,
-        limit: 1000,
-        pagination: false,
-        where: {
-          _status: {
-            equals: 'published',
-          },
-        },
-        select: {
-          slug: true,
-          updatedAt: true,
-        },
-      })
-
       const dateFallback = new Date().toISOString()
 
-      const defaultSitemap = [
+      // ใช้ fallback data ที่ถูกต้องแทน เพื่อหลีกเลี่ยง URL ซ้ำ
+      const sitemap = [
+        {
+          loc: `${SITE_URL}/`,
+          lastmod: dateFallback,
+          changefreq: 'daily',
+          priority: 1.0,
+        },
         {
           loc: `${SITE_URL}/search`,
           lastmod: dateFallback,
@@ -44,7 +32,6 @@ const getPagesSitemap = unstable_cache(
           changefreq: 'weekly',
           priority: 0.7,
         },
-        // Local SEO Pages
         {
           loc: `${SITE_URL}/construction-materials-near-me`,
           lastmod: dateFallback,
@@ -69,24 +56,15 @@ const getPagesSitemap = unstable_cache(
           changefreq: 'monthly',
           priority: 0.6,
         },
+        {
+          loc: `${SITE_URL}/calculator`,
+          lastmod: dateFallback,
+          changefreq: 'monthly',
+          priority: 0.5,
+        },
       ]
 
-      let sitemap = []
-
-      if (results.docs && results.docs.length > 0) {
-        sitemap = results.docs
-          .filter((page) => Boolean(page?.slug))
-          .map((page) => {
-            return {
-              loc: page?.slug === 'home' ? `${SITE_URL}/` : `${SITE_URL}/${page?.slug}`,
-              lastmod: page.updatedAt || dateFallback,
-              changefreq: 'monthly',
-              priority: 0.5,
-            }
-          })
-      }
-
-      return [...defaultSitemap, ...sitemap]
+      return sitemap
     } catch (error) {
       console.error('Error generating pages sitemap:', error)
 

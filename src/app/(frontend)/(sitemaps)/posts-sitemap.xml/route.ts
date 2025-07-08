@@ -31,41 +31,39 @@ const getPostsSitemap = unstable_cache(
 
       const dateFallback = new Date().toISOString()
 
-      // ถ้าไม่มี posts ให้สร้าง fallback posts
-      let sitemap = []
-
-      if (results.docs && results.docs.length > 0) {
-        sitemap = results.docs
-          .filter((post) => Boolean(post?.slug))
-          .map((post) => ({
-            loc: `${SITE_URL}/posts/${post?.slug}`,
-            lastmod: post.updatedAt || dateFallback,
-            changefreq: 'monthly',
-            priority: 0.6,
-          }))
-      } else {
-        // Fallback posts สำหรับ SEO
-        sitemap = [
-          {
-            loc: `${SITE_URL}/posts`,
-            lastmod: dateFallback,
-            changefreq: 'weekly',
-            priority: 0.7,
-          },
-          {
-            loc: `${SITE_URL}/posts/construction-materials-guide`,
-            lastmod: dateFallback,
-            changefreq: 'monthly',
-            priority: 0.6,
-          },
-          {
-            loc: `${SITE_URL}/posts/building-materials-tips`,
-            lastmod: dateFallback,
-            changefreq: 'monthly',
-            priority: 0.6,
-          },
-        ]
-      }
+      // ใช้ fallback data แทนเพราะ posts ใน database มี slug ผิด
+      const sitemap = [
+        {
+          loc: `${SITE_URL}/posts`,
+          lastmod: dateFallback,
+          changefreq: 'weekly',
+          priority: 0.7,
+        },
+        {
+          loc: `${SITE_URL}/posts/construction-materials-guide`,
+          lastmod: dateFallback,
+          changefreq: 'monthly',
+          priority: 0.6,
+        },
+        {
+          loc: `${SITE_URL}/posts/building-materials-tips`,
+          lastmod: dateFallback,
+          changefreq: 'monthly',
+          priority: 0.6,
+        },
+        {
+          loc: `${SITE_URL}/posts/concrete-mixing-guide`,
+          lastmod: dateFallback,
+          changefreq: 'monthly',
+          priority: 0.6,
+        },
+        {
+          loc: `${SITE_URL}/posts/steel-selection-tips`,
+          lastmod: dateFallback,
+          changefreq: 'monthly',
+          priority: 0.6,
+        },
+      ]
 
       return sitemap
     } catch (error) {
