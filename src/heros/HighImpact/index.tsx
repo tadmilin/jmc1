@@ -102,7 +102,7 @@ const HeroActionSlotsRenderer: React.FC<{
 }> = ({ slots, colorTheme }) => {
   // Debug: แสดงจำนวน slots ที่ได้รับจริง
   console.log('Hero Action Slots received:', slots?.length || 0, slots)
-  
+
   if (!slots || slots.length === 0) return null
 
   const isDarkTheme = colorTheme === 'dark'
@@ -266,6 +266,8 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
   featuredText,
   backgroundImage,
   slideImages,
+  enableAutoSlide = true,
+  autoSlideSpeed = 'medium',
   showCategoriesDropdown = true,
   categoriesLimit = 10,
   displayFrame,
@@ -282,6 +284,34 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
   useEffect(() => {
     setHeaderTheme(colorTheme === 'dark' ? 'dark' : 'light')
   }, [colorTheme, setHeaderTheme])
+
+  // เพิ่มการเลื่อนอัตโนมัติสำหรับสไลด์โชว์
+  const [isPaused, setIsPaused] = useState(false)
+
+  // คำนวณความเร็วในการเลื่อนตามการตั้งค่า
+  const getSlideInterval = () => {
+    if (!enableAutoSlide) return null
+    switch (autoSlideSpeed) {
+      case 'slow':
+        return 5000
+      case 'fast':
+        return 2500
+      case 'medium':
+      default:
+        return 3500
+    }
+  }
+
+  useEffect(() => {
+    const interval = getSlideInterval()
+    if (!hasSlideImages || slideImages.length <= 1 || isPaused || !interval) return
+
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slideImages.length)
+    }, interval)
+
+    return () => clearInterval(timer)
+  }, [hasSlideImages, slideImages.length, isPaused, enableAutoSlide, autoSlideSpeed])
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -333,11 +363,15 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
   const MainMediaArea = () => {
     if (hasSlideImages) {
       return (
-        <div className="relative rounded-xl overflow-hidden shadow-2xl w-full mb-2 aspect-video md:aspect-[16/9]">
+        <div
+          className="relative rounded-xl overflow-hidden shadow-2xl w-full mb-2 aspect-video md:aspect-[16/9]"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
           {slideImages.map((slide, index) => (
             <div
               key={index}
-              className={`absolute inset-0 ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}
+              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}
             >
               {slide.image && typeof slide.image === 'object' && (
                 <Media
@@ -353,7 +387,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
             {slideImages.map((_, index) => (
               <button
                 key={index}
-                className={`w-2.5 h-2.5 rounded-full ${
+                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
                   index === currentSlide
                     ? (colorTheme === 'dark' ? 'bg-white' : 'bg-gray-800') + ' scale-110 shadow-md'
                     : colorTheme === 'dark'
@@ -365,6 +399,18 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
               />
             ))}
           </div>
+          {/* แสดงสถานะการเลื่อนอัตโนมัติ */}
+          {enableAutoSlide && slideImages.length > 1 && (
+            <div className="absolute top-4 right-4 z-10">
+              <div
+                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  isPaused ? 'bg-gray-800/80 text-white' : 'bg-green-500/80 text-white'
+                }`}
+              >
+                {isPaused ? 'หยุดชั่วคราว' : 'เลื่อนอัตโนมัติ'}
+              </div>
+            </div>
+          )}
           {showDecorations && featuredText && (
             <div
               className={`absolute -right-3 -bottom-3 py-2 px-4 rounded-md flex items-center justify-center text-white shadow-lg ${colorTheme === 'dark' ? 'bg-blue-500' : 'bg-blue-600'}`}

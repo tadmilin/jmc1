@@ -311,6 +311,14 @@ export interface Page {
         }[]
       | null;
     /**
+     * เปิด/ปิดการเลื่อนอัตโนมัติของสไลด์โชว์
+     */
+    enableAutoSlide?: boolean | null;
+    /**
+     * เลือกความเร็วในการเลื่อนอัตโนมัติ
+     */
+    autoSlideSpeed?: ('slow' | 'medium' | 'fast') | null;
+    /**
      * เปิด/ปิดการแสดงเมนูหมวดหมู่แบบ Dropdown
      */
     showCategoriesDropdown?: boolean | null;
@@ -431,6 +439,7 @@ export interface Page {
     | FormBlock
     | ImageSliderBlock
     | CategoryGridBlock
+    | ContentGridBlock
     | GoogleMapBlock
     | ServiceFeaturesBlock
     | ProductsBlock
@@ -450,9 +459,13 @@ export interface Page {
      */
     keywords?: string | null;
     /**
-     * รูปภาพที่จะแสดงเมื่อแชร์ในโซเชียล
+     * รูปภาพหลักที่จะแสดงเมื่อแชร์ในโซเชียล
      */
     image?: (string | null) | Media;
+    /**
+     * เพิ่มรูปภาพหลายรูปเพื่อให้ Google แสดงใน Search Results (แนะนำ 3-8 รูป)
+     */
+    images?: (string | Media)[] | null;
   };
   publishedAt?: string | null;
   slug?: string | null;
@@ -468,6 +481,10 @@ export interface Page {
 export interface Post {
   id: string;
   title: string;
+  /**
+   * คำอธิบายย่อของบทความที่จะแสดงใน grid และหน้าแรก (แนะนำ 150-200 ตัวอักษร)
+   */
+  excerpt?: string | null;
   heroImage?: (string | null) | Media;
   content: {
     root: {
@@ -929,6 +946,114 @@ export interface CategoryGridBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'categoryGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContentGridBlock".
+ */
+export interface ContentGridBlock {
+  /**
+   * หัวข้อหลักที่จะแสดงด้านบนของ grid
+   */
+  title?: string | null;
+  /**
+   * คำอธิบายเพิ่มเติมใต้หัวข้อหลัก (ตัวเลือก)
+   */
+  subtitle?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * เลือกประเภทของเนื้อหาที่ต้องการแสดง
+   */
+  contentType: 'custom' | 'posts' | 'products';
+  /**
+   * เพิ่มรายการเนื้อหาที่ต้องการแสดงใน grid
+   */
+  customItems?:
+    | {
+        /**
+         * หัวข้อของเนื้อหา
+         */
+        title: string;
+        /**
+         * คำอธิบายย่อของเนื้อหา (ตัวเลือก)
+         */
+        description?: string | null;
+        /**
+         * รูปภาพที่จะแสดงในการ์ด
+         */
+        image: string | Media;
+        linkType: 'internal' | 'external';
+        /**
+         * เลือกหน้าหรือบทความที่ต้องการลิงก์ไป
+         */
+        internalLink?:
+          | ({
+              relationTo: 'pages';
+              value: string | Page;
+            } | null)
+          | ({
+              relationTo: 'posts';
+              value: string | Post;
+            } | null);
+        /**
+         * ใส่ URL เต็ม เช่น https://example.com
+         */
+        externalLink?: string | null;
+        /**
+         * ข้อความที่แสดงบนปุ่ม
+         */
+        buttonText?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * กรองบทความตามหมวดหมู่ที่เลือก (ถ้าไม่เลือกจะแสดงทุกหมวดหมู่)
+   */
+  categories?: (string | Category)[] | null;
+  /**
+   * จำนวนรายการสูงสุดที่จะแสดงใน grid
+   */
+  limit?: number | null;
+  /**
+   * จำนวนคอลัมน์ที่จะแสดงในแต่ละแถว
+   */
+  columns?: ('auto' | '2' | '3' | '4') | null;
+  /**
+   * แสดงปุ่มลิงก์ไปหน้าอื่นที่ด้านล่าง grid
+   */
+  showMoreButton?: boolean | null;
+  /**
+   * ข้อความที่แสดงบนปุ่ม "ดูทั้งหมด"
+   */
+  moreButtonText?: string | null;
+  /**
+   * หน้าที่จะลิงก์ไปเมื่อคลิกปุ่ม "ดูทั้งหมด"
+   */
+  moreButtonLink?:
+    | ({
+        relationTo: 'pages';
+        value: string | Page;
+      } | null)
+    | ({
+        relationTo: 'posts';
+        value: string | Post;
+      } | null);
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'contentGrid';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1664,6 +1789,8 @@ export interface PagesSelect<T extends boolean = true> {
               caption?: T;
               id?: T;
             };
+        enableAutoSlide?: T;
+        autoSlideSpeed?: T;
         showCategoriesDropdown?: T;
         categoriesLimit?: T;
         featuredText?: T;
@@ -1737,6 +1864,7 @@ export interface PagesSelect<T extends boolean = true> {
         formBlock?: T | FormBlockSelect<T>;
         imageSlider?: T | ImageSliderBlockSelect<T>;
         categoryGrid?: T | CategoryGridBlockSelect<T>;
+        contentGrid?: T | ContentGridBlockSelect<T>;
         googleMap?: T | GoogleMapBlockSelect<T>;
         serviceFeatures?: T | ServiceFeaturesBlockSelect<T>;
         productsBlock?: T | ProductsBlockSelect<T>;
@@ -1749,6 +1877,7 @@ export interface PagesSelect<T extends boolean = true> {
         description?: T;
         keywords?: T;
         image?: T;
+        images?: T;
       };
   publishedAt?: T;
   slug?: T;
@@ -1887,6 +2016,35 @@ export interface CategoryGridBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContentGridBlock_select".
+ */
+export interface ContentGridBlockSelect<T extends boolean = true> {
+  title?: T;
+  subtitle?: T;
+  contentType?: T;
+  customItems?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        linkType?: T;
+        internalLink?: T;
+        externalLink?: T;
+        buttonText?: T;
+        id?: T;
+      };
+  categories?: T;
+  limit?: T;
+  columns?: T;
+  showMoreButton?: T;
+  moreButtonText?: T;
+  moreButtonLink?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "GoogleMapBlock_select".
  */
 export interface GoogleMapBlockSelect<T extends boolean = true> {
@@ -1970,6 +2128,7 @@ export interface QuoteRequestFormBlockSelect<T extends boolean = true> {
  */
 export interface PostsSelect<T extends boolean = true> {
   title?: T;
+  excerpt?: T;
   heroImage?: T;
   content?: T;
   relatedPosts?: T;

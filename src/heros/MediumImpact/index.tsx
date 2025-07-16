@@ -26,15 +26,17 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
   layoutVariant = 'standard',
   backgroundImage,
   slideImages,
+  enableAutoSlide = true,
+  autoSlideSpeed = 'medium',
   showCategoriesDropdown = true,
   categoriesLimit = 10,
   socialMediaButtons,
 }) => {
   const { setHeaderTheme } = useHeaderTheme()
-  const [_currentSlide, setCurrentSlide] = useState(0)
+  const [currentSlide, setCurrentSlide] = useState(0)
   const hasSlideImages = Array.isArray(slideImages) && slideImages.length > 0
   const [categories, setCategories] = useState<Category[]>([])
-  const [_hoveredCategory, _setHoveredCategory] = useState<string | null>(null)
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
   const [isLoadingCategories, setIsLoadingCategories] = useState(true)
 
   useEffect(() => {
@@ -89,15 +91,32 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
   const isCentered = layoutVariant === 'centered'
 
   // สร้างสไลด์โชว์อัตโนมัติ
+  const [isPaused, setIsPaused] = useState(false)
+
+  // คำนวณความเร็วในการเลื่อนตามการตั้งค่า
+  const getSlideInterval = () => {
+    if (!enableAutoSlide) return null
+    switch (autoSlideSpeed) {
+      case 'slow':
+        return 5000
+      case 'fast':
+        return 2500
+      case 'medium':
+      default:
+        return 4000
+    }
+  }
+
   useEffect(() => {
-    if (!hasSlideImages) return
+    const interval = getSlideInterval()
+    if (!hasSlideImages || slideImages.length <= 1 || isPaused || !interval) return
 
-    const interval = setInterval(() => {
+    const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slideImages.length)
-    }, 5000)
+    }, interval)
 
-    return () => clearInterval(interval)
-  }, [hasSlideImages, slideImages])
+    return () => clearInterval(timer)
+  }, [hasSlideImages, slideImages.length, isPaused, enableAutoSlide, autoSlideSpeed])
 
   // Categories Dropdown Component
   const CategoriesDropdown = () => {
@@ -345,8 +364,76 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
               </div>
             )}
 
-            {/* Media in centered layout */}
-            {media && typeof media === 'object' && (
+            {/* Media/Slider in centered layout */}
+            {hasSlideImages ? (
+              <div
+                className="relative mx-auto mt-6"
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+              >
+                <div className="relative aspect-[16/9] max-w-3xl mx-auto rounded-lg overflow-hidden shadow-lg">
+                  {slideImages.map((slide, index) => (
+                    <div
+                      key={index}
+                      className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                        index === currentSlide ? 'opacity-100' : 'opacity-0'
+                      }`}
+                    >
+                      {slide.image && typeof slide.image === 'object' && (
+                        <MediaComponent
+                          className="w-full h-full object-cover"
+                          imgClassName="object-cover w-full h-full"
+                          priority={index === 0}
+                          resource={slide.image as Media}
+                        />
+                      )}
+                    </div>
+                  ))}
+                  {/* Pagination dots */}
+                  <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
+                    {slideImages.map((_, index) => (
+                      <button
+                        key={index}
+                        className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                          index === currentSlide
+                            ? (colorTheme === 'dark' ? 'bg-white' : 'bg-gray-800') +
+                              ' scale-110 shadow-md'
+                            : colorTheme === 'dark'
+                              ? 'bg-white/50'
+                              : 'bg-gray-400'
+                        }`}
+                        onClick={() => setCurrentSlide(index)}
+                        aria-label={`ดูรูปที่ ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                  {/* แสดงสถานะการเลื่อนอัตโนมัติ */}
+                  {enableAutoSlide && slideImages.length > 1 && (
+                    <div className="absolute top-4 right-4 z-10">
+                      <div
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          isPaused ? 'bg-gray-800/80 text-white' : 'bg-green-500/80 text-white'
+                        }`}
+                      >
+                        {isPaused ? 'หยุดชั่วคราว' : 'เลื่อนอัตโนมัติ'}
+                      </div>
+                    </div>
+                  )}
+                  {/* แสดงสถานะการเลื่อนอัตโนมัติ */}
+                  {enableAutoSlide && slideImages.length > 1 && (
+                    <div className="absolute top-4 right-4 z-10">
+                      <div
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          isPaused ? 'bg-gray-800/80 text-white' : 'bg-green-500/80 text-white'
+                        }`}
+                      >
+                        {isPaused ? 'หยุดชั่วคราว' : 'เลื่อนอัตโนมัติ'}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : media && typeof media === 'object' ? (
               <div className="relative mx-auto mt-6">
                 <div className="relative aspect-[16/9] max-w-3xl mx-auto rounded-lg overflow-hidden shadow-lg">
                   <MediaComponent
@@ -357,7 +444,7 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
                   />
                 </div>
               </div>
-            )}
+            ) : null}
 
             {Array.isArray(links) && links.length > 0 && (
               <ul className="flex flex-wrap justify-center gap-4 mt-8">
@@ -438,6 +525,53 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
                   </div>
                 </div>
               )}
+
+              {/* Media/Slider in non-centered layout */}
+              {hasSlideImages ? (
+                <div
+                  className="relative w-full mt-6"
+                  onMouseEnter={() => setIsPaused(true)}
+                  onMouseLeave={() => setIsPaused(false)}
+                >
+                  <div className="relative aspect-[16/9] rounded-lg overflow-hidden shadow-lg">
+                    {slideImages.map((slide, index) => (
+                      <div
+                        key={index}
+                        className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                          index === currentSlide ? 'opacity-100' : 'opacity-0'
+                        }`}
+                      >
+                        {slide.image && typeof slide.image === 'object' && (
+                          <MediaComponent
+                            className="w-full h-full object-cover"
+                            imgClassName="object-cover w-full h-full"
+                            priority={index === 0}
+                            resource={slide.image as Media}
+                          />
+                        )}
+                      </div>
+                    ))}
+                    {/* Pagination dots */}
+                    <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
+                      {slideImages.map((_, index) => (
+                        <button
+                          key={index}
+                          className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                            index === currentSlide
+                              ? (colorTheme === 'dark' ? 'bg-white' : 'bg-gray-800') +
+                                ' scale-110 shadow-md'
+                              : colorTheme === 'dark'
+                                ? 'bg-white/50'
+                                : 'bg-gray-400'
+                          }`}
+                          onClick={() => setCurrentSlide(index)}
+                          aria-label={`ดูรูปที่ ${index + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : null}
 
               {Array.isArray(links) && links.length > 0 && (
                 <ul className="flex flex-wrap gap-4 mt-8">

@@ -220,6 +220,41 @@ export const hero: Field = {
       ],
     },
     {
+      name: 'enableAutoSlide',
+      type: 'checkbox',
+      label: 'เปิดใช้งานการเลื่อนอัตโนมัติ',
+      defaultValue: true,
+      admin: {
+        description: 'เปิด/ปิดการเลื่อนอัตโนมัติของสไลด์โชว์',
+        condition: (_, { type } = {}) => ['highImpact', 'mediumImpact'].includes(type),
+      },
+    },
+    {
+      name: 'autoSlideSpeed',
+      type: 'select',
+      label: 'ความเร็วในการเลื่อนอัตโนมัติ',
+      defaultValue: 'medium',
+      options: [
+        {
+          label: 'ช้า (5 วินาที)',
+          value: 'slow',
+        },
+        {
+          label: 'ปานกลาง (3.5 วินาที)',
+          value: 'medium',
+        },
+        {
+          label: 'เร็ว (2.5 วินาที)',
+          value: 'fast',
+        },
+      ],
+      admin: {
+        description: 'เลือกความเร็วในการเลื่อนอัตโนมัติ',
+        condition: (_, { type, enableAutoSlide } = {}) => 
+          ['highImpact', 'mediumImpact'].includes(type) && enableAutoSlide === true,
+      },
+    },
+    {
       name: 'showCategoriesDropdown',
       type: 'checkbox',
       label: 'แสดงเมนูหมวดหมู่แบบ Dropdown',
