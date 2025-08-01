@@ -8,7 +8,7 @@ import type { Post } from '@/payload-types'
 
 import { Media } from '@/components/Media'
 
-export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'>
+export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title' | 'excerpt'>
 
 export const Card: React.FC<{
   alignItems?: 'center'
@@ -35,12 +35,13 @@ export const Card: React.FC<{
     setIsClient(true)
   }, [])
 
-  const { slug, categories, meta, title } = doc || {}
-  const { description, image: metaImage } = meta || {}
+  const { slug, categories, meta, title, excerpt } = doc || {}
+  const { image: metaImage } = meta || {}
 
   const hasCategories = categories && Array.isArray(categories) && categories.length > 0
   const titleToUse = titleFromProps || title
-  const sanitizedDescription = description?.replace(/\s/g, ' ') // replace non-breaking space with white space
+  const descriptionToShow = excerpt || meta?.description
+  const sanitizedDescription = descriptionToShow?.replace(/\s/g, ' ') // replace non-breaking space with white space
   const href = `/${relationTo}/${slug}`
 
   const isDarkTheme = colorTheme === 'dark'
@@ -72,8 +73,8 @@ export const Card: React.FC<{
       ref={card.ref as React.LegacyRef<HTMLElement>}
       onClick={handleCardClick}
     >
-      {/* Image Section */}
-      <div className="relative w-full aspect-video overflow-hidden">
+      {/* Image Section - ปรับขนาดให้เล็กลง */}
+      <div className="relative w-full aspect-[4/3] overflow-hidden">
         {!metaImage && (
           <div
             className={`w-full h-full flex items-center justify-center ${
@@ -82,7 +83,7 @@ export const Card: React.FC<{
           >
             <div className="text-center">
               <svg
-                className="w-16 h-16 mx-auto mb-2 opacity-50"
+                className="w-12 h-12 mx-auto mb-2 opacity-50"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -94,7 +95,7 @@ export const Card: React.FC<{
                   d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                 />
               </svg>
-              <p className="text-sm">ไม่มีรูปภาพ</p>
+              <p className="text-xs">ไม่มีรูปภาพ</p>
             </div>
           </div>
         )}
@@ -102,7 +103,7 @@ export const Card: React.FC<{
           <div className="relative w-full h-full">
             <Media
               resource={metaImage}
-              size="33vw"
+              size="25vw"
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
             {/* Gradient Overlay */}
@@ -112,8 +113,8 @@ export const Card: React.FC<{
 
         {/* Category Badge */}
         {showCategories && hasCategories && (
-          <div className="absolute top-4 left-4">
-            <div className="flex flex-wrap gap-2">
+          <div className="absolute top-3 left-3">
+            <div className="flex flex-wrap gap-1">
               {categories?.slice(0, 2).map((category, index) => {
                 if (typeof category === 'object') {
                   const { title: titleFromCategory } = category
@@ -122,7 +123,7 @@ export const Card: React.FC<{
                   return (
                     <span
                       key={index}
-                      className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
+                      className={`px-2 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
                         isDarkTheme ? 'bg-blue-600/80 text-white' : 'bg-blue-600/90 text-white'
                       } shadow-lg`}
                     >
@@ -134,7 +135,7 @@ export const Card: React.FC<{
               })}
               {categories && categories.length > 2 && (
                 <span
-                  className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
+                  className={`px-2 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
                     isDarkTheme ? 'bg-gray-600/80 text-white' : 'bg-gray-600/90 text-white'
                   } shadow-lg`}
                 >
@@ -147,11 +148,11 @@ export const Card: React.FC<{
       </div>
 
       {/* Content Section */}
-      <div className="p-6">
+      <div className="p-4">
         {titleToUse && (
           <div className="mb-3">
             <h3
-              className={`text-xl font-bold leading-tight transition-colors duration-300 ${
+              className={`text-lg font-bold leading-tight transition-colors duration-300 line-clamp-2 whitespace-pre-line ${
                 isDarkTheme
                   ? 'text-gray-100 group-hover:text-blue-400'
                   : 'text-gray-800 group-hover:text-blue-600'
@@ -164,7 +165,7 @@ export const Card: React.FC<{
           </div>
         )}
 
-        {description && (
+        {sanitizedDescription && (
           <div className="mb-4">
             <p
               className={`text-sm leading-relaxed line-clamp-3 ${

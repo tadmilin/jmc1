@@ -9,7 +9,7 @@ import { formatAuthors } from '@/utilities/formatAuthors'
 export const PostHero: React.FC<{
   post: Post
 }> = ({ post }) => {
-  const { categories, heroImage, populatedAuthors, publishedAt, title } = post
+  const { categories, heroImage, populatedAuthors, publishedAt, title, excerpt } = post
 
   const hasAuthors =
     populatedAuthors && populatedAuthors.length > 0 && formatAuthors(populatedAuthors) !== ''
@@ -17,10 +17,10 @@ export const PostHero: React.FC<{
   return (
     <div className="bg-white">
       <div className="container mx-auto px-4 py-8">
-        {/* แสดงรูปภาพแยกออกมา */}
+        {/* แสดงรูปภาพแยกออกมา - ปรับขนาดให้เล็กลง 3 เท่า */}
         {heroImage && typeof heroImage !== 'string' && (
           <div className="mb-8 flex justify-center">
-            <div className="max-w-4xl w-full">
+            <div className="max-w-xl w-full">
               <Media
                 resource={heroImage}
                 className="rounded-lg shadow-lg overflow-hidden"
@@ -52,12 +52,19 @@ export const PostHero: React.FC<{
             })}
           </div>
 
-          {/* Title */}
+          {/* Title - ปรับให้อ่านง่ายขึ้น */}
           <div className="mb-6">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 leading-relaxed whitespace-pre-line">
               {title}
             </h1>
           </div>
+
+          {/* Excerpt - เพิ่มการแสดงผลคำอธิบายสั้นๆ */}
+          {excerpt && (
+            <div className="mb-6">
+              <p className="text-lg text-gray-700 leading-relaxed max-w-3xl">{excerpt}</p>
+            </div>
+          )}
 
           {/* Author and Date */}
           <div className="flex flex-col md:flex-row gap-4 md:gap-16 text-gray-700">
