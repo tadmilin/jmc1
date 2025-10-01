@@ -15,6 +15,7 @@ import { GoogleMapBlock } from '../../blocks/GoogleMapBlock/config'
 import { ServiceFeaturesBlock } from '../../blocks/ServiceFeaturesBlock/config'
 import { ProductsBlock } from '../../blocks/ProductsBlock/config'
 import { QuoteRequestFormBlock } from '../../blocks/QuoteRequestFormBlock/config'
+import { CatalogsBlock } from '../../blocks/CatalogsBlock/config'
 import { hero } from '@/heros/config'
 import { slugField } from '@/fields/slug'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
@@ -96,6 +97,7 @@ export const Pages: CollectionConfig<'pages'> = {
                 ServiceFeaturesBlock,
                 ProductsBlock,
                 QuoteRequestFormBlock,
+                CatalogsBlock,
               ],
               required: true,
               admin: {
