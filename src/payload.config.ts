@@ -2,7 +2,7 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import sharp from 'sharp'
+import sharp from 'sharp' 
 
 import path from 'path'
 import { buildConfig } from 'payload'
@@ -10,6 +10,7 @@ import { fileURLToPath } from 'url'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 
 import { Categories } from './collections/Categories'
+import { Catalogs } from './collections/Catalogs'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
@@ -26,9 +27,9 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 // Production URL handling
-const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || (
-  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'
-)
+const serverURL =
+  process.env.NEXT_PUBLIC_SERVER_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
 
 export default buildConfig({
   serverURL,
@@ -41,11 +42,13 @@ export default buildConfig({
       titleSuffix: '- จงมีชัยค้าวัสดุ',
     },
   },
-  
+
   // Secret key setting
   secret: process.env.PAYLOAD_SECRET || '8ecc0ba2b1c8c461f2daba9d',
 
   // Simplified database configuration
+  collections: [Categories, Catalogs, Media, Pages, Posts, Products, Users, QuoteRequests],
+
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
   }),
@@ -63,23 +66,24 @@ export default buildConfig({
     outputFile: path.resolve(dirname, './payload-types.ts'),
   },
 
-  collections: [Categories, Media, Pages, Posts, Products, Users, QuoteRequests],
   globals: [Header, Footer, CategoryShowcase, SiteSettings],
   cors: [serverURL].filter(Boolean),
   plugins: [
     ...plugins,
     // ใช้ Vercel Blob Storage เฉพาะใน production
-    ...(process.env.NODE_ENV === 'production' && process.env.BLOB_READ_WRITE_TOKEN ? [
-      vercelBlobStorage({
-        enabled: true,
-        collections: {
-          media: true,
-        },
-        token: process.env.BLOB_READ_WRITE_TOKEN,
-        addRandomSuffix: true,
-        cacheControlMaxAge: 365 * 24 * 60 * 60,
-        clientUploads: true,
-      })
-    ] : []),
+    ...(process.env.NODE_ENV === 'production' && process.env.BLOB_READ_WRITE_TOKEN
+      ? [
+          vercelBlobStorage({
+            enabled: true,
+            collections: {
+              media: true,
+            },
+            token: process.env.BLOB_READ_WRITE_TOKEN,
+            addRandomSuffix: true,
+            cacheControlMaxAge: 365 * 24 * 60 * 60,
+            clientUploads: true,
+          }),
+        ]
+      : []),
   ],
 })

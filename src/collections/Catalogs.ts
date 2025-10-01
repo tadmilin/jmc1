@@ -1,0 +1,72 @@
+import type { CollectionConfig } from 'payload'
+import { anyone } from '../access/anyone'
+
+export interface ICatalog {
+  id: string
+  name: string
+  description?: string
+  category?: string
+  thumbnailImage: {
+    url: string
+    alt: string
+    filename: string
+    width: number
+    height: number
+  }
+  pdfFile: {
+    url: string
+    filename: string
+  }
+  createdAt: string
+}
+
+export const Catalogs: CollectionConfig = {
+  slug: 'catalogs',
+  admin: {
+    useAsTitle: 'name',
+    group: 'Content',
+    defaultColumns: ['name', 'category', 'createdAt'],
+  },
+  access: {
+    read: anyone,
+  },
+  fields: [
+    {
+      name: 'name',
+      type: 'text',
+      required: true,
+      label: 'ชื่อแคตตาล็อก',
+    },
+    {
+      name: 'description',
+      type: 'textarea',
+      label: 'รายละเอียด',
+    },
+    {
+      name: 'category',
+      type: 'text',
+      label: 'หมวดหมู่',
+    },
+    {
+      name: 'thumbnailImage',
+      type: 'upload',
+      relationTo: 'media',
+      required: true,
+      label: 'รูปภาพปก',
+    },
+    {
+      name: 'pdfFile',
+      type: 'upload',
+      relationTo: 'media',
+      required: true,
+      label: 'ไฟล์ PDF',
+      filterOptions: {
+        mimeType: {
+          contains: 'application/pdf',
+        },
+      },
+    },
+  ],
+}
+
+export default Catalogs
