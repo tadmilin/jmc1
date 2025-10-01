@@ -1,24 +1,9 @@
 import type { CollectionConfig } from 'payload'
 import { anyone } from '../access/anyone'
 
-export interface ICatalog {
-  id: string
-  name: string
-  description?: string
-  category?: string
-  thumbnailImage: {
-    url: string
-    alt: string
-    filename: string
-    width: number
-    height: number
-  }
-  pdfFile: {
-    url: string
-    filename: string
-  }
-  createdAt: string
-}
+// Import the type from payload-types.ts instead
+import type { Catalog } from '../payload-types'
+export type { Catalog as ICatalog }
 
 export const Catalogs: CollectionConfig = {
   slug: 'catalogs',
