@@ -16,7 +16,6 @@ export const CatalogsBlock: React.FC<CatalogsBlockProps> = ({
   const { data: catalogs, isLoading } = usePayloadAPI('catalogs', {
     limit,
     sort: '-createdAt',
-    depth: 1,
   })
 
   if (isLoading) {

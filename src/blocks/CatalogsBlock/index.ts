@@ -1,8 +1,10 @@
-export { CatalogsBlock } from './CatalogsBlock/config'
-export { CatalogsBlock as CatalogsBlockComponent } from './CatalogsBlock/Component'
+import { CatalogsBlock as Component } from './Component'
+import { CatalogsBlock as Config } from './config'
 
-import { CatalogsBlock as CatalogsBlockComponent } from './CatalogsBlock/Component'
+export const CatalogsBlockConfig = Config
+export const CatalogsBlockComponent = Component
 
-export const blocks = {
-  catalogs: CatalogsBlockComponent,
+export default {
+  Component,
+  Config,
 }
