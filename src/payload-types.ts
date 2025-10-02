@@ -68,7 +68,6 @@ export interface Config {
   blocks: {};
   collections: {
     categories: Category;
-    catalogs: Catalog;
     media: Media;
     pages: Page;
     posts: Post;
@@ -87,7 +86,6 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
-    catalogs: CatalogsSelect<false> | CatalogsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
@@ -245,20 +243,6 @@ export interface Media {
       filename?: string | null;
     };
   };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "catalogs".
- */
-export interface Catalog {
-  id: string;
-  name: string;
-  description?: string | null;
-  category?: string | null;
-  thumbnailImage: string | Media;
-  pdfFile: string | Media;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -460,6 +444,44 @@ export interface Page {
     | ServiceFeaturesBlock
     | ProductsBlock
     | QuoteRequestFormBlock
+    | {
+        /**
+         * หัวข้อที่จะแสดงด้านบนของแคตตาล็อก
+         */
+        heading?: string | null;
+        layout?: ('grid' | 'list') | null;
+        /**
+         * เพิ่มรายการแคตตาล็อกที่ต้องการแสดง
+         */
+        items?:
+          | {
+              /**
+               * ชื่อของแคตตาล็อกที่จะแสดง
+               */
+              name: string;
+              /**
+               * รายละเอียดเกี่ยวกับแคตตาล็อก (ไม่บังคับ)
+               */
+              description?: string | null;
+              /**
+               * หมวดหมู่ของแคตตาล็อก (ไม่บังคับ)
+               */
+              category?: string | null;
+              /**
+               * รูปภาพที่จะแสดงเป็นปกของแคตตาล็อก
+               */
+              thumbnailImage: string | Media;
+              /**
+               * ไฟล์ PDF ที่ลูกค้าสามารถดาวน์โหลดได้
+               */
+              pdfFile: string | Media;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'catalogsBlock';
+      }
   )[];
   meta?: {
     /**
@@ -1604,10 +1626,6 @@ export interface PayloadLockedDocument {
         value: string | Category;
       } | null)
     | ({
-        relationTo: 'catalogs';
-        value: string | Catalog;
-      } | null)
-    | ({
         relationTo: 'media';
         value: string | Media;
       } | null)
@@ -1715,19 +1733,6 @@ export interface CategoriesSelect<T extends boolean = true> {
         label?: T;
         id?: T;
       };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "catalogs_select".
- */
-export interface CatalogsSelect<T extends boolean = true> {
-  name?: T;
-  description?: T;
-  category?: T;
-  thumbnailImage?: T;
-  pdfFile?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1902,6 +1907,24 @@ export interface PagesSelect<T extends boolean = true> {
         serviceFeatures?: T | ServiceFeaturesBlockSelect<T>;
         productsBlock?: T | ProductsBlockSelect<T>;
         quoteRequestFormBlock?: T | QuoteRequestFormBlockSelect<T>;
+        catalogsBlock?:
+          | T
+          | {
+              heading?: T;
+              layout?: T;
+              items?:
+                | T
+                | {
+                    name?: T;
+                    description?: T;
+                    category?: T;
+                    thumbnailImage?: T;
+                    pdfFile?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
       };
   meta?:
     | T

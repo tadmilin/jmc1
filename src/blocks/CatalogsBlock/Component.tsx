@@ -74,7 +74,7 @@ export const CatalogsBlock: React.FC<CatalogsBlockProps> = ({
 
   if (!items?.length) {
     return (
-      <div className="text-center text-gray-600 py-12">
+      <div className="text-center text-gray-600 py-12 bg-white">
         <p>ไม่พบแคตตาล็อก</p>
         <p className="text-sm">กรุณาเพิ่มรายการแคตตาล็อกใน Admin Panel</p>
       </div>
@@ -82,9 +82,9 @@ export const CatalogsBlock: React.FC<CatalogsBlockProps> = ({
   }
 
   return (
-    <section className="py-12">
+    <section className="py-12 bg-white">
       <div className="container mx-auto px-4">
-        {heading && <h2 className="text-3xl font-bold mb-8 text-center">{heading}</h2>}
+        {heading && <h2 className="text-3xl font-bold mb-8 text-center text-black">{heading}</h2>}
         <div className={containerClass}>
           {items.map((item, index) => (
             <div
@@ -108,7 +108,7 @@ export const CatalogsBlock: React.FC<CatalogsBlockProps> = ({
                 )}
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-semibold mb-2">{item.name}</h3>
+                <h3 className="text-xl font-semibold mb-2 text-black">{item.name}</h3>
                 {item.category && (
                   <span className="inline-block px-3 py-1 bg-gray-100 text-sm text-gray-600 rounded-full mb-3">
                     {item.category}
