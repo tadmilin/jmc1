@@ -48,6 +48,7 @@ export const Media: CollectionConfig = {
       'image/jpeg',
       'image/jpg',
       'image/png',
+      'application/pdf',
       'image/gif',
       'image/webp',
       'image/svg+xml',

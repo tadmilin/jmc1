@@ -61,6 +61,9 @@ export default buildConfig({
     },
   },
 
+  // เพิ่ม sharp configuration สำหรับ image resizing
+  sharp,
+
   typescript: {
     outputFile: path.resolve(dirname, './payload-types.ts'),
   },

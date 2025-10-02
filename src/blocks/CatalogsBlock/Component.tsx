@@ -19,8 +19,15 @@ interface CatalogsBlockProps {
 }
 
 const getMediaUrl = (media: string | Media): string => {
-  if (typeof media === 'string') return media
-  return `${process.env.NEXT_PUBLIC_SERVER_URL}/media/${media.filename}`
+  if (typeof media === 'string') {
+    if (media.includes('/')) return media
+    return `${process.env.NEXT_PUBLIC_SERVER_URL || ''}/media/${encodeURIComponent(media)}`
+  }
+  if (!media?.filename) {
+    console.warn('Media object missing filename:', media)
+    return '/placeholder-image.jpg'
+  }
+  return `${process.env.NEXT_PUBLIC_SERVER_URL || ''}/media/${encodeURIComponent(media.filename)}`
 }
 
 export const CatalogsBlock: React.FC<CatalogsBlockProps> = ({
@@ -32,57 +39,57 @@ export const CatalogsBlock: React.FC<CatalogsBlockProps> = ({
     layout === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-6'
 
   if (!items?.length) {
-    return <div className="text-center text-gray-600">ไม่พบแคตตาล็อก</div>
+    return <div className="text-center text-gray-600 py-12">ไม่พบแคตตาล็อก</div>
   }
 
   return (
-    <section className="py-12 bg-gray-50">
+    <section className="py-12">
       <div className="container mx-auto px-4">
-        {heading && <h2 className="text-3xl font-bold mb-8 text-gray-900">{heading}</h2>}
+        {heading && <h2 className="text-3xl font-bold mb-8 text-center">{heading}</h2>}
         <div className={containerClass}>
           {items.map((item, index) => (
             <div
               key={index}
-              className={`
-                bg-white rounded-lg shadow-md overflow-hidden
-                ${layout === 'list' ? 'flex items-center' : 'flex flex-col'}
-              `}
+              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
             >
-              <div
-                className={`
-                  relative
-                  ${layout === 'list' ? 'w-1/3' : 'w-full aspect-video'}
-                `}
-              >
+              <div className="relative w-full aspect-video">
                 <Image
                   src={getMediaUrl(item.thumbnailImage)}
                   alt={item.name}
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  onError={(e) => {
+                    console.error('Image failed to load:', item.thumbnailImage)
+                    e.currentTarget.src = '/placeholder-image.jpg'
+                  }}
                 />
               </div>
-              <div
-                className={`
-                  p-4 flex flex-col
-                  ${layout === 'list' ? 'w-2/3' : 'w-full'}
-                `}
-              >
+              <div className="p-6">
                 <h3 className="text-xl font-semibold mb-2">{item.name}</h3>
                 {item.category && (
-                  <span className="text-sm text-gray-600 mb-2">{item.category}</span>
+                  <span className="inline-block px-3 py-1 bg-gray-100 text-sm text-gray-600 rounded-full mb-3">
+                    {item.category}
+                  </span>
                 )}
                 {item.description && (
-                  <p className="text-gray-700 mb-4 line-clamp-2">{item.description}</p>
+                  <p className="text-gray-700 mb-4 line-clamp-3">{item.description}</p>
                 )}
                 <a
                   href={getMediaUrl(item.pdfFile)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors mt-auto"
+                  className="inline-flex items-center justify-center w-full px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                   download
+                  onClick={(e) => {
+                    const url = getMediaUrl(item.pdfFile)
+                    if (!url || url === '/placeholder-image.jpg') {
+                      e.preventDefault()
+                      alert('ไฟล์ PDF ไม่พร้อมใช้งาน')
+                    }
+                  }}
                 >
-                  ดาวน์โหลด PDF
+                  📄 ดาวน์โหลด PDF
                 </a>
               </div>
             </div>

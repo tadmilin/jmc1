@@ -11,6 +11,9 @@ export const CatalogsBlock: Block = {
       name: 'heading',
       type: 'text',
       label: 'หัวข้อ',
+      admin: {
+        description: 'หัวข้อที่จะแสดงด้านบนของแคตตาล็อก',
+      },
     },
     {
       name: 'layout',
@@ -19,11 +22,11 @@ export const CatalogsBlock: Block = {
       defaultValue: 'grid',
       options: [
         {
-          label: 'Grid',
+          label: 'Grid (แสดงเป็นตาราง)',
           value: 'grid',
         },
         {
-          label: 'List',
+          label: 'List (แสดงเป็นรายการ)',
           value: 'list',
         },
       ],
@@ -33,22 +36,34 @@ export const CatalogsBlock: Block = {
       type: 'array',
       label: 'รายการแคตตาล็อก',
       minRows: 1,
+      admin: {
+        description: 'เพิ่มรายการแคตตาล็อกที่ต้องการแสดง',
+      },
       fields: [
         {
           name: 'name',
           type: 'text',
           label: 'ชื่อแคตตาล็อก',
           required: true,
+          admin: {
+            description: 'ชื่อของแคตตาล็อกที่จะแสดง',
+          },
         },
         {
           name: 'description',
           type: 'textarea',
           label: 'รายละเอียด',
+          admin: {
+            description: 'รายละเอียดเกี่ยวกับแคตตาล็อก (ไม่บังคับ)',
+          },
         },
         {
           name: 'category',
           type: 'text',
           label: 'หมวดหมู่',
+          admin: {
+            description: 'หมวดหมู่ของแคตตาล็อก (ไม่บังคับ)',
+          },
         },
         {
           name: 'thumbnailImage',
@@ -56,6 +71,9 @@ export const CatalogsBlock: Block = {
           label: 'รูปภาพปก',
           relationTo: 'media',
           required: true,
+          admin: {
+            description: 'รูปภาพที่จะแสดงเป็นปกของแคตตาล็อก',
+          },
         },
         {
           name: 'pdfFile',
@@ -67,6 +85,9 @@ export const CatalogsBlock: Block = {
             mimeType: {
               contains: 'application/pdf',
             },
+          },
+          admin: {
+            description: 'ไฟล์ PDF ที่ลูกค้าสามารถดาวน์โหลดได้',
           },
         },
       ],
