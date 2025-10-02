@@ -15,11 +15,13 @@ import { RelatedPostsBlock } from './RelatedPosts/config'
 import { SaleProductsSliderBlock } from './SaleProductsSliderBlock/config'
 import { ServiceFeaturesBlock } from './ServiceFeaturesBlock/config'
 import { Code } from './Code/config'
+import { CatalogsBlock } from './CatalogsBlock/config'
 
 export const blocks: Block[] = [
   ArchiveBlock,
   Banner,
   CallToAction,
+  CatalogsBlock,
   CategoryGridBlock,
   ContentGridBlock,
   Code,
