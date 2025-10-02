@@ -1,7 +1,7 @@
 import { Block } from 'payload'
 
 export const CatalogsBlock: Block = {
-  slug: 'catalogs',
+  slug: 'catalogsBlock',
   labels: {
     singular: 'Catalogs Block',
     plural: 'Catalogs Blocks',

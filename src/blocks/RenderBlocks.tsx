@@ -21,6 +21,7 @@ import { RelatedPosts } from './RelatedPosts/Component'
 import { SaleProductsSliderBlock } from './SaleProductsSliderBlock/Component'
 import { ServiceFeaturesBlock } from './ServiceFeaturesBlock/Component'
 import { QuoteRequestFormBlockComponent } from './QuoteRequestFormBlock/Component'
+import { CatalogsBlock } from './CatalogsBlock/Component'
 // import { CategoryListBlock } from './CategoryListBlock/Component' // Remove categoryList import
 
 // Dynamically import ImageSliderBlock (still needed if ImageSliderBlock has client-specific code)
@@ -42,7 +43,7 @@ const blockComponents = {
   saleProductsSliderBlock: SaleProductsSliderBlock,
   serviceFeatures: ServiceFeaturesBlock,
   quoteRequestFormBlock: QuoteRequestFormBlockComponent,
-  // categoryList: CategoryListBlock, // Remove categoryList
+  catalogsBlock: CatalogsBlock, // Add CatalogsBlock with correct slug
 }
 
 // Updated props type to include colorTheme
@@ -89,7 +90,7 @@ export const RenderBlocks: React.FC<{
                   </div>
                 )
               }
-              
+
               // กรณี ProductsBlock ส่ง colorTheme เพิ่มเติม
               if (blockType === 'productsBlock') {
                 return (
@@ -99,7 +100,7 @@ export const RenderBlocks: React.FC<{
                   </div>
                 )
               }
-              
+
               // กรณี SaleProductsSliderBlock ส่ง colorTheme เพิ่มเติม
               if ((blockType as string) === 'saleProductsSliderBlock') {
                 return (
@@ -109,7 +110,7 @@ export const RenderBlocks: React.FC<{
                   </div>
                 )
               }
-              
+
               // กรณี ArchiveBlock ส่ง colorTheme เพิ่มเติม
               if (blockType === 'archive') {
                 return (
@@ -119,7 +120,7 @@ export const RenderBlocks: React.FC<{
                   </div>
                 )
               }
-              
+
               // กรณีอื่นๆ ใช้การส่งแบบเดิม
               return (
                 <div key={index}>
