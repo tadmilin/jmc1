@@ -2,7 +2,7 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import sharp from 'sharp' 
+import sharp from 'sharp'
 
 import path from 'path'
 import { buildConfig } from 'payload'
@@ -10,7 +10,6 @@ import { fileURLToPath } from 'url'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 
 import { Categories } from './collections/Categories'
-import { Catalogs } from './collections/Catalogs'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
@@ -47,7 +46,7 @@ export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || '8ecc0ba2b1c8c461f2daba9d',
 
   // Simplified database configuration
-  collections: [Categories, Catalogs, Media, Pages, Posts, Products, Users, QuoteRequests],
+  collections: [Categories, Media, Pages, Posts, Products, Users, QuoteRequests],
 
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
