@@ -19,30 +19,35 @@ interface CatalogsBlockProps {
 }
 
 const getMediaUrl = (media: string | Media): string => {
-  // ถ้าเป็น string และมี URL ครบถ้วนแล้ว
+  // ถ้าเป็น string (filename)
   if (typeof media === 'string') {
     if (media.startsWith('http') || media.startsWith('/')) {
       return media
     }
-    // ถ้าเป็นแค่ filename ให้สร้าง URL ใหม่
-    const baseUrl =
-      process.env.NODE_ENV === 'development'
-        ? 'http://localhost:3000'
-        : process.env.NEXT_PUBLIC_SERVER_URL || 'https://jmc111.vercel.app'
-    return `${baseUrl}/media/${encodeURIComponent(media)}`
+    // ใช้ Payload media endpoint
+    return `/media/${media}`
   }
 
   // ถ้าเป็น Media object
-  if (!media || !media.filename) {
-    console.warn('Media object missing or missing filename:', media)
+  if (!media || typeof media !== 'object') {
     return '/placeholder-image.svg'
   }
 
-  const baseUrl =
-    process.env.NODE_ENV === 'development'
-      ? 'http://localhost:3000'
-      : process.env.NEXT_PUBLIC_SERVER_URL || 'https://jmc111.vercel.app'
-  return `${baseUrl}/media/${encodeURIComponent(media.filename)}`
+  // ตรวจสอบ properties ต่างๆ ของ Media object
+  if ('url' in media && media.url) {
+    return media.url as string
+  }
+
+  if ('filename' in media && media.filename) {
+    return `/media/${media.filename}`
+  }
+
+  if ('id' in media && media.id) {
+    return `/media/${media.id}`
+  }
+
+  // ถ้าไม่เจอ property ไหนเลย
+  return '/placeholder-image.svg'
 }
 
 export const CatalogsBlock: React.FC<CatalogsBlockProps> = ({
@@ -50,15 +55,19 @@ export const CatalogsBlock: React.FC<CatalogsBlockProps> = ({
   layout = 'grid',
   items = [],
 }) => {
-  // Debug logging
+  // Debug logging เพื่อดูข้อมูล
   React.useEffect(() => {
-    console.log('CatalogsBlock received props:', { heading, layout, items })
-    if (items?.length > 0) {
-      console.log('First item:', items[0])
+    console.log('=== CatalogsBlock Debug ===')
+    console.log('Items received:', items)
+    console.log('Items count:', items?.length)
+    if (items && items.length > 0) {
+      console.log('First item detail:', items[0])
       console.log('Thumbnail image:', items[0]?.thumbnailImage)
-      console.log('PDF file:', items[0]?.pdfFile)
+      if (items[0]?.thumbnailImage) {
+        console.log('Generated URL:', getMediaUrl(items[0].thumbnailImage))
+      }
     }
-  }, [heading, layout, items])
+  }, [items])
 
   const containerClass =
     layout === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-6'
@@ -67,7 +76,7 @@ export const CatalogsBlock: React.FC<CatalogsBlockProps> = ({
     return (
       <div className="text-center text-gray-600 py-12">
         <p>ไม่พบแคตตาล็อก</p>
-        <small className="text-xs text-gray-400">Debug: items = {JSON.stringify(items)}</small>
+        <p className="text-sm">กรุณาเพิ่มรายการแคตตาล็อกใน Admin Panel</p>
       </div>
     )
   }
@@ -82,29 +91,19 @@ export const CatalogsBlock: React.FC<CatalogsBlockProps> = ({
               key={index}
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
             >
-              <div className="relative w-full aspect-video bg-gray-200">
+              <div className="relative w-full aspect-video bg-gray-100">
                 {item.thumbnailImage ? (
                   <Image
                     src={getMediaUrl(item.thumbnailImage)}
                     alt={item.name || 'รูปภาพแคตตาล็อก'}
                     fill
-                    className="object-cover"
+                    className="object-cover rounded-t-lg"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    priority={false}
-                    loading="lazy"
-                    onError={(e) => {
-                      console.error('Image failed to load:', item.thumbnailImage)
-                      // ป้องกันการ loop โดยซ่อน fallback อีก
-                      const target = e.currentTarget
-                      if (!target.dataset.fallback) {
-                        target.dataset.fallback = 'true'
-                        target.src = '/placeholder-image.svg'
-                      }
-                    }}
+                    unoptimized={true}
                   />
                 ) : (
-                  <div className="flex items-center justify-center w-full h-full bg-gray-300 text-gray-500">
-                    ไม่มีรูปภาพ
+                  <div className="flex items-center justify-center w-full h-full bg-gray-200 text-gray-500 rounded-t-lg">
+                    📷 ไม่มีรูปภาพ
                   </div>
                 )}
               </div>
