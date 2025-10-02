@@ -2,9 +2,9 @@
 
 // Remove dynamic import of ImageSliderBlock here
 // import dynamic from 'next/dynamic'
-import React, { Fragment } from 'react'
+import React, { Fragment, Suspense } from 'react'
 
-import type { Page } from '@/payload-types'
+
 
 // Import Block Components directly
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
@@ -46,9 +46,11 @@ const blockComponents = {
   catalogsBlock: CatalogsBlock, // Add CatalogsBlock with correct slug
 }
 
+type BlockType = keyof typeof blockComponents
+
 // Updated props type to include colorTheme
 export const RenderBlocks: React.FC<{
-  blocks: Page['layout'][0][]
+  blocks: Array<{ blockType: BlockType } & Record<string, unknown>>
   colorTheme?: string
 }> = (props) => {
   const { blocks, colorTheme = 'light' } = props
@@ -58,80 +60,92 @@ export const RenderBlocks: React.FC<{
   if (hasBlocks) {
     return (
       <Fragment>
-        {blocks.map((block, index) => {
-          const { blockType } = block
+        <Suspense fallback={<div>Loading...</div>}>
+          {blocks.map((block, index) => {
+            const { blockType } = block
 
-          if (blockType && blockType in blockComponents) {
-            const Block = blockComponents[blockType]
+            if (blockType && blockType in blockComponents) {
+              const Block = blockComponents[blockType]
 
-            if (Block) {
-              // กรณีที่ต้องส่งในรูปแบบพิเศษ (ส่งผ่าน block prop)
-              if (
-                blockType === 'categoryGrid' ||
-                blockType === 'contentGrid' ||
-                blockType === 'imageSlider' ||
-                blockType === 'googleMap' ||
-                blockType === 'serviceFeatures'
-              ) {
+              if (Block) {
+                // กรณีที่ต้องส่งในรูปแบบพิเศษ (ส่งผ่าน block prop)
+                if (
+                  blockType === 'categoryGrid' ||
+                  blockType === 'contentGrid' ||
+                  blockType === 'imageSlider' ||
+                  blockType === 'googleMap' ||
+                  blockType === 'serviceFeatures'
+                ) {
+                  return (
+                    <div key={index}>
+                      {/* @ts-expect-error there may be some mismatch between the expected types here */}
+                      <Block block={block} colorTheme={colorTheme} />
+                    </div>
+                  )
+                }
+
+                // กรณี QuoteRequestFormBlock ส่งข้อมูลแบบพิเศษ
+                if (blockType === 'quoteRequestFormBlock') {
+                  return (
+                    <div key={index}>
+                      {/* @ts-expect-error there may be some mismatch between the expected types here */}
+                      <Block {...block} />
+                    </div>
+                  )
+                }
+
+                // กรณี ProductsBlock ส่ง colorTheme เพิ่มเติม
+                if (blockType === 'productsBlock') {
+                  return (
+                    <div key={index}>
+                      {/* @ts-expect-error there may be some mismatch between the expected types here */}
+                      <Block {...block} colorTheme={colorTheme} />
+                    </div>
+                  )
+                }
+
+                // กรณี CatalogsBlock
+                if (blockType === 'catalogsBlock') {
+                  return (
+                    <div key={index}>
+                      {/* @ts-expect-error async component */}
+                      <Block {...block} />
+                    </div>
+                  )
+                }
+
+                // กรณี SaleProductsSliderBlock ส่ง colorTheme เพิ่มเติม
+                if ((blockType as string) === 'saleProductsSliderBlock') {
+                  return (
+                    <div key={index}>
+                      {/* @ts-expect-error there may be some mismatch between the expected types here */}
+                      <Block {...block} colorTheme={colorTheme} />
+                    </div>
+                  )
+                }
+
+                // กรณี ArchiveBlock ส่ง colorTheme เพิ่มเติม
+                if (blockType === 'archive') {
+                  return (
+                    <div key={index}>
+                      {/* @ts-expect-error there may be some mismatch between the expected types here */}
+                      <Block {...block} colorTheme={colorTheme} disableInnerContainer />
+                    </div>
+                  )
+                }
+
+                // กรณีอื่นๆ ใช้การส่งแบบเดิม
                 return (
                   <div key={index}>
                     {/* @ts-expect-error there may be some mismatch between the expected types here */}
-                    <Block block={block} colorTheme={colorTheme} />
+                    <Block {...block} disableInnerContainer />
                   </div>
                 )
               }
-
-              // กรณี QuoteRequestFormBlock ส่งข้อมูลแบบพิเศษ
-              if (blockType === 'quoteRequestFormBlock') {
-                return (
-                  <div key={index}>
-                    {/* @ts-expect-error there may be some mismatch between the expected types here */}
-                    <Block {...block} />
-                  </div>
-                )
-              }
-
-              // กรณี ProductsBlock ส่ง colorTheme เพิ่มเติม
-              if (blockType === 'productsBlock') {
-                return (
-                  <div key={index}>
-                    {/* @ts-expect-error there may be some mismatch between the expected types here */}
-                    <Block {...block} colorTheme={colorTheme} />
-                  </div>
-                )
-              }
-
-              // กรณี SaleProductsSliderBlock ส่ง colorTheme เพิ่มเติม
-              if ((blockType as string) === 'saleProductsSliderBlock') {
-                return (
-                  <div key={index}>
-                    {/* @ts-expect-error there may be some mismatch between the expected types here */}
-                    <Block {...block} colorTheme={colorTheme} />
-                  </div>
-                )
-              }
-
-              // กรณี ArchiveBlock ส่ง colorTheme เพิ่มเติม
-              if (blockType === 'archive') {
-                return (
-                  <div key={index}>
-                    {/* @ts-expect-error there may be some mismatch between the expected types here */}
-                    <Block {...block} colorTheme={colorTheme} disableInnerContainer />
-                  </div>
-                )
-              }
-
-              // กรณีอื่นๆ ใช้การส่งแบบเดิม
-              return (
-                <div key={index}>
-                  {/* @ts-expect-error there may be some mismatch between the expected types here */}
-                  <Block {...block} disableInnerContainer />
-                </div>
-              )
             }
-          }
-          return null
-        })}
+            return null
+          })}
+        </Suspense>
       </Fragment>
     )
   }

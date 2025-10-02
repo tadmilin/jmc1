@@ -2,10 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-  
+
   // ข้าม admin routes ทั้งหมด - ให้ Payload จัดการเอง
   if (pathname.startsWith('/admin')) {
     return NextResponse.next()
+  }
+
+  // Force server-side rendering for pages with server components
+  if (pathname.startsWith('/catalogs')) {
+    const response = NextResponse.next()
+    response.headers.set('x-middleware-next', '1')
+    return response
   }
 
   const response = NextResponse.next()
@@ -17,10 +24,9 @@ export function middleware(request: NextRequest) {
     const allowedOrigins = [
       'https://jmc111.vercel.app',
       'https://jmc111-git-main-tadmilins-projects.vercel.app',
-      ...(process.env.NODE_ENV === 'development' ? [
-        'http://localhost:3000',
-        'http://localhost:3001'
-      ] : [])
+      ...(process.env.NODE_ENV === 'development'
+        ? ['http://localhost:3000', 'http://localhost:3001']
+        : []),
     ]
 
     // Set CORS headers
@@ -33,7 +39,10 @@ export function middleware(request: NextRequest) {
     }
 
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH')
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin')
+    response.headers.set(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+    )
     response.headers.set('Access-Control-Allow-Credentials', 'true')
 
     // Handle preflight requests
@@ -52,4 +61,4 @@ export const config = {
     // เฉพาะ API routes เท่านั้น
     '/api/:path*',
   ],
-} 
+}

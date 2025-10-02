@@ -1,12 +1,16 @@
 import { NextResponse } from 'next/server'
 import payload from 'payload'
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const limit = Number(searchParams.get('limit')) || 12
+
   try {
     const catalogs = await payload.find({
       collection: 'catalogs',
       depth: 1,
       sort: '-createdAt',
+      limit,
     })
 
     return NextResponse.json(catalogs)
