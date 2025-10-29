@@ -19,12 +19,105 @@ import FloatingButtons from '@/components/FloatingButtons'
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
 
+// Generate dynamic metadata from CMS
+export async function generateMetadata(): Promise<Metadata> {
+  const siteSettings = await getCachedGlobal('site-settings', 1)()
+  const baseURL = getServerSideURL()
+
+  // Type-safe access to settings with fallbacks
+  const siteName =
+    typeof siteSettings === 'object' && siteSettings !== null && 'siteName' in siteSettings
+      ? String(siteSettings.siteName)
+      : ''
+  const siteTagline =
+    typeof siteSettings === 'object' && siteSettings !== null && 'siteTagline' in siteSettings
+      ? String(siteSettings.siteTagline)
+      : ''
+  const siteDescription =
+    typeof siteSettings === 'object' && siteSettings !== null && 'siteDescription' in siteSettings
+      ? String(siteSettings.siteDescription)
+      : ''
+  const siteKeywords =
+    typeof siteSettings === 'object' && siteSettings !== null && 'siteKeywords' in siteSettings
+      ? String(siteSettings.siteKeywords)
+      : ''
+
+  // Use CMS data or fallback to defaults
+  const title =
+    siteName && siteTagline
+      ? `${siteName} | ${siteTagline}`
+      : 'วัสดุก่อสร้างใกล้ฉัน ตลิ่งชัน ราคาถูก | จงมีชัยค้าวัสดุ'
+
+  const description =
+    siteDescription ||
+    'ร้านวัสดุก่อสร้างใกล้ฉัน จงมีชัยค้าวัสดุ ตลิ่งชัน ปากซอยชักพระ6 วัสดุก่อสร้างครบวงจร ราคาถูก ส่งด่วนถึงไซต์งาน อิฐ หิน ปูน ทราย เหล็ก ประปา ไฟฟ้าใกล้ฉัน บริการพื้นที่ ตลิ่งชัน บางพลัด ท่าพระ'
+
+  const keywords =
+    siteKeywords ||
+    'วัสดุก่อสร้างใกล้ฉัน, ร้านวัสดุก่อสร้างใกล้ฉัน, วัสดุใกล้ฉัน, อิฐใกล้ฉัน, ปูนใกล้ฉัน, ทรายใกล้ฉัน, หินใกล้ฉัน, เหล็กใกล้ฉัน, ประปาใกล้ฉัน, ไฟฟ้าใกล้ฉัน, วัสดุก่อสร้าง ตลิ่งชัน, ร้านวัสดุก่อสร้าง ตลิ่งชัน, วัสดุก่อสร้าง เขตตลิ่งชัน, วัสดุก่อสร้าง ปากซอยชักพระ6, วัสดุก่อสร้าง บางพลัด, วัสดุก่อสร้าง ท่าพระ, วัสดุก่อสร้าง บางกอกน้อย, ร้านค้าวัสดุใกล้ฉัน, หาร้านวัสดุใกล้ฉัน, ปั๊มน้ำใกล้ฉัน, ท่อประปาใกล้ฉัน, สายไฟใกล้ฉัน, ประตูหน้าต่างใกล้ฉัน, เครื่องผสมสีใกล้ฉัน, ส่งวัสดุถึงไซต์งาน, วัสดุก่อสร้างราคาถูกใกล้ฉัน'
+
+  // Use OG image from CMS or fallback
+  const ogImageUrl =
+    typeof siteSettings === 'object' &&
+    siteSettings !== null &&
+    'ogImage' in siteSettings &&
+    typeof siteSettings.ogImage === 'object' &&
+    siteSettings.ogImage !== null &&
+    'url' in siteSettings.ogImage
+      ? String(siteSettings.ogImage.url)
+      : `${baseURL}/jmc-og-image.svg`
+
+  return {
+    metadataBase: new URL(baseURL),
+    title,
+    description,
+    keywords,
+    robots: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1',
+
+    openGraph: {
+      title,
+      description,
+      url: baseURL,
+      siteName: siteName || 'JMC จงมีชัยค้าวัสดุ ปากซอยชักพระ6',
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+      locale: 'th_TH',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      site: '@jmccompany',
+      creator: '@jmccompany',
+      title,
+      description,
+      images: [ogImageUrl],
+    },
+  }
+}
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
 
   // Fetch header data เพื่อเอา logo มาใช้เป็น favicon
-  const headerData = (await getCachedGlobal('header', 1)()) as any
-  const logoImageUrl = headerData?.logo?.logoImage?.url || '/favicon.svg'
+  const headerData = await getCachedGlobal('header', 1)()
+  const logoImageUrl =
+    typeof headerData === 'object' &&
+    headerData !== null &&
+    'logo' in headerData &&
+    typeof headerData.logo === 'object' &&
+    headerData.logo !== null &&
+    'logoImage' in headerData.logo &&
+    typeof headerData.logo.logoImage === 'object' &&
+    headerData.logo.logoImage !== null &&
+    'url' in headerData.logo.logoImage
+      ? String(headerData.logo.logoImage.url)
+      : '/favicon.svg'
 
   // เพิ่ม cache busting version
   const faviconUrl = logoImageUrl.includes('http') ? logoImageUrl : `${logoImageUrl}?v=3`
@@ -70,40 +163,4 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </body>
     </html>
   )
-}
-
-export const metadata: Metadata = {
-  metadataBase: new URL(getServerSideURL()),
-  title: 'ร้านวัสดุก่อสร้าง ตลิ่งชัน ใกล้ฉัน | จงมีชัยค้าวัสดุ ',
-  description:
-    'จงมีชัยค้าวัสดุ ตลิ่งชัน ปากซอยชักพระ6 ร้านวัสดุก่อสร้างครบวงจร ราคาถูก ส่งด่วนถึงไซต์งาน อิฐ หิน ปูน ทราย เหล็ก ประปา ไฟฟ้า ช่าง ครบจบที่เดียว',
-  keywords:
-    'วัสดุก่อสร้าง,วัสดุก่อสร้างใกล้ฉัน, ราคาถูก, ตลิ่งชัน, ปากซอยชักพระ6, ประปา,ไฟฟ้า, เหล็ก, ปั๊มน้ำ,ปูน,ทรายคิว ,หินคิว ,ทราย ,หิน ,รถปูน ,ประตู,หน้าต่าง อุปกรณ์ประปา, เครื่องผสมสี, ร้านวัสดุก่อสร้างใกล้ฉัน',
-  robots: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1',
-
-  openGraph: {
-    title: 'ร้านวัสดุก่อสร้าง ตลิ่งชัน ใกล้ฉัน | JMC',
-    description:
-      'จงมีชัยค้าวัสดุ ร้านวัสดุก่อสร้างครบวงจร ตลิ่งชัน ราคาถูก ส่งไว ปากซอยชักพระ6 โทรเลย!',
-    url: getServerSideURL(),
-    siteName: 'JMC จงมีชัยค้าวัสดุ ปากซอยชักพระ6',
-    images: [
-      {
-        url: `${getServerSideURL()}/jmc-og-image.svg`,
-        width: 1200,
-        height: 630,
-        alt: 'ร้านวัสดุก่อสร้าง ตลิ่งชัน ใกล้ฉัน JMC',
-      },
-    ],
-    locale: 'th_TH',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    site: '@jmccompany',
-    creator: '@jmccompany',
-    title: 'ร้านวัสดุก่อสร้าง ตลิ่งชัน ใกล้ฉัน | JMC',
-    description: 'วัสดุก่อสร้างครบวงจร ราคาถูก ตลิ่งชัน ปากซอยชักพระ6 ส่งไวถึงไซต์งาน',
-    images: [`${getServerSideURL()}/jmc-og-image.svg`],
-  },
 }

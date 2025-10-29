@@ -1,34 +1,38 @@
-import type { CollectionConfig } from 'payload'
+import type {
+  CollectionConfig,
+  CollectionAfterChangeHook,
+  CollectionAfterDeleteHook,
+} from 'payload'
 import { revalidatePath, revalidateTag } from 'next/cache'
 
-import { anyone } from '../access/anyone'
+import { publicRead } from '../access/publicRead'
 import { authenticated } from '../access/authenticated'
 import { slugField } from '@/fields/slug'
 
 // Revalidation hook for categories
-const revalidateCategory = ({ doc, req: { context } }) => {
+const revalidateCategory: CollectionAfterChangeHook = ({ doc, req: { context } }) => {
   if (!context.disableRevalidate) {
     // Revalidate the specific category page
     const path = `/categories/${doc.slug}`
     revalidatePath(path)
-    
+
     // Revalidate the main categories page
     revalidatePath('/categories')
-    
+
     // Revalidate any other pages that might use categories
     revalidateTag('categories')
   }
 }
 
-const revalidateDeleteCategory = ({ doc, req: { context } }) => {
+const revalidateDeleteCategory: CollectionAfterDeleteHook = ({ doc, req: { context } }) => {
   if (!context.disableRevalidate) {
     // Revalidate the specific category page
     const path = `/categories/${doc.slug}`
     revalidatePath(path)
-    
+
     // Revalidate the main categories page
     revalidatePath('/categories')
-    
+
     // Revalidate any other pages that might use categories
     revalidateTag('categories')
   }
@@ -39,7 +43,7 @@ export const Categories: CollectionConfig = {
   access: {
     create: authenticated,
     delete: authenticated,
-    read: anyone,
+    read: publicRead,
     update: authenticated,
   },
   admin: {

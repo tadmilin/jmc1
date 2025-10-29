@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 
 import { authenticated } from '../access/authenticated'
-import { anyone } from '../access/anyone'
+import { publicRead } from '../access/publicRead'
 import { slugField } from '@/fields/slug'
 import { link } from '@/fields/link'
 
@@ -10,7 +10,7 @@ export const Products: CollectionConfig = {
   slug: 'products',
   access: {
     create: authenticated,
-    read: anyone,
+    read: publicRead,
     update: authenticated,
     delete: authenticated,
   },
@@ -513,7 +513,8 @@ export const Products: CollectionConfig = {
               relationTo: 'media',
               label: 'OG Image',
               admin: {
-                description: 'รูปภาพที่แสดงเมื่อแชร์ (แนะนำ 1200x630px) จะใช้รูปแรกของสินค้าหากไม่ได้เลือก',
+                description:
+                  'รูปภาพที่แสดงเมื่อแชร์ (แนะนำ 1200x630px) จะใช้รูปแรกของสินค้าหากไม่ได้เลือก',
               },
             },
           ],

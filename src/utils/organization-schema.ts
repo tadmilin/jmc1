@@ -34,6 +34,7 @@ export type OrganizationSchema = {
   paymentAccepted: string[]
   currenciesAccepted: string
   areaServed: string[]
+  keywords: string
   serviceType: string[]
   founder: {
     '@type': 'Person'
@@ -128,12 +129,6 @@ export function generateOrganizationSchema(): OrganizationSchema {
         opens: '07:00',
         closes: '17:00',
       },
-      {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: ['Sunday'],
-        opens: '08:00',
-        closes: '16:00',
-      },
     ],
     priceRange: '฿฿',
     paymentAccepted: ['Cash', 'Credit Card', 'Bank Transfer', 'Promptpay'],
@@ -147,22 +142,14 @@ export function generateOrganizationSchema(): OrganizationSchema {
       'ปิ่นเกล้า',
       'จรัญสนิทวงศ์',
       'บางขุนนนท์',
-      'บรมราชชนนี',
-      'สวนผัก',
-      'พระราม5',
-      'บางกรวย',
       'บางพลัด',
+      'ท่าพระ',
       'บางกอกน้อย',
+      'บางบำหรุ',
       'ธนบุรี',
-      'บางกอกใหญ่',
-      'หนองแขม',
-      'บางแค',
-      'ทวีวัฒนา',
-      'ภาษีเจริญ',
-      'กรุงเทพมหานคร',
-      'นนทบุรี',
-      'ปทุมธานี',
     ],
+    keywords:
+      'วัสดุก่อสร้างใกล้ฉัน, ร้านวัสดุก่อสร้างใกล้ฉัน, วัสดุใกล้ฉัน, อิฐใกล้ฉัน, ปูนใกล้ฉัน, ทรายใกล้ฉัน, หินใกล้ฉัน, เหล็กใกล้ฉัน, ประปาใกล้ฉัน, ไฟฟ้าใกล้ฉัน, วัสดุก่อสร้าง ตลิ่งชัน, ร้านวัสดุก่อสร้าง ตลิ่งชัน',
     serviceType: [
       'ร้านวัสดุก่อสร้าง ตลิ่งชัน',
       'วัสดุก่อสร้าง ใกล้ฉัน',
@@ -198,7 +185,7 @@ export function generateOrganizationSchema(): OrganizationSchema {
       bestRating: '5',
       worstRating: '1',
     },
-    openingHours: 'Mo-Sa 07:00-17:00, Su 08:00-16:00',
+    openingHours: 'Mo-Sa 07:00-17:00',
     additionalProperty: [
       {
         '@type': 'PropertyValue',

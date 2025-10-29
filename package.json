@@ -6,7 +6,8 @@
   "type": "module",
   "packageManager": "pnpm@8.15.4",
   "scripts": {
-    "build": "set \"NODE_OPTIONS=--max-old-space-size=4096\" && next build",
+    "build": "set \"NODE_OPTIONS=--max-old-space-size=4096\" && set \"NEXT_PUBLIC_SERVER_URL=https://jmc111.vercel.app\" && next build",
+    "build:local": "set \"NODE_OPTIONS=--max-old-space-size=4096\" && next build",
     "build:analyze": "cross-env ANALYZE=true next build",
     "analyze:deps": "npx depcheck",
     "analyze:size": "npx bundle-size-analyzer .next/static/chunks/*.js",
