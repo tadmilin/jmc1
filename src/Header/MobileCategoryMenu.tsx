@@ -157,7 +157,7 @@ export const MobileCategoryMenu: React.FC<MobileCategoryMenuProps> = ({ onClose 
     const fetchCategories = async () => {
       try {
         setError(null)
-        const response = await fetch('/api/public/categories?depth=2&sort=displayOrder&limit=50')
+        const response = await fetch('/api/categories?depth=2&sort=displayOrder&limit=50')
 
         if (!response.ok) throw new Error('ไม่สามารถดึงข้อมูลหมวดหมู่ได้')
 

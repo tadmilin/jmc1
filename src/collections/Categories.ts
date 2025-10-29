@@ -5,7 +5,6 @@ import type {
 } from 'payload'
 import { revalidatePath, revalidateTag } from 'next/cache'
 
-import { publicRead } from '../access/publicRead'
 import { authenticated } from '../access/authenticated'
 import { slugField } from '@/fields/slug'
 
@@ -43,7 +42,7 @@ export const Categories: CollectionConfig = {
   access: {
     create: authenticated,
     delete: authenticated,
-    read: publicRead,
+    read: () => true, // อนุญาตให้ทุกคนอ่านได้
     update: authenticated,
   },
   admin: {

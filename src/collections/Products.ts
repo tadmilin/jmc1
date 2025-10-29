@@ -2,7 +2,6 @@ import type { CollectionConfig } from 'payload'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 
 import { authenticated } from '../access/authenticated'
-import { publicRead } from '../access/publicRead'
 import { slugField } from '@/fields/slug'
 import { link } from '@/fields/link'
 
@@ -10,7 +9,7 @@ export const Products: CollectionConfig = {
   slug: 'products',
   access: {
     create: authenticated,
-    read: publicRead,
+    read: () => true, // อนุญาตให้ทุกคนอ่านได้
     update: authenticated,
     delete: authenticated,
   },

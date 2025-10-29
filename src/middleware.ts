@@ -19,6 +19,24 @@ export function middleware(request: NextRequest) {
 
   // จัดการเฉพาะ API routes
   if (pathname.startsWith('/api')) {
+    // ป้องกัน sensitive API endpoints จาก external access
+    if (
+      pathname.startsWith('/api/admin-status') ||
+      pathname.startsWith('/api/health') ||
+      pathname.startsWith('/api/env-check')
+    ) {
+      const referer = request.headers.get('referer')
+      const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+
+      // บล็อกถ้าไม่ได้มาจาก admin panel หรือไม่มี authentication
+      if (
+        !referer?.startsWith(serverURL + '/admin') &&
+        !request.headers.get('cookie')?.includes('payload-token')
+      ) {
+        return new NextResponse('Not Found', { status: 404 })
+      }
+    }
+
     // Get the origin for CORS
     const origin = request.headers.get('origin')
     const allowedOrigins = [

@@ -18,7 +18,7 @@ export default function CategoriesPageClient() {
     const fetchCategories = async () => {
       try {
         setLoading(true)
-        const response = await fetch('/api/public/categories?limit=100&depth=1&sort=displayOrder')
+        const response = await fetch('/api/categories?limit=100&depth=1&sort=displayOrder')
         if (response.ok) {
           const data = await response.json()
           setCategories(data.docs || [])
