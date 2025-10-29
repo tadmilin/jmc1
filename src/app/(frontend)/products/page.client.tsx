@@ -32,7 +32,7 @@ export default function ProductsPageClient() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('/api/categories?limit=100&depth=0')
+        const response = await fetch('/api/public/categories?limit=100&depth=0')
         if (response.ok) {
           const data = await response.json()
           setCategories(data.docs || [])
@@ -69,7 +69,7 @@ export default function ProductsPageClient() {
         // Only show active products
         params.append('where[status][equals]', 'active')
 
-        const response = await fetch(`/api/products?${params.toString()}`)
+        const response = await fetch(`/api/public/products?${params.toString()}`)
 
         if (response.ok) {
           const data = await response.json()

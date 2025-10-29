@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import Image from 'next/image' 
+import Image from 'next/image'
 import type { Category } from '@/payload-types'
 
 interface MobileCategoryMenuProps {
@@ -157,7 +157,7 @@ export const MobileCategoryMenu: React.FC<MobileCategoryMenuProps> = ({ onClose 
     const fetchCategories = async () => {
       try {
         setError(null)
-        const response = await fetch('/api/categories?depth=2&sort=displayOrder&limit=50')
+        const response = await fetch('/api/public/categories?depth=2&sort=displayOrder&limit=50')
 
         if (!response.ok) throw new Error('ไม่สามารถดึงข้อมูลหมวดหมู่ได้')
 
@@ -194,15 +194,15 @@ export const MobileCategoryMenu: React.FC<MobileCategoryMenuProps> = ({ onClose 
         typeof category.image === 'object' && category.image && 'url' in category.image
           ? category.image.url || ''
           : ''
-              return (
-          <Image
-            src={imageUrl}
-            alt={category.title || 'หมวดหมู่สินค้า'}
-            width={48}
-            height={48}
-            className="w-12 h-12 object-cover rounded-lg group-hover:scale-105 transition-transform duration-200"
-          />
-        )
+      return (
+        <Image
+          src={imageUrl}
+          alt={category.title || 'หมวดหมู่สินค้า'}
+          width={48}
+          height={48}
+          className="w-12 h-12 object-cover rounded-lg group-hover:scale-105 transition-transform duration-200"
+        />
+      )
     } else {
       // แสดง icon แทนถ้าไม่มีรูปหรือรูปไม่ถูกต้อง
       return (
