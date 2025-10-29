@@ -5,21 +5,34 @@ import config from '@payload-config'
 export async function GET(request: NextRequest) {
   try {
     const payload = await getPayload({ config })
-    
+
+    // ตรวจสอบ Authentication - เฉพาะ admin เท่านั้น
+    const { user } = await payload.auth({ headers: request.headers })
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 401 })
+    }
+
     // ทดสอบการเชื่อมต่อ database
     const [users, products, categories] = await Promise.all([
-      payload.find({
-        collection: 'users',
-        limit: 1,
-      }).catch(err => ({ error: err.message, totalDocs: 0 })),
-      payload.find({
-        collection: 'products',
-        limit: 1,
-      }).catch(err => ({ error: err.message, totalDocs: 0 })),
-      payload.find({
-        collection: 'categories',
-        limit: 1,
-      }).catch(err => ({ error: err.message, totalDocs: 0 })),
+      payload
+        .find({
+          collection: 'users',
+          limit: 1,
+        })
+        .catch((err) => ({ error: err.message, totalDocs: 0 })),
+      payload
+        .find({
+          collection: 'products',
+          limit: 1,
+        })
+        .catch((err) => ({ error: err.message, totalDocs: 0 })),
+      payload
+        .find({
+          collection: 'categories',
+          limit: 1,
+        })
+        .catch((err) => ({ error: err.message, totalDocs: 0 })),
     ])
 
     const adminStatus = {
@@ -63,13 +76,13 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Admin Status Error:', error)
     return NextResponse.json(
-      { 
+      {
         status: 'error',
         error: 'Failed to check admin status',
         details: error instanceof Error ? error.message : String(error),
         timestamp: new Date().toISOString(),
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
-} 
+}
