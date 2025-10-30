@@ -1,10 +1,21 @@
 import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload'
 
-import { revalidatePath, revalidateTag } from 'next/cache'
-
 import type { Page } from '../../../payload-types'
 
-export const revalidatePage: CollectionAfterChangeHook<Page> = ({
+// Safe revalidation function to avoid server-only import errors
+const safeRevalidate = async (path?: string, tag?: string) => {
+  try {
+    if (typeof window === 'undefined') {
+      const { revalidatePath, revalidateTag } = await import('next/cache')
+      if (path) revalidatePath(path)
+      if (tag) revalidateTag(tag)
+    }
+  } catch (error) {
+    console.warn('Revalidation failed:', error)
+  }
+}
+
+export const revalidatePage: CollectionAfterChangeHook<Page> = async ({
   doc,
   previousDoc,
   req: { payload, context },
@@ -15,8 +26,8 @@ export const revalidatePage: CollectionAfterChangeHook<Page> = ({
 
       payload.logger.info(`Revalidating page at path: ${path}`)
 
-      revalidatePath(path)
-      revalidateTag('pages-sitemap')
+      await safeRevalidate(path)
+      await safeRevalidate(undefined, 'pages-sitemap')
     }
 
     // If the page was previously published, we need to revalidate the old path
@@ -25,18 +36,21 @@ export const revalidatePage: CollectionAfterChangeHook<Page> = ({
 
       payload.logger.info(`Revalidating old page at path: ${oldPath}`)
 
-      revalidatePath(oldPath)
-      revalidateTag('pages-sitemap')
+      await safeRevalidate(oldPath)
+      await safeRevalidate(undefined, 'pages-sitemap')
     }
   }
   return doc
 }
 
-export const revalidateDelete: CollectionAfterDeleteHook<Page> = ({ doc, req: { context } }) => {
+export const revalidateDelete: CollectionAfterDeleteHook<Page> = async ({
+  doc,
+  req: { context },
+}) => {
   if (!context.disableRevalidate) {
     const path = doc?.slug === 'home' ? '/' : `/${doc?.slug}`
-    revalidatePath(path)
-    revalidateTag('pages-sitemap')
+    await safeRevalidate(path)
+    await safeRevalidate(undefined, 'pages-sitemap')
   }
 
   return doc

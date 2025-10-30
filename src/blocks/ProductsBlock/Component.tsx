@@ -46,6 +46,7 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
   const [products, setProducts] = useState<ProductCardData[]>([])
   const [loading, setLoading] = useState(true)
   const [_error, setError] = useState<string | null>(null)
+
   const isDarkTheme = colorTheme === 'dark'
 
   useEffect(() => {
@@ -63,7 +64,7 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
           'where[status][equals]': 'active',
         })
 
-        // ไม่ต้องใส่ API key เพราะเป็น internal request
+        console.log('ProductsBlock: Fetching products...', { showOnlyOnSale, limit: fetchLimit })
         const response = await fetch(`/api/products?${params.toString()}`)
 
         if (!response.ok) {
@@ -74,18 +75,21 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
         }
 
         const data = await response.json()
+        console.log('ProductsBlock: Received', data.totalDocs, 'products')
+
         let filteredProducts = data.docs || []
 
-        // กรองเฉพาะสินค้า active
+        // กรองเฉพาะสินค้าที่ active
         filteredProducts = filteredProducts.filter(
           (product: ProductCardData) => product && product.status === 'active',
         )
 
-        // กรองสินค้าลดราคาถ้าต้องการ
+        // ถ้า showOnlyOnSale เป็น true ให้กรองเฉพาะสินค้าลดราคา
         if (showOnlyOnSale) {
           filteredProducts = filteredProducts.filter((product: ProductCardData) => {
             if (!product || product.status !== 'active') return false
 
+            // เช็คสินค้าหลักว่ามีราคาลดหรือไม่
             const basePrice = product.price ? Number(product.price) : 0
             const baseSalePrice = product.salePrice ? Number(product.salePrice) : 0
             const hasBaseSale = baseSalePrice > 0 && baseSalePrice < basePrice
@@ -94,7 +98,7 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
           })
         }
 
-        const finalProducts = filteredProducts.slice(0, limit)
+        const finalProducts = filteredProducts.slice(0, limit || 8)
         setProducts(finalProducts)
       } catch (err) {
         console.error('ProductsBlock error:', err)
@@ -149,181 +153,108 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
             {showOnlyOnSale ? (
               <>
                 <p className={`text-lg ${isDarkTheme ? 'text-gray-300' : 'text-gray-600'} mb-6`}>
-                  ขณะนี้ยังไม่มีสินค้าลดราคา กรุณาติดตามใหม่อีกครั้ง
+                  ขณะนี้ยังไม่มีสินค้าลดราขา กรุณาติดตามใหม่อีกครั้ง
                 </p>
-                <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded-lg mb-6 max-w-md mx-auto">
-                  <p className="text-sm">
-                    💡 <strong>สำหรับ Admin:</strong> ตั้งค่า salePrice ในสินค้าหรือ variant
-                    เพื่อแสดงในส่วนนี้
-                  </p>
-                </div>
               </>
             ) : (
               <p className={`text-lg ${isDarkTheme ? 'text-gray-300' : 'text-gray-600'} mb-6`}>
                 กำลังเตรียมสินค้าสำหรับคุณ...
               </p>
             )}
-            <div className="mt-6">
-              <a
-                href={showOnlyOnSale ? '/products' : '/admin'}
-                className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                {showOnlyOnSale ? 'ดูสินค้าทั้งหมด' : 'เพิ่มสินค้าใน Admin Panel'}
-              </a>
-            </div>
           </div>
         </div>
       </div>
     )
   }
 
-  // คำนวณ slidesPerView และ loop condition สำหรับ Swiper
-  const getMaxSlidesPerView = (breakpointSlides: number) =>
-    Math.min(breakpointSlides, products.length)
-  const shouldEnableLoop = products.length >= 6 // ต้องมีอย่างน้อย 6 ชิ้นถึงจะ loop ได้
-
   return (
     <div className={`py-8 lg:py-12 ${getBgClasses()}`}>
       <style dangerouslySetInnerHTML={{ __html: customPaginationStyles }} />
       <div className="container mx-auto px-4">
-        {/* Header Section */}
-        <div className="text-center mb-8">
+        {/* Header */}
+        <div className="text-center mb-8 lg:mb-12">
           <h2
-            className={`text-3xl md:text-4xl font-bold mb-4 ${isDarkTheme ? 'text-red-400' : 'text-red-600'}`}
+            className={`text-3xl md:text-4xl font-bold mb-4 ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}
           >
             {title}
           </h2>
           {subtitle && (
             <p
-              className={`text-lg max-w-2xl mx-auto ${isDarkTheme ? 'text-gray-300' : 'text-gray-600'}`}
+              className={`text-lg ${isDarkTheme ? 'text-gray-300' : 'text-gray-600'} max-w-2xl mx-auto`}
             >
               {subtitle}
             </p>
           )}
-          {showOnlyOnSale && (
-            <div className="mt-4">
-              <div className="bg-red-100 text-red-800 px-4 py-2 rounded-full text-sm font-semibold inline-block">
-                🔥 สินค้าลดราคา {products.length} รายการ
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Products Section */}
+        {/* Products Display */}
         {layout === 'slider' ? (
-          <div className="relative">
+          <div className="products-swiper">
             <Swiper
               modules={[Navigation, Pagination, Autoplay]}
-              spaceBetween={16}
+              spaceBetween={24}
               slidesPerView={1}
               navigation={{
-                nextEl: '.swiper-button-next-custom',
-                prevEl: '.swiper-button-prev-custom',
+                nextEl: '.products-swiper-button-next',
+                prevEl: '.products-swiper-button-prev',
               }}
               pagination={{
+                el: '.products-swiper-pagination',
                 clickable: true,
-                el: '.swiper-pagination-custom',
+                dynamicBullets: true,
               }}
-              autoplay={
-                products.length > 1
-                  ? {
-                      delay: 4000,
-                      disableOnInteraction: false,
-                    }
-                  : false
-              }
-              loop={shouldEnableLoop}
-              loopAdditionalSlides={shouldEnableLoop ? 2 : 0}
-              watchSlidesProgress={true}
+              autoplay={{
+                delay: 5000,
+                disableOnInteraction: false,
+              }}
               breakpoints={{
                 640: {
-                  slidesPerView: getMaxSlidesPerView(2),
-                  spaceBetween: 20,
+                  slidesPerView: 2,
                 },
                 768: {
-                  slidesPerView: getMaxSlidesPerView(2),
-                  spaceBetween: 24,
+                  slidesPerView: 3,
                 },
                 1024: {
-                  slidesPerView: getMaxSlidesPerView(3),
-                  spaceBetween: 24,
-                },
-                1280: {
-                  slidesPerView: getMaxSlidesPerView(4),
-                  spaceBetween: 24,
+                  slidesPerView: 4,
                 },
               }}
-              className="products-swiper"
+              className="pb-12"
             >
-              {products.map((product, index) => (
-                <SwiperSlide key={product.id || index}>
-                  <ProductCard product={product} colorTheme={colorTheme} />
+              {products.map((product) => (
+                <SwiperSlide key={product.id}>
+                  <ProductCard product={product} />
                 </SwiperSlide>
               ))}
             </Swiper>
 
-            {/* Custom Navigation Buttons */}
-            <div className="flex justify-center items-center gap-4 mt-8">
-              <button
-                className={`swiper-button-prev-custom w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
-                  isDarkTheme
-                    ? 'bg-gray-800 text-white hover:bg-gray-700 border border-gray-600'
-                    : 'bg-white text-gray-600 hover:text-blue-600 hover:bg-blue-50 shadow-lg border border-gray-200'
-                }`}
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
+            {/* Custom Navigation */}
+            <div className="flex justify-center items-center mt-6 space-x-4">
+              <button className="products-swiper-button-prev w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition-colors">
+                ←
               </button>
-
-              {/* Custom Pagination */}
-              <div className="swiper-pagination-custom flex gap-2"></div>
-
-              <button
-                className={`swiper-button-next-custom w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
-                  isDarkTheme
-                    ? 'bg-gray-800 text-white hover:bg-gray-700 border border-gray-600'
-                    : 'bg-white text-gray-600 hover:text-blue-600 hover:bg-blue-50 shadow-lg border border-gray-200'
-                }`}
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
+              <div className="products-swiper-pagination swiper-pagination-custom"></div>
+              <button className="products-swiper-button-next w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition-colors">
+                →
               </button>
             </div>
           </div>
         ) : (
-          // Grid Layout
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product, index) => (
-              <ProductCard key={product.id || index} product={product} colorTheme={colorTheme} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         )}
 
         {/* View All Button */}
-        {showViewAllButton && viewAllLink && (
-          <div className="text-center mt-12">
+        {showViewAllButton && products.length > 0 && (
+          <div className="text-center mt-8 lg:mt-12">
             <a
-              href={viewAllLink}
-              className={`inline-flex items-center px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 ${
-                isDarkTheme
-                  ? 'bg-red-600 text-white hover:bg-red-700 shadow-lg hover:shadow-xl'
-                  : 'bg-gradient-to-r from-red-600 to-orange-600 text-white hover:from-red-700 hover:to-orange-700 shadow-lg hover:shadow-xl'
-              }`}
+              href={viewAllLink || '/products'}
+              className="inline-flex items-center px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors duration-300"
             >
               ดูสินค้าทั้งหมด
-              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"

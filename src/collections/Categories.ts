@@ -3,37 +3,49 @@ import type {
   CollectionAfterChangeHook,
   CollectionAfterDeleteHook,
 } from 'payload'
-import { revalidatePath, revalidateTag } from 'next/cache'
 
 import { authenticated } from '../access/authenticated'
 import { slugField } from '@/fields/slug'
 
-// Revalidation hook for categories
-const revalidateCategory: CollectionAfterChangeHook = ({ doc, req: { context } }) => {
-  if (!context.disableRevalidate) {
-    // Revalidate the specific category page
-    const path = `/categories/${doc.slug}`
-    revalidatePath(path)
-
-    // Revalidate the main categories page
-    revalidatePath('/categories')
-
-    // Revalidate any other pages that might use categories
-    revalidateTag('categories')
+// Safe revalidation function to avoid server-only import errors
+const safeRevalidate = async (path?: string, tag?: string) => {
+  try {
+    if (typeof window === 'undefined') {
+      const { revalidatePath, revalidateTag } = await import('next/cache')
+      if (path) revalidatePath(path)
+      if (tag) revalidateTag(tag)
+    }
+  } catch (error) {
+    console.warn('Revalidation failed:', error)
   }
 }
 
-const revalidateDeleteCategory: CollectionAfterDeleteHook = ({ doc, req: { context } }) => {
+// Revalidation hook for categories
+const revalidateCategory: CollectionAfterChangeHook = async ({ doc, req: { context } }) => {
   if (!context.disableRevalidate) {
     // Revalidate the specific category page
     const path = `/categories/${doc.slug}`
-    revalidatePath(path)
+    await safeRevalidate(path)
 
     // Revalidate the main categories page
-    revalidatePath('/categories')
+    await safeRevalidate('/categories')
 
     // Revalidate any other pages that might use categories
-    revalidateTag('categories')
+    await safeRevalidate(undefined, 'categories')
+  }
+}
+
+const revalidateDeleteCategory: CollectionAfterDeleteHook = async ({ doc, req: { context } }) => {
+  if (!context.disableRevalidate) {
+    // Revalidate the specific category page
+    const path = `/categories/${doc.slug}`
+    await safeRevalidate(path)
+
+    // Revalidate the main categories page
+    await safeRevalidate('/categories')
+
+    // Revalidate any other pages that might use categories
+    await safeRevalidate(undefined, 'categories')
   }
 }
 
