@@ -33,10 +33,10 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
     const fetchSaleProducts = async () => {
       try {
         setLoading(true)
-        
+
         // เพิ่ม limit มากขึ้นเพื่อให้มีโอกาสหาสินค้าลดราคาได้มากขึ้น
         const fetchLimit = Math.max(limit * 3, 50) // ดึงมาก่อน แล้วกรองทีหลัง
-        
+
         const params = new URLSearchParams({
           limit: fetchLimit.toString(),
           depth: '1',
@@ -44,8 +44,12 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
         })
 
         console.log('SaleProductsSlider: Fetching products for sale filtering...')
-        const response = await fetch(`/api/products?${params.toString()}`)
-        
+        const response = await fetch(`/api/products?${params.toString()}`, {
+          headers: {
+            'x-api-key': process.env.NEXT_PUBLIC_API_KEY || 'jmc-api-2024-secure-key-xdata24b',
+          },
+        })
+
         if (!response.ok) {
           console.error('SaleProductsSlider API failed:', response.status, response.statusText)
           setProducts([])
@@ -53,52 +57,65 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
         }
 
         const data = await response.json()
-        console.log('SaleProductsSlider: Received', data.totalDocs, 'products, filtering for sales...')
-        
+        console.log(
+          'SaleProductsSlider: Received',
+          data.totalDocs,
+          'products, filtering for sales...',
+        )
+
         // กรองสินค้าลดราคาอย่างละเอียด
         const saleProducts = (data.docs || []).filter((product: ProductCardData) => {
           if (!product || product.status !== 'active') return false
-          
+
           // เช็คสินค้าหลักว่ามีราคาลดหรือไม่
           const basePrice = product.price ? Number(product.price) : 0
           const baseSalePrice = product.salePrice ? Number(product.salePrice) : 0
           const hasBaseSale = baseSalePrice > 0 && baseSalePrice < basePrice
-          
+
           // เช็ค variants ว่ามีราคาลดหรือไม่
-          const hasVariantSale = product.variants && 
-                                product.variants.length > 0 && 
-                                product.variants.some((variant) => {
-                                  if (variant.variantStatus !== 'active') return false
-                                  const variantPrice = variant.variantPrice ? Number(variant.variantPrice) : 0
-                                  const variantSalePrice = variant.variantSalePrice ? Number(variant.variantSalePrice) : 0
-                                  return variantSalePrice > 0 && variantSalePrice < variantPrice
-                                })
-          
+          const hasVariantSale =
+            product.variants &&
+            product.variants.length > 0 &&
+            product.variants.some((variant) => {
+              if (variant.variantStatus !== 'active') return false
+              const variantPrice = variant.variantPrice ? Number(variant.variantPrice) : 0
+              const variantSalePrice = variant.variantSalePrice
+                ? Number(variant.variantSalePrice)
+                : 0
+              return variantSalePrice > 0 && variantSalePrice < variantPrice
+            })
+
           const isSaleProduct = hasBaseSale || hasVariantSale
-          
+
           if (isSaleProduct) {
             console.log('✅ Sale product found:', product.title, {
               hasBaseSale,
               hasVariantSale,
               basePrice,
               baseSalePrice,
-              variantsCount: product.variants?.length || 0
+              variantsCount: product.variants?.length || 0,
             })
           }
-          
+
           return isSaleProduct
         })
 
-        console.log('🎯 Final sale products:', saleProducts.length, 'out of', data.docs?.length || 0)
-        
+        console.log(
+          '🎯 Final sale products:',
+          saleProducts.length,
+          'out of',
+          data.docs?.length || 0,
+        )
+
         // จำกัดจำนวนตาม limit ที่ต้องการ
         const finalProducts = saleProducts.slice(0, limit)
         setProducts(finalProducts)
-        
+
         if (finalProducts.length === 0) {
-          console.warn('⚠️ No sale products found! Check if products have salePrice or variant salePrice set')
+          console.warn(
+            '⚠️ No sale products found! Check if products have salePrice or variant salePrice set',
+          )
         }
-        
       } catch (err) {
         console.error('Error fetching sale products:', err)
         setProducts([])
@@ -142,19 +159,18 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
       <div className={`py-12 lg:py-16 ${getBgClasses()}`}>
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-red-600">
-              {title}
-            </h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-red-600">{title}</h2>
             <p className="text-lg text-gray-600 mb-8">
               ขณะนี้ยังไม่มีสินค้าลดราคา กรุณาติดตามใหม่อีกครั้ง
             </p>
             <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded-lg mb-6 max-w-md mx-auto">
               <p className="text-sm">
-                💡 <strong>สำหรับ Admin:</strong> ตั้งค่า salePrice ในสินค้าหรือ variant เพื่อแสดงในส่วนนี้
+                💡 <strong>สำหรับ Admin:</strong> ตั้งค่า salePrice ในสินค้าหรือ variant
+                เพื่อแสดงในส่วนนี้
               </p>
             </div>
-            <a 
-              href="/products" 
+            <a
+              href="/products"
               className="inline-block bg-red-600 text-white px-8 py-3 rounded-xl hover:bg-red-700 transition-colors font-semibold"
             >
               ดูสินค้าทั้งหมด
@@ -166,15 +182,17 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
   }
 
   // คำนวณ slidesPerView สำหรับแต่ละ breakpoint
-  const getMaxSlidesPerView = (breakpointSlides: number) => Math.min(breakpointSlides, products.length)
-  
+  const getMaxSlidesPerView = (breakpointSlides: number) =>
+    Math.min(breakpointSlides, products.length)
+
   // เงื่อนไข loop ที่ปลอดภัย - ต้องมีสินค้าเพียงพอสำหรับ loop
   const shouldEnableLoop = products.length >= 6 // ต้องมีอย่างน้อย 6 ชิ้นถึงจะ loop ได้
 
   return (
     <div className={`py-12 lg:py-16 ${getBgClasses()}`}>
-      <style dangerouslySetInnerHTML={{ 
-        __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
           .sale-products-swiper .swiper-pagination-bullet {
             width: 12px;
             height: 12px;
@@ -195,9 +213,10 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
           .sale-products-swiper .swiper-slide {
             height: auto;
           }
-        ` 
-      }} />
-      
+        `,
+        }}
+      />
+
       <div className="container mx-auto px-4">
         {/* Header Section */}
         <div className="text-center mb-12">
@@ -230,11 +249,15 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
               clickable: true,
               dynamicBullets: true,
             }}
-            autoplay={products.length > 1 ? {
-              delay: 3500,
-              disableOnInteraction: false,
-              pauseOnMouseEnter: true,
-            } : false}
+            autoplay={
+              products.length > 1
+                ? {
+                    delay: 3500,
+                    disableOnInteraction: false,
+                    pauseOnMouseEnter: true,
+                  }
+                : false
+            }
             loop={shouldEnableLoop}
             loopAdditionalSlides={shouldEnableLoop ? 3 : 0}
             watchSlidesProgress={true}
@@ -270,13 +293,23 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
           {/* Custom Navigation Buttons */}
           <button className="sale-swiper-button-prev absolute left-4 top-1/2 -translate-y-1/2 z-10 w-14 h-14 bg-white/90 backdrop-blur-sm text-red-600 rounded-full flex items-center justify-center shadow-xl hover:bg-white hover:scale-110 transition-all duration-300 border-2 border-red-100">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
 
           <button className="sale-swiper-button-next absolute right-4 top-1/2 -translate-y-1/2 z-10 w-14 h-14 bg-white/90 backdrop-blur-sm text-red-600 rounded-full flex items-center justify-center shadow-xl hover:bg-white hover:scale-110 transition-all duration-300 border-2 border-red-100">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </button>
         </div>
@@ -290,7 +323,12 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
             >
               <span>ดูสินค้าลดราคาทั้งหมด</span>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </a>
           </div>
@@ -298,4 +336,4 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
       </div>
     </div>
   )
-} 
+}

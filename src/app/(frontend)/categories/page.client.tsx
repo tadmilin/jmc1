@@ -18,7 +18,11 @@ export default function CategoriesPageClient() {
     const fetchCategories = async () => {
       try {
         setLoading(true)
-        const response = await fetch('/api/categories?limit=100&depth=1&sort=displayOrder')
+        const response = await fetch('/api/categories?limit=100&depth=1&sort=displayOrder', {
+          headers: {
+            'x-api-key': process.env.NEXT_PUBLIC_API_KEY || 'jmc-api-2024-secure-key-xdata24b',
+          },
+        })
         if (response.ok) {
           const data = await response.json()
           setCategories(data.docs || [])

@@ -3,7 +3,13 @@ import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Media } from '@/components/Media'
 import { ProductCard, type ProductCardData } from '@/components/ProductCard'
 import { ArrowLeft, Grid, List } from 'lucide-react'
@@ -39,7 +45,7 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
     const fetchProducts = async () => {
       try {
         setLoading(true)
-        
+
         const params = new URLSearchParams({
           limit: limit.toString(),
           page: currentPage.toString(),
@@ -77,8 +83,12 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
             params.append('sort', '-createdAt')
         }
 
-        const response = await fetch(`/api/products?${params.toString()}`)
-        
+        const response = await fetch(`/api/products?${params.toString()}`, {
+          headers: {
+            'x-api-key': process.env.NEXT_PUBLIC_API_KEY || 'jmc-api-2024-secure-key-xdata24b',
+          },
+        })
+
         if (response.ok) {
           const data = await response.json()
           setProducts(data.docs || [])
@@ -129,8 +139,8 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
         {/* Back Button */}
         <div className="mb-6">
           <Link href="/categories">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="gap-2 bg-white border-2 border-blue-500 text-blue-600 hover:bg-blue-50 hover:border-blue-600 hover:text-blue-700 shadow-md hover:shadow-lg transition-all duration-200 font-medium px-4 py-2 rounded-lg"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -154,7 +164,7 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                  
+
                   {/* Mobile Title Overlay */}
                   <div className="absolute bottom-0 left-0 right-0 p-6">
                     <div className="space-y-3">
@@ -170,9 +180,7 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
                         <Badge className="bg-white/95 text-gray-800 border-0 font-semibold px-3 py-1">
                           {totalDocs} สินค้า
                         </Badge>
-                        <div className="text-white/80 text-sm">
-                          อัปเดตล่าสุด
-                        </div>
+                        <div className="text-white/80 text-sm">อัปเดตล่าสุด</div>
                       </div>
                     </div>
                   </div>
@@ -182,9 +190,7 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
               /* Mobile without Image */
               <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl shadow-xl p-6 text-white">
                 <div className="space-y-4">
-                  <h1 className="text-2xl sm:text-3xl font-bold leading-tight">
-                    {title}
-                  </h1>
+                  <h1 className="text-2xl sm:text-3xl font-bold leading-tight">{title}</h1>
                   {description && (
                     <p className="text-blue-100 text-sm sm:text-base leading-relaxed line-clamp-3">
                       {description}
@@ -194,9 +200,7 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
                     <Badge className="bg-white/20 text-white border-white/30 font-semibold px-3 py-1">
                       {totalDocs} สินค้า
                     </Badge>
-                    <div className="text-blue-200 text-sm">
-                      อัปเดตล่าสุด
-                    </div>
+                    <div className="text-blue-200 text-sm">อัปเดตล่าสุด</div>
                   </div>
                 </div>
               </div>
@@ -218,20 +222,21 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                   </div>
                 )}
-                
+
                 {/* Desktop Content */}
                 <div className="flex-1 p-8">
                   <div className="flex flex-col h-full justify-center">
-                    <h1 className="text-4xl font-bold mb-6 text-gray-900 leading-tight">
-                      {title}
-                    </h1>
+                    <h1 className="text-4xl font-bold mb-6 text-gray-900 leading-tight">{title}</h1>
                     {description && (
                       <p className="text-gray-600 text-lg leading-relaxed mb-6 line-clamp-3">
                         {description}
                       </p>
                     )}
                     <div className="flex items-center gap-4">
-                      <Badge variant="outline" className="text-blue-600 border-blue-600 px-4 py-2 text-sm font-medium">
+                      <Badge
+                        variant="outline"
+                        className="text-blue-600 border-blue-600 px-4 py-2 text-sm font-medium"
+                      >
                         {totalDocs} สินค้า
                       </Badge>
                       <div className="flex items-center text-sm text-gray-500">
@@ -261,9 +266,9 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="w-full pr-20 text-base border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-xl h-12 bg-white text-gray-900 placeholder:text-gray-500"
                     />
-                    <Button 
-                      type="submit" 
-                      size="sm" 
+                    <Button
+                      type="submit"
+                      size="sm"
                       className="absolute right-2 top-2 bg-blue-600 hover:bg-blue-700 px-4 rounded-lg"
                     >
                       ค้นหา
@@ -288,7 +293,7 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   {/* Mobile View Toggle */}
                   <div className="flex bg-gray-100 rounded-xl p-1">
                     <Button
@@ -383,9 +388,11 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
         <div className="mb-6">
           <div className="flex items-center justify-between">
             <p className="text-gray-600 font-medium">
-              {loading ? 'กำลังโหลด...' : 
-               totalDocs > 0 ? `พบสินค้า ${totalDocs} รายการ` : 'ไม่พบสินค้า'
-              }
+              {loading
+                ? 'กำลังโหลด...'
+                : totalDocs > 0
+                  ? `พบสินค้า ${totalDocs} รายการ`
+                  : 'ไม่พบสินค้า'}
             </p>
             {!loading && totalPages > 1 && (
               <p className="text-sm text-gray-500">
@@ -439,16 +446,25 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
           <div className="text-center py-20">
             <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl shadow-lg p-12 max-w-lg mx-auto">
               <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-indigo-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-                <svg className="w-12 h-12 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                <svg
+                  className="w-12 h-12 text-blue-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                  />
                 </svg>
               </div>
               <h3 className="text-2xl font-bold text-gray-800 mb-3">ไม่พบสินค้า</h3>
               <p className="text-gray-600 text-lg leading-relaxed mb-6">
-                {searchTerm 
+                {searchTerm
                   ? `ไม่พบสินค้าที่ตรงกับ "${searchTerm}" ในหมวดหมู่นี้`
-                  : 'ยังไม่มีสินค้าในหมวดหมู่นี้ในขณะนี้'
-                }
+                  : 'ยังไม่มีสินค้าในหมวดหมู่นี้ในขณะนี้'}
               </p>
               {searchTerm && (
                 <Button
@@ -471,7 +487,7 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-3">
               <div className="flex items-center gap-2">
                 <Button
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
                   variant="ghost"
                   size="sm"
@@ -480,9 +496,9 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
                   <span className="hidden sm:inline font-medium">ก่อนหน้า</span>
                   <span className="sm:hidden text-lg">‹</span>
                 </Button>
-                
-                                <div className="flex gap-1">
-                  {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {   
+
+                <div className="flex gap-1">
+                  {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
                     let pageNum: number
                     if (totalPages <= 5) {
                       pageNum = i + 1
@@ -498,11 +514,11 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
                       <Button
                         key={pageNum}
                         onClick={() => setCurrentPage(pageNum)}
-                        variant={currentPage === pageNum ? "default" : "ghost"}
+                        variant={currentPage === pageNum ? 'default' : 'ghost'}
                         size="sm"
                         className={`min-w-[44px] h-11 rounded-xl font-semibold transition-all duration-200 ${
-                          currentPage === pageNum 
-                            ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg' 
+                          currentPage === pageNum
+                            ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg'
                             : 'hover:bg-blue-50 text-gray-700'
                         }`}
                       >
@@ -513,7 +529,7 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
                 </div>
 
                 <Button
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
                   variant="ghost"
                   size="sm"
@@ -529,4 +545,4 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
       </div>
     </div>
   )
-} 
+}

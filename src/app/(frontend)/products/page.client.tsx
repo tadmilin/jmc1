@@ -32,7 +32,11 @@ export default function ProductsPageClient() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('/api/categories?limit=100&depth=0')
+        const response = await fetch('/api/categories?limit=100&depth=0', {
+          headers: {
+            'x-api-key': process.env.NEXT_PUBLIC_API_KEY || 'jmc-api-2024-secure-key-xdata24b',
+          },
+        })
         if (response.ok) {
           const data = await response.json()
           setCategories(data.docs || [])
@@ -69,7 +73,11 @@ export default function ProductsPageClient() {
         // Only show active products
         params.append('where[status][equals]', 'active')
 
-        const response = await fetch(`/api/products?${params.toString()}`)
+        const response = await fetch(`/api/products?${params.toString()}`, {
+          headers: {
+            'x-api-key': process.env.NEXT_PUBLIC_API_KEY || 'jmc-api-2024-secure-key-xdata24b',
+          },
+        })
 
         if (response.ok) {
           const data = await response.json()

@@ -58,8 +58,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Restrict to published products only
-    where._status = { equals: 'published' }
+    // Restrict to active products only
     where.status = { equals: 'active' }
 
     // Fetch products
