@@ -22,7 +22,11 @@ const FloatingButtons: React.FC = () => {
     // Fetch site settings
     const fetchSettings = async () => {
       try {
-        const response = await fetch(`${getServerSideURL()}/api/globals/site-settings`)
+        const response = await fetch(`${getServerSideURL()}/api/globals/site-settings`, {
+          headers: {
+            'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '',
+          },
+        })
         if (response.ok) {
           const data = await response.json()
           setSettings(data)

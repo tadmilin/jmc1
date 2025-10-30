@@ -18,6 +18,7 @@ export const getMeUser = async (args?: {
   const meUserReq = await fetch(`${getClientSideURL()}/api/users/me`, {
     headers: {
       Authorization: `JWT ${token}`,
+      'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '',
     },
   })
 

@@ -1,8 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import type { ICatalog } from '@/collections/Catalogs'
 
-interface CatalogsResponse {
-  docs: ICatalog[]
+interface PayloadResponse<T> {
+  docs: T[]
   totalDocs: number
   limit: number
   totalPages: number
@@ -27,10 +26,14 @@ export const usePayloadAPI = (endpoint: string, params: FetchParams = {}) => {
     sort: params.sort || '-createdAt',
   }).toString()
 
-  return useQuery<CatalogsResponse>({
+  return useQuery<PayloadResponse<unknown>>({
     queryKey: [endpoint, queryString],
     queryFn: async () => {
-      const response = await fetch(`/api/${endpoint}?${queryString}`)
+      const response = await fetch(`/api/${endpoint}?${queryString}`, {
+        headers: {
+          'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '',
+        },
+      })
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }

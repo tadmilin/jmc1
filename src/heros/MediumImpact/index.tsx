@@ -36,7 +36,7 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
   const [currentSlide, setCurrentSlide] = useState(0)
   const hasSlideImages = Array.isArray(slideImages) && slideImages.length > 0
   const [categories, setCategories] = useState<Category[]>([])
-  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
+  const [_hoveredCategory, _setHoveredCategory] = useState<string | null>(null)
   const [isLoadingCategories, setIsLoadingCategories] = useState(true)
 
   useEffect(() => {
@@ -54,6 +54,11 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
         setIsLoadingCategories(true)
         const response = await fetch(
           `/api/categories?limit=${categoriesLimit}&depth=0&sort=displayOrder`,
+          {
+            headers: {
+              'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '',
+            },
+          },
         )
 
         if (!response.ok) throw new Error('ไม่สามารถดึงข้อมูลหมวดหมู่ได้')
@@ -93,30 +98,29 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
   // สร้างสไลด์โชว์อัตโนมัติ
   const [isPaused, setIsPaused] = useState(false)
 
-  // คำนวณความเร็วในการเลื่อนตามการตั้งค่า
-  const getSlideInterval = () => {
-    if (!enableAutoSlide) return null
+  useEffect(() => {
+    if (!hasSlideImages || (slideImages?.length || 0) <= 1 || isPaused || !enableAutoSlide) return
+
+    // คำนวณความเร็วในการเลื่อนตามการตั้งค่า
+    let interval: number
     switch (autoSlideSpeed) {
       case 'slow':
-        return 5000
+        interval = 5000
+        break
       case 'fast':
-        return 2500
+        interval = 2500
+        break
       case 'medium':
       default:
-        return 4000
+        interval = 4000
     }
-  }
-
-  useEffect(() => {
-    const interval = getSlideInterval()
-    if (!hasSlideImages || slideImages.length <= 1 || isPaused || !interval) return
 
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slideImages.length)
+      setCurrentSlide((prev) => (prev + 1) % (slideImages?.length || 1))
     }, interval)
 
     return () => clearInterval(timer)
-  }, [hasSlideImages, slideImages.length, isPaused, enableAutoSlide, autoSlideSpeed])
+  }, [hasSlideImages, slideImages?.length, isPaused, enableAutoSlide, autoSlideSpeed])
 
   // Categories Dropdown Component
   const CategoriesDropdown = () => {

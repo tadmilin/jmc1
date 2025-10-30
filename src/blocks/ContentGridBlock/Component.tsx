@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import { Media as MediaComponent } from '@/components/Media'
 import RichText from '@/components/RichText'
 import Link from 'next/link'
-import type { Post, Product, Category } from '@/payload-types'
+import type { Post, Product } from '@/payload-types'
 import type { ContentGridBlockProps, ContentItem, ApiResponse, ContentCardProps } from './types'
 import { DEFAULT_VALUES, API_CONFIG, ERROR_MESSAGES, EMPTY_STATE_MESSAGES } from './constants'
 import {
@@ -60,7 +60,12 @@ export const ContentGridBlock: React.FC<{
         let url = `/api/posts?depth=${API_CONFIG.DEPTH}&limit=${limit}&sort=${API_CONFIG.SORT}`
         url += createCategoriesWhereClause(categoryIds)
 
-        const response = await fetch(url, { signal })
+        const response = await fetch(url, {
+          signal,
+          headers: {
+            'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '',
+          },
+        })
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`)
@@ -71,8 +76,8 @@ export const ContentGridBlock: React.FC<{
         return data.docs.map((post: Post) => ({
           id: post.id,
           title: post.title,
-          description: post.excerpt || post.meta?.description,
-          image: post.heroImage || post.meta?.image,
+          description: post.excerpt || post.meta?.description || undefined,
+          image: post.heroImage || post.meta?.image || undefined,
           url: `/posts/${post.slug}`,
           buttonText: DEFAULT_VALUES.BUTTON_TEXT.POSTS,
         }))
@@ -92,7 +97,12 @@ export const ContentGridBlock: React.FC<{
     async (signal: AbortSignal): Promise<ContentItem[]> => {
       try {
         const url = `/api/products?depth=${API_CONFIG.DEPTH}&limit=${limit}&sort=${API_CONFIG.SORT}`
-        const response = await fetch(url, { signal })
+        const response = await fetch(url, {
+          signal,
+          headers: {
+            'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '',
+          },
+        })
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`)
@@ -103,8 +113,8 @@ export const ContentGridBlock: React.FC<{
         return data.docs.map((product: Product) => ({
           id: product.id,
           title: product.title,
-          description: product.meta?.description || product.summary,
-          image: product.meta?.image || product.image,
+          description: product.meta?.description || product.shortDescription || undefined,
+          image: product.images?.[0]?.image || undefined,
           url: `/products/${product.slug}`,
           buttonText: DEFAULT_VALUES.BUTTON_TEXT.PRODUCTS,
         }))
@@ -181,7 +191,7 @@ export const ContentGridBlock: React.FC<{
     }
   }, [])
 
-  // Fetch content when key dependencies change (NOT fetchContent itself)
+  // Fetch content when key dependencies change
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       fetchContent()
@@ -190,18 +200,7 @@ export const ContentGridBlock: React.FC<{
     return () => {
       clearTimeout(timeoutId)
     }
-  }, [
-    contentType,
-    customItems.length,
-    categories.length,
-    limit,
-    // For posts/products, only track relevant dependencies
-    ...(contentType === 'posts' ? [categoryIds.join(',')] : []),
-    // For custom content, track customItems more carefully
-    ...(contentType === 'custom'
-      ? [customItems.map((item) => `${item.title}-${item.linkType}`).join(',')]
-      : []),
-  ])
+  }, [fetchContent])
 
   // Get grid classes based on columns setting
   const gridClasses = getGridCss(columns)

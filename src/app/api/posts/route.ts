@@ -43,14 +43,16 @@ export async function GET(request: NextRequest) {
     // Handle various where conditions
     for (const [key, value] of searchParams.entries()) {
       if (key.startsWith('where[') && key.endsWith(']')) {
-        const field = key.slice(6, -1) // Remove 'where[' and ']'
-
-        // Handle nested conditions like where[status][equals]
-        if (field.includes('][')) {
-          const [fieldName, operator] = field.split('][')
-          if (fieldName && operator) {
-            if (!where[fieldName]) where[fieldName] = {}
-            where[fieldName][operator] = value
+        const field = key.slice(6, -1)
+        if (field.includes('[') && field.includes(']')) {
+          // Handle nested conditions like where[categories][in]
+          const parts = field.split(/[[\]]/).filter(Boolean)
+          if (parts.length === 2) {
+            const [fieldName, operator] = parts
+            if (fieldName && operator) {
+              if (!where[fieldName]) where[fieldName] = {}
+              where[fieldName][operator] = value.split(',')
+            }
           }
         } else {
           where[field] = value
@@ -58,9 +60,12 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Fetch categories (no status restriction needed for categories)
-    const categories = await payload.find({
-      collection: 'categories',
+    // Restrict to published posts only
+    where._status = { equals: 'published' }
+
+    // Fetch posts
+    const posts = await payload.find({
+      collection: 'posts',
       where,
       limit,
       page,
@@ -72,25 +77,35 @@ export async function GET(request: NextRequest) {
     // For API key access, filter response fields
     if (apiKey) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const filteredDocs = categories.docs.map((category: any) => ({
-        id: category.id,
-        title: category.title,
-        slug: category.slug,
-        description: category.description,
-        image: category.image,
-        _status: category._status,
+      const filteredDocs = posts.docs.map((post: any) => ({
+        id: post.id,
+        title: post.title,
+        slug: post.slug,
+        excerpt: post.excerpt,
+        publishedAt: post.publishedAt,
+        categories: post.categories,
+        meta: post.meta,
+        _status: post._status,
       }))
 
       return NextResponse.json({
-        ...categories,
         docs: filteredDocs,
+        totalDocs: posts.totalDocs,
+        limit: posts.limit,
+        totalPages: posts.totalPages,
+        page: posts.page,
+        pagingCounter: posts.pagingCounter,
+        hasPrevPage: posts.hasPrevPage,
+        hasNextPage: posts.hasNextPage,
+        prevPage: posts.prevPage,
+        nextPage: posts.nextPage,
       })
     }
 
-    // Return full data for admin users
-    return NextResponse.json(categories)
+    // For admin access, return full data
+    return NextResponse.json(posts)
   } catch (error) {
-    console.error('Error in categories API:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error in posts API:', error)
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 }

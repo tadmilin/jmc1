@@ -87,12 +87,16 @@ export const CategoryGridBlock: React.FC<{
         }
 
         // เพิ่ม sort parameter เพื่อเรียงลำดับตามที่กำหนดใน dashboard
-        url += '&sort=displayOrder'  
+        url += '&sort=displayOrder'
 
         // เพิ่ม limit parameter
         url += `&limit=${blockConfig.limit}`
 
-        const response = await fetch(url)
+        const response = await fetch(url, {
+          headers: {
+            'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '',
+          },
+        })
         if (!response.ok) throw new Error('ไม่สามารถดึงข้อมูลหมวดหมู่ได้')
 
         const data = await response.json()

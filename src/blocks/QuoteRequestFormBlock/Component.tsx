@@ -95,6 +95,9 @@ export const QuoteRequestFormBlockComponent: React.FC<QuoteRequestFormBlockProps
 
         const uploadResponse = await fetch(`${getClientSideURL()}/api/upload`, {
           method: 'POST',
+          headers: {
+            'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '',
+          },
           body: formData,
         })
 
@@ -109,6 +112,7 @@ export const QuoteRequestFormBlockComponent: React.FC<QuoteRequestFormBlockProps
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '',
         },
         body: JSON.stringify({
           ...data,
