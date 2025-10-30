@@ -1,17 +1,16 @@
 import type { CollectionConfig } from 'payload'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 
-import { authenticated } from '../access/authenticated'
 import { slugField } from '@/fields/slug'
 import { link } from '@/fields/link'
 
 export const Products: CollectionConfig = {
   slug: 'products',
   access: {
-    create: authenticated,
-    read: () => true, // อนุญาตให้ทุกคนอ่านได้
-    update: authenticated,
-    delete: authenticated,
+    create: ({ req: { user } }) => user?.role === 'admin',
+    read: ({ req: { user } }) => user?.role === 'admin',
+    update: ({ req: { user } }) => user?.role === 'admin',
+    delete: ({ req: { user } }) => user?.role === 'admin',
   },
   admin: {
     useAsTitle: 'title',

@@ -4,8 +4,6 @@
 // import dynamic from 'next/dynamic'
 import React, { Fragment, Suspense } from 'react'
 
-
-
 // Import Block Components directly
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
@@ -78,7 +76,7 @@ export const RenderBlocks: React.FC<{
                 ) {
                   return (
                     <div key={index}>
-                      {/* @ts-expect-error there may be some mismatch between the expected types here */}
+                      {/* @ts-expect-error Block component types mismatch */}
                       <Block block={block} colorTheme={colorTheme} />
                     </div>
                   )
@@ -88,7 +86,7 @@ export const RenderBlocks: React.FC<{
                 if (blockType === 'quoteRequestFormBlock') {
                   return (
                     <div key={index}>
-                      {/* @ts-expect-error there may be some mismatch between the expected types here */}
+                      {/* @ts-expect-error QuoteRequestFormBlock props mismatch */}
                       <Block {...block} />
                     </div>
                   )
@@ -98,7 +96,7 @@ export const RenderBlocks: React.FC<{
                 if (blockType === 'productsBlock') {
                   return (
                     <div key={index}>
-                      {/* @ts-expect-error there may be some mismatch between the expected types here */}
+                      {/* @ts-expect-error ProductsBlock colorTheme props */}
                       <Block {...block} colorTheme={colorTheme} />
                     </div>
                   )
@@ -108,7 +106,7 @@ export const RenderBlocks: React.FC<{
                 if (blockType === 'catalogsBlock') {
                   return (
                     <div key={index}>
-                      {/* @ts-expect-error async component */}
+                      {/* @ts-expect-error CatalogsBlock async component */}
                       <Block {...block} />
                     </div>
                   )
@@ -118,7 +116,7 @@ export const RenderBlocks: React.FC<{
                 if ((blockType as string) === 'saleProductsSliderBlock') {
                   return (
                     <div key={index}>
-                      {/* @ts-expect-error there may be some mismatch between the expected types here */}
+                      {/* @ts-expect-error SaleProductsSliderBlock colorTheme props */}
                       <Block {...block} colorTheme={colorTheme} />
                     </div>
                   )
@@ -128,7 +126,7 @@ export const RenderBlocks: React.FC<{
                 if (blockType === 'archive') {
                   return (
                     <div key={index}>
-                      {/* @ts-expect-error there may be some mismatch between the expected types here */}
+                      {/* @ts-expect-error ArchiveBlock colorTheme props */}
                       <Block {...block} colorTheme={colorTheme} disableInnerContainer />
                     </div>
                   )
@@ -137,7 +135,7 @@ export const RenderBlocks: React.FC<{
                 // กรณีอื่นๆ ใช้การส่งแบบเดิม
                 return (
                   <div key={index}>
-                    {/* @ts-expect-error there may be some mismatch between the expected types here */}
+                    {/* @ts-expect-error Generic block props mismatch */}
                     <Block {...block} disableInnerContainer />
                   </div>
                 )

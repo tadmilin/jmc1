@@ -46,7 +46,6 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
   const [products, setProducts] = useState<ProductCardData[]>([])
   const [loading, setLoading] = useState(true)
   const [_error, setError] = useState<string | null>(null)
-
   const isDarkTheme = colorTheme === 'dark'
 
   useEffect(() => {
@@ -56,7 +55,7 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
         setError(null)
 
         // เพิ่ม limit เมื่อต้องการกรองสินค้าลดราคา
-        const fetchLimit = showOnlyOnSale ? Math.max((limit || 8) * 3, 50) : (limit || 8)
+        const fetchLimit = showOnlyOnSale ? Math.max((limit || 8) * 3, 50) : limit || 8
 
         const params = new URLSearchParams({
           limit: fetchLimit.toString(),
@@ -64,7 +63,7 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
           'where[status][equals]': 'active',
         })
 
-        console.log('ProductsBlock: Fetching products...', { showOnlyOnSale, limit: fetchLimit })
+        // ไม่ต้องใส่ API key เพราะเป็น internal request
         const response = await fetch(`/api/products?${params.toString()}`)
 
         if (!response.ok) {
@@ -75,59 +74,28 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
         }
 
         const data = await response.json()
-        console.log('ProductsBlock: Received', data.totalDocs, 'products')
-
         let filteredProducts = data.docs || []
-        
-        // กรองเฉพาะสินค้าที่ active
-        filteredProducts = filteredProducts.filter((product: ProductCardData) => 
-          product && product.status === 'active'
+
+        // กรองเฉพาะสินค้า active
+        filteredProducts = filteredProducts.filter(
+          (product: ProductCardData) => product && product.status === 'active',
         )
 
-        // ถ้า showOnlyOnSale เป็น true ให้กรองเฉพาะสินค้าลดราคา (ใช้ logic เดียวกับ SaleProductsSlider)
+        // กรองสินค้าลดราคาถ้าต้องการ
         if (showOnlyOnSale) {
           filteredProducts = filteredProducts.filter((product: ProductCardData) => {
             if (!product || product.status !== 'active') return false
-            
-            // เช็คสินค้าหลักว่ามีราคาลดหรือไม่
+
             const basePrice = product.price ? Number(product.price) : 0
             const baseSalePrice = product.salePrice ? Number(product.salePrice) : 0
             const hasBaseSale = baseSalePrice > 0 && baseSalePrice < basePrice
-            
-            // เช็ค variants ว่ามีราคาลดหรือไม่
-            const hasVariantSale = product.variants && 
-                                  product.variants.length > 0 && 
-                                  product.variants.some((variant) => {
-                                    if (variant.variantStatus !== 'active') return false
-                                    const variantPrice = variant.variantPrice ? Number(variant.variantPrice) : 0
-                                    const variantSalePrice = variant.variantSalePrice ? Number(variant.variantSalePrice) : 0
-                                    return variantSalePrice > 0 && variantSalePrice < variantPrice
-                                  })
-            
-            const isSaleProduct = hasBaseSale || hasVariantSale
-            
-            if (isSaleProduct) {
-              console.log('✅ ProductsBlock sale product:', product.title, {
-                hasBaseSale,
-                hasVariantSale,
-                basePrice,
-                baseSalePrice
-              })
-            }
-            
-            return isSaleProduct
+
+            return hasBaseSale
           })
-          
-          console.log('🎯 ProductsBlock filtered sale products:', filteredProducts.length)
         }
 
-        const finalProducts = filteredProducts.slice(0, limit || 8)
+        const finalProducts = filteredProducts.slice(0, limit)
         setProducts(finalProducts)
-        
-        if (showOnlyOnSale && finalProducts.length === 0) {
-          console.warn('⚠️ ProductsBlock: No sale products found!')
-        }
-        
       } catch (err) {
         console.error('ProductsBlock error:', err)
         setProducts([])
@@ -173,7 +141,9 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
       <div className={`py-8 lg:py-12 ${getBgClasses()}`}>
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>
+            <h2
+              className={`text-3xl md:text-4xl font-bold mb-4 ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}
+            >
               {title}
             </h2>
             {showOnlyOnSale ? (
@@ -183,21 +153,22 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
                 </p>
                 <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded-lg mb-6 max-w-md mx-auto">
                   <p className="text-sm">
-                    💡 <strong>สำหรับ Admin:</strong> ตั้งค่า salePrice ในสินค้าหรือ variant เพื่อแสดงในส่วนนี้
+                    💡 <strong>สำหรับ Admin:</strong> ตั้งค่า salePrice ในสินค้าหรือ variant
+                    เพื่อแสดงในส่วนนี้
                   </p>
                 </div>
               </>
             ) : (
               <p className={`text-lg ${isDarkTheme ? 'text-gray-300' : 'text-gray-600'} mb-6`}>
-              กำลังเตรียมสินค้าสำหรับคุณ...
-            </p>
+                กำลังเตรียมสินค้าสำหรับคุณ...
+              </p>
             )}
             <div className="mt-6">
-              <a 
-                href={showOnlyOnSale ? "/products" : "/admin"} 
+              <a
+                href={showOnlyOnSale ? '/products' : '/admin'}
                 className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
               >
-                {showOnlyOnSale ? "ดูสินค้าทั้งหมด" : "เพิ่มสินค้าใน Admin Panel"}
+                {showOnlyOnSale ? 'ดูสินค้าทั้งหมด' : 'เพิ่มสินค้าใน Admin Panel'}
               </a>
             </div>
           </div>
@@ -207,7 +178,8 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
   }
 
   // คำนวณ slidesPerView และ loop condition สำหรับ Swiper
-  const getMaxSlidesPerView = (breakpointSlides: number) => Math.min(breakpointSlides, products.length)
+  const getMaxSlidesPerView = (breakpointSlides: number) =>
+    Math.min(breakpointSlides, products.length)
   const shouldEnableLoop = products.length >= 6 // ต้องมีอย่างน้อย 6 ชิ้นถึงจะ loop ได้
 
   return (
@@ -216,11 +188,15 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
       <div className="container mx-auto px-4">
         {/* Header Section */}
         <div className="text-center mb-8">
-          <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${isDarkTheme ? 'text-red-400' : 'text-red-600'}`}>
+          <h2
+            className={`text-3xl md:text-4xl font-bold mb-4 ${isDarkTheme ? 'text-red-400' : 'text-red-600'}`}
+          >
             {title}
           </h2>
           {subtitle && (
-            <p className={`text-lg max-w-2xl mx-auto ${isDarkTheme ? 'text-gray-300' : 'text-gray-600'}`}>
+            <p
+              className={`text-lg max-w-2xl mx-auto ${isDarkTheme ? 'text-gray-300' : 'text-gray-600'}`}
+            >
               {subtitle}
             </p>
           )}
@@ -248,10 +224,14 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
                 clickable: true,
                 el: '.swiper-pagination-custom',
               }}
-              autoplay={products.length > 1 ? {
-                delay: 4000,
-                disableOnInteraction: false,
-              } : false}
+              autoplay={
+                products.length > 1
+                  ? {
+                      delay: 4000,
+                      disableOnInteraction: false,
+                    }
+                  : false
+              }
               loop={shouldEnableLoop}
               loopAdditionalSlides={shouldEnableLoop ? 2 : 0}
               watchSlidesProgress={true}
@@ -284,26 +264,40 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
 
             {/* Custom Navigation Buttons */}
             <div className="flex justify-center items-center gap-4 mt-8">
-              <button className={`swiper-button-prev-custom w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
-                isDarkTheme 
-                  ? 'bg-gray-800 text-white hover:bg-gray-700 border border-gray-600' 
-                  : 'bg-white text-gray-600 hover:text-blue-600 hover:bg-blue-50 shadow-lg border border-gray-200'
-              }`}>
+              <button
+                className={`swiper-button-prev-custom w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  isDarkTheme
+                    ? 'bg-gray-800 text-white hover:bg-gray-700 border border-gray-600'
+                    : 'bg-white text-gray-600 hover:text-blue-600 hover:bg-blue-50 shadow-lg border border-gray-200'
+                }`}
+              >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
               </button>
 
               {/* Custom Pagination */}
               <div className="swiper-pagination-custom flex gap-2"></div>
 
-              <button className={`swiper-button-next-custom w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
-                isDarkTheme 
-                  ? 'bg-gray-800 text-white hover:bg-gray-700 border border-gray-600' 
-                  : 'bg-white text-gray-600 hover:text-blue-600 hover:bg-blue-50 shadow-lg border border-gray-200'
-              }`}>
+              <button
+                className={`swiper-button-next-custom w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  isDarkTheme
+                    ? 'bg-gray-800 text-white hover:bg-gray-700 border border-gray-600'
+                    : 'bg-white text-gray-600 hover:text-blue-600 hover:bg-blue-50 shadow-lg border border-gray-200'
+                }`}
+              >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </button>
             </div>
@@ -330,7 +324,12 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
             >
               ดูสินค้าทั้งหมด
               <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                />
               </svg>
             </a>
           </div>
