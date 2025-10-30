@@ -8,7 +8,12 @@ export const Products: CollectionConfig = {
   slug: 'products',
   access: {
     create: ({ req: { user } }) => user?.role === 'admin',
-    read: ({ req: { user } }) => user?.role === 'admin',
+    read: ({ req: { user } }) => {
+      // Admin สามารถเห็นทุกสินค้า
+      if (user?.role === 'admin') return true
+      // Public สามารถเห็นเฉพาะสินค้าที่ active
+      return { status: { equals: 'active' } }
+    },
     update: ({ req: { user } }) => user?.role === 'admin',
     delete: ({ req: { user } }) => user?.role === 'admin',
   },
