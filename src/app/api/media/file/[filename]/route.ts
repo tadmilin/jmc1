@@ -46,8 +46,10 @@ export async function GET(
       return NextResponse.redirect(blobUrl, 307)
     }
 
-    // Fallback: Try direct Blob Storage URL
-    const blobUrl = `https://fzhrisgdjt706ftr.public.blob.vercel-storage.com/${filename}`
+    // Fallback: Try direct Blob Storage URL using environment variable or known base
+    const blobBaseUrl =
+      process.env.BLOB_STORAGE_URL || 'https://fzhrisgdjt706ftr.public.blob.vercel-storage.com'
+    const blobUrl = `${blobBaseUrl}/${filename}`
     return NextResponse.redirect(blobUrl, 307)
   } catch (error) {
     console.error('Error serving media file:', error)
