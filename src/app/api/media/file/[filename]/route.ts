@@ -12,6 +12,13 @@ export async function GET(
     // Get Payload instance
     const payload = await getPayload({ config })
 
+    // **สำคัญ: Media files ต้องเป็น public เพื่อให้ browser แสดงรูปภาพได้**
+    // ไม่ต้องเช็ค authentication หรือ API key สำหรับ media files
+    // เพราะ <img> tags ไม่สามารถส่ง headers หรือ credentials ได้
+
+    // หาก admin ต้องการลบหรือแก้ไข media จะทำผ่าน Payload Admin Panel
+    // ที่มีการตรวจสอบ session authentication อยู่แล้ว
+
     // Search for media with this filename
     const result = await payload.find({
       collection: 'media',
@@ -30,6 +37,7 @@ export async function GET(
         ],
       },
       limit: 1,
+      overrideAccess: true, // Bypass Payload access control
     })
 
     if (result.docs.length === 0) {
@@ -55,4 +63,34 @@ export async function GET(
     console.error('Error serving media file:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
+}
+
+// ❌ ป้องกัน POST, PUT, PATCH, DELETE methods
+// เฉพาะ GET เท่านั้นที่สามารถใช้ได้ (อ่านไฟล์เท่านั้น)
+export async function POST() {
+  return NextResponse.json(
+    { error: 'Method not allowed. Use Admin Panel to upload media.' },
+    { status: 405, headers: { Allow: 'GET' } },
+  )
+}
+
+export async function PUT() {
+  return NextResponse.json(
+    { error: 'Method not allowed. Use Admin Panel to update media.' },
+    { status: 405, headers: { Allow: 'GET' } },
+  )
+}
+
+export async function PATCH() {
+  return NextResponse.json(
+    { error: 'Method not allowed. Use Admin Panel to update media.' },
+    { status: 405, headers: { Allow: 'GET' } },
+  )
+}
+
+export async function DELETE() {
+  return NextResponse.json(
+    { error: 'Method not allowed. Use Admin Panel to delete media.' },
+    { status: 405, headers: { Allow: 'GET' } },
+  )
 }

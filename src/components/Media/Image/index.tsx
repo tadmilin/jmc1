@@ -55,19 +55,20 @@ export const Image: React.FC<Props> = (props) => {
     height_final = height_final || heightFromResource || 800
     alt = altFromProps || altFromResource || filename || 'รูปภาพ'
 
-    src = url || srcFromProps as string
+    src = url || (srcFromProps as string)
   }
 
-  // แก้ไขปัญหา: ให้ localhost/api/media/file ทำงานได้ แต่ block production URLs ใน development 
-  const isBlockedProductionUrl = src && (
-    src.includes('jmc111-mv7jkkd-tadmilins-projects.vercel.app/api/media/file/') ||
-    src.includes('blob.vercel-storage.com')
-    // ลบ localhost check ออกเพราะ localhost/api/media/file เป็น valid URL
-  )
+  // แก้ไขปัญหา: ให้ localhost/api/media/file ทำงานได้ แต่ block production URLs ใน development
+  const isBlockedProductionUrl =
+    src &&
+    (src.includes('jmc111-mv7jkkd-tadmilins-projects.vercel.app/api/media/file/') ||
+      src.includes('blob.vercel-storage.com'))
+  // ลบ localhost check ออกเพราะ localhost/api/media/file เป็น valid URL
 
   // ถ้าไม่มี src หรือ src ไม่ถูกต้อง หรือเป็น production URL ใน development ให้ใช้ placeholder
   if (!src || src === '' || isBlockedProductionUrl) {
-    src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+CiAgPHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzlmYTZiNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPuC4o+C4ueC4m+C4oOC4suC4nuC4quC4oeC4geC4qOC4tDwvdGV4dD4KICA8L3N2Zz4K'
+    src =
+      'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+CiAgPHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzlmYTZiNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPuC4o+C4ueC4m+C4oOC4suC4nuC4quC4oeC4geC4qOC4tDwvdGV4dD4KICA8L3N2Zz4K'
     alt = 'ไม่มีรูปภาพ'
     width_final = width_final || 400
     height_final = height_final || 300
@@ -84,6 +85,13 @@ export const Image: React.FC<Props> = (props) => {
     src,
     width: !fill ? width_final : undefined,
   }
+
+  // Media files เป็น public access แล้ว ไม่ต้องเพิ่ม API key
+  // if (typeof src === 'string' && src.includes('/api/media/file/')) {
+  //   const apiKey = process.env.NEXT_PUBLIC_API_KEY || ''
+  //   const separator = src.includes('?') ? '&' : '?'
+  //   imageProps.src = `${src}${separator}key=${apiKey}`
+  // }
 
   // เพิ่ม unoptimized สำหรับ localhost ใน development
   if (process.env.NODE_ENV === 'development' && src && src.includes('localhost')) {
@@ -102,4 +110,4 @@ export const Image: React.FC<Props> = (props) => {
       <NextImage {...imageProps} />
     </div>
   )
-} 
+}

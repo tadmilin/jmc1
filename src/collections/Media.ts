@@ -12,10 +12,10 @@ import { authenticated } from '../access/authenticated'
 export const Media: CollectionConfig = {
   slug: 'media',
   access: {
-    create: authenticated,
-    delete: authenticated,
-    read: () => true,
-    update: authenticated,
+    create: authenticated, // ✅ เฉพาะ Admin upload ได้
+    delete: authenticated, // ✅ เฉพาะ Admin ลบได้
+    read: authenticated, // ✅ เฉพาะ Admin ดู metadata ใน Admin Panel ได้
+    update: authenticated, // ✅ เฉพาะ Admin แก้ไขได้
   },
   admin: {
     useAsTitle: 'alt',

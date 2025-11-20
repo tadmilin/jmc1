@@ -78,12 +78,18 @@ export default buildConfig({
           vercelBlobStorage({
             enabled: true,
             collections: {
-              media: true,
+              media: {
+                prefix: 'media',
+                generateFileURL: ({ filename }) => {
+                  // ใช้ route เดียว ที่รองรับทั้ง session cookie (Admin) และ API key (Public)
+                  return `/api/media/file/${filename}`
+                },
+              },
             },
             token: process.env.BLOB_READ_WRITE_TOKEN,
             addRandomSuffix: true,
             cacheControlMaxAge: 365 * 24 * 60 * 60,
-            clientUploads: true,
+            clientUploads: false, // ปิด direct upload
           }),
         ]
       : []),
