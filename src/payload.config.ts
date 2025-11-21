@@ -72,16 +72,20 @@ export default buildConfig({
   cors: [serverURL].filter(Boolean),
   plugins: [
     ...plugins,
-    // ใช้ Vercel Blob Storage เฉพาะใน production
-    ...(process.env.NODE_ENV === 'production' && process.env.BLOB_READ_WRITE_TOKEN
+    // ใช้ Vercel Blob Storage ถ้ามี token (ทั้ง dev และ production)
+    ...(process.env.BLOB_READ_WRITE_TOKEN
       ? [
           vercelBlobStorage({
             enabled: true,
             collections: {
               media: {
                 prefix: 'media',
-                generateFileURL: ({ filename }) => {
-                  // สร้าง URL ที่สมบูรณ์ โดยใช้ serverURL
+                generateFileURL: ({ filename, prefix }) => {
+                  // ถ้ามี prefix (Blob URL) ใช้โดยตรง
+                  if (prefix) {
+                    return `${prefix}/${filename}`
+                  }
+                  // ไม่งั้นใช้ API route
                   return `${serverURL}/api/media/file/${filename}`
                 },
               },
@@ -89,7 +93,7 @@ export default buildConfig({
             token: process.env.BLOB_READ_WRITE_TOKEN,
             addRandomSuffix: true,
             cacheControlMaxAge: 365 * 24 * 60 * 60,
-            clientUploads: false, // ปิด direct upload
+            clientUploads: false,
           }),
         ]
       : []),
