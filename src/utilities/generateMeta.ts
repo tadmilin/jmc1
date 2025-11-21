@@ -59,6 +59,8 @@ const getImageURL = (
     const featureUrl = mediaWithSizes.sizes?.feature?.url
     const cardUrl = mediaWithSizes.sizes?.card?.url
     const originalUrl = image.url
+    const filename = image.filename || undefined
+    const prefix = (image as unknown as { prefix?: string }).prefix
 
     let finalUrl = null
 
@@ -77,10 +79,27 @@ const getImageURL = (
         // Absolute URL จาก Blob Storage - ใช้โดยตรง (ถูกต้องตามเอกสาร)
         url = finalUrl
       } else {
-        // Fallback: ถ้าเป็น relative path (ไม่ควรเกิดขึ้นกับ Blob Storage)
-        // ใช้ API route เป็น fallback
-        console.warn('⚠️ Unexpected relative path from PayloadCMS:', finalUrl)
-        url = `${serverUrl}/api/media/file/${finalUrl.replace(/^\/?(media\/)?/, '')}`
+        // Fallback robust: รองรับหลายรูปแบบให้มากที่สุด
+        // 1) ถ้ามี prefix + filename (Vercel Blob) ให้ใช้โดยตรง
+        if (prefix && filename) {
+          url = `${prefix}/${filename}`
+        }
+        // 2) ถ้ามี filename อย่างเดียว ใช้เส้นทาง Payload v3 ที่ถูกต้อง
+        else if (filename) {
+          url = `${serverUrl}/api/collections/media/file/${filename}`
+        }
+        // 3) ถ้า finalUrl เป็น '/media/xyz' หรือ 'media/xyz' ให้แม็พเป็นเส้นทาง Payload v3
+        else if (/^\/?media\//.test(finalUrl)) {
+          url = `${serverUrl}/api/collections/media/file/${finalUrl.replace(/^\/?media\//, '')}`
+        }
+        // 4) ถ้า finalUrl เป็น relative path ทั่วไป ให้ต่อกับ serverUrl
+        else if (finalUrl.startsWith('/')) {
+          url = `${serverUrl}${finalUrl}`
+        } else {
+          // 5) สุดท้าย fallback OG image เริ่มต้น
+          console.warn('⚠️ Unexpected media path; using default OG image:', finalUrl)
+          url = serverUrl + '/jmc-og-image.svg'
+        }
       }
     }
 
