@@ -58,8 +58,8 @@ export const Media: CollectionConfig = {
     ],
     filesRequiredOnCreate: false,
     adminThumbnail: 'thumbnail',
-    focalPoint: false,
-    crop: false,
+    focalPoint: true,
+    crop: true,
     formatOptions: {
       format: 'webp',
       options: {
