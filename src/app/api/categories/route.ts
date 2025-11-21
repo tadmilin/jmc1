@@ -8,12 +8,18 @@ export async function GET(request: NextRequest) {
     const apiKey = request.headers.get('x-api-key')
     const referer = request.headers.get('referer') || ''
     const host = request.headers.get('host') || ''
+    const origin = request.headers.get('origin') || ''
 
     // Allow internal requests (from same domain) OR valid API key
     const isInternalRequest =
+      // มี referer ภายในโดเมนเดียวกัน
       referer.includes(host) ||
       referer.includes('localhost:3000') ||
-      referer.includes(process.env.NEXT_PUBLIC_SERVER_URL || '')
+      referer.includes(process.env.NEXT_PUBLIC_SERVER_URL || '') ||
+      // SSR หรือ fetch ภายในบางกรณีจะไม่มี Referer/Origin ให้ถือว่าเป็น internal
+      (!referer && !origin) ||
+      // อนุญาต origin เดียวกัน (เช่น เรียกจากหน้าเว็บเดียวกัน)
+      (!!origin && (origin.includes(host) || origin.includes('localhost:3000')))
 
     if (!apiKey && !isInternalRequest) {
       return NextResponse.json(

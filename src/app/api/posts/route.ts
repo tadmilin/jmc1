@@ -8,12 +8,15 @@ export async function GET(request: NextRequest) {
     const apiKey = request.headers.get('x-api-key')
     const referer = request.headers.get('referer') || ''
     const host = request.headers.get('host') || ''
+    const origin = request.headers.get('origin') || ''
 
     // Allow internal requests (from same domain) OR valid API key
     const isInternalRequest =
       referer.includes(host) ||
       referer.includes('localhost:3000') ||
-      referer.includes(process.env.NEXT_PUBLIC_SERVER_URL || '')
+      referer.includes(process.env.NEXT_PUBLIC_SERVER_URL || '') ||
+      (!referer && !origin) ||
+      (!!origin && (origin.includes(host) || origin.includes('localhost:3000')))
 
     if (!apiKey && !isInternalRequest) {
       return NextResponse.json(
