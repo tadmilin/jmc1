@@ -55,8 +55,26 @@ export const Image: React.FC<Props> = (props) => {
     height_final = height_final || heightFromResource || 800
     alt = altFromProps || altFromResource || filename || 'รูปภาพ'
 
-    // ใช้ URL จาก resource ถ้ามี ไม่งั้นสร้าง URL ใหม่
-    src = url || (srcFromProps as string)
+    // ใช้ URL จาก PayloadCMS โดยตรง หรือสร้าง URL ผ่าง API route ถ้าไม่มี
+    if (url) {
+      // ถ้า URL เป็น relative path ให้เพิ่ม / หน้า
+      if (url.startsWith('media/')) {
+        src = `/${url}`
+      } else if (url.startsWith('http')) {
+        // URL เต็ม ใช้โดยตรง
+        src = url
+      } else {
+        // fallback ใช้ API route
+        const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+        src = `${baseUrl}/api/media/file/${filename}`
+      }
+    } else if (filename) {
+      // ใช้ API route ที่เราสร้างไว้
+      const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+      src = `${baseUrl}/api/media/file/${filename}`
+    } else {
+      src = srcFromProps as string
+    }
   }
 
   // ถ้าไม่มี src ใช้ placeholder

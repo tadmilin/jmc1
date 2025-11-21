@@ -32,22 +32,13 @@ export async function GET(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const media = result.docs[0] as any
 
-    // ตรวจสอบว่ามี URL ที่ชัดเจนจาก media document หรือไม่
-    // PayloadCMS จะสร้าง URL ให้เมื่อใช้ Blob Storage
-    if (media?.url && media.url.startsWith('http')) {
-      // URL สมบูรณ์จาก Blob Storage - redirect ไปเลย
+    // ใช้ URL จาก media document โดยตรง (PayloadCMS จัดการ Blob Storage ให้)
+    if (media?.url) {
       return NextResponse.redirect(media.url, 307)
     }
 
-    // หรือถ้ามี prefix (Blob Storage)
-    if (media?.prefix) {
-      return NextResponse.redirect(`${media.prefix}/${filename}`, 307)
-    }
-
-    // Fallback: สร้าง URL จาก environment variable
-    const blobBaseUrl =
-      process.env.BLOB_STORAGE_URL || 'https://fzhrisgdjt706ftr.public.blob.vercel-storage.com'
-    return NextResponse.redirect(`${blobBaseUrl}/${filename}`, 307)
+    // Fallback ถ้าไม่มี URL
+    return NextResponse.json({ error: 'Media URL not found' }, { status: 404 })
   } catch (error) {
     console.error('Error serving media file:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

@@ -70,10 +70,13 @@ const getImageURL = (
       finalUrl = originalUrl
     }
 
-    if (finalUrl) {
+    if (finalUrl && finalUrl !== 'undefined') {
       // ถ้า URL เป็น absolute URL แล้ว ใช้เลย
       if (finalUrl.startsWith('http')) {
         url = finalUrl
+      } else if (finalUrl.startsWith('media/')) {
+        // PayloadCMS Blob Storage path - เพิ่ม / หน้า
+        url = `${serverUrl}/${finalUrl}`
       } else {
         // ถ้าเป็น relative URL ให้เพิ่ม server URL (อย่าลืมลบ slash ซ้ำ)
         const cleanUrl = finalUrl.startsWith('/') ? finalUrl : `/${finalUrl}`
@@ -347,8 +350,8 @@ export const generateMeta = async (args: {
   }
 
   // เพิ่มรูปเพิ่มเติมจาก meta.images
-  if (doc?.meta && (doc.meta as any)?.images && Array.isArray((doc.meta as any).images)) {
-    ;(doc.meta as any).images.forEach((image: any, index: number) => {
+  if (doc?.meta && 'images' in doc.meta && Array.isArray(doc.meta.images)) {
+    doc.meta.images.forEach((image: Media | string | null, index: number) => {
       if (image && typeof image === 'object') {
         const imageUrl = getImageURL(image, undefined)
         if (imageUrl && imageUrl !== ogImage) {
