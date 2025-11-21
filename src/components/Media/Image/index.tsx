@@ -55,21 +55,14 @@ export const Image: React.FC<Props> = (props) => {
     height_final = height_final || heightFromResource || 800
     alt = altFromProps || altFromResource || filename || 'รูปภาพ'
 
-    // ตามเอกสาร PayloadCMS v3: media.url เป็น absolute URL จาก Blob Storage
+    // PayloadCMS v3 with Blob Storage provides absolute URLs directly
     if (url) {
-      if (url.startsWith('http')) {
-        // Absolute URL จาก Vercel Blob Storage (ถูกต้องตามเอกสาร)
-        src = url
-      } else {
-        // Fallback: ในกรณีที่ URL ไม่เป็น absolute (ไม่ควรเกิดขึ้น)
-        console.warn('⚠️ PayloadCMS returned non-absolute URL:', url)
-        const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
-        src = `${baseUrl}/api/media/file/${filename || 'unknown'}`
-      }
+      // PayloadCMS จัดการ URL ให้เสร็จสรรพแล้ว - ไม่ต้องสร้าง custom API
+      src = url
     } else if (filename) {
-      // Fallback: ถ้าไม่มี URL ใช้ API route
+      // Fallback: ใช้ PayloadCMS built-in media endpoint
       const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
-      src = `${baseUrl}/api/media/file/${filename}`
+      src = `${baseUrl}/api/media/${filename}`
     } else {
       src = srcFromProps as string
     }

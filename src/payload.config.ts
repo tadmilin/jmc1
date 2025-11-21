@@ -81,12 +81,12 @@ export default buildConfig({
               media: {
                 prefix: 'media',
                 generateFileURL: ({ filename, prefix }) => {
-                  // ถ้ามี prefix (Blob URL) ใช้โดยตรง
+                  // Vercel Blob Storage จะให้ prefix (absolute URL) เสมอ
                   if (prefix) {
                     return `${prefix}/${filename}`
                   }
-                  // ไม่งั้นใช้ API route
-                  return `${serverURL}/api/media/file/${filename}`
+                  // Fallback: ใช้ PayloadCMS built-in media endpoint
+                  return `${serverURL}/api/media/${filename}`
                 },
               },
             },

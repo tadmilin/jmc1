@@ -19,29 +19,23 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  // Images configuration สำหรับ PayloadCMS v3 + Vercel Blob Storage
+  // Images configuration for PayloadCMS v3 + Vercel Blob Storage
   images: {
     remotePatterns: [
-      // Development localhost
+      // Development - PayloadCMS media API
       {
         protocol: 'http',
         hostname: 'localhost',
         port: '3000',
-        pathname: '/api/**',
+        pathname: '/api/media/**',
       },
-      // Production domain
+      // Production - PayloadCMS media API
       {
         protocol: 'https',
         hostname: 'jmc111.vercel.app',
-        pathname: '/api/**',
+        pathname: '/api/media/**',
       },
-      // Vercel preview deployments
-      {
-        protocol: 'https',
-        hostname: '**.vercel.app',
-        pathname: '/api/**',
-      },
-      // Vercel Blob Storage - Official domains
+      // Vercel Blob Storage - Direct access
       {
         protocol: 'https',
         hostname: '**.blob.vercel-storage.com',
