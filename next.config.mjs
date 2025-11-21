@@ -34,40 +34,23 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'jmc111.vercel.app',
-        port: '',
-        pathname: '/api/media/**',
+        pathname: '/**',
       },
       // เพิ่ม pattern สำหรับ Vercel preview deployments
       {
         protocol: 'https',
-        hostname: 'jmc111-*-tadmilins-projects.vercel.app',
-        port: '',
-        pathname: '/api/media/**',
-      },
-      {
-        protocol: 'https',
-        hostname: '*-tadmilins-projects.vercel.app',
-        port: '',
-        pathname: '/api/media/**',
-      },
-      // Vercel Blob Storage - รองรับทุก subdomain
-      {
-        protocol: 'https',
-        hostname: '*.public.blob.vercel-storage.com',
-        port: '',
+        hostname: '**-tadmilins-projects.vercel.app',
         pathname: '/**',
       },
+      // Vercel Blob Storage - รองรับทุกแบบ
       {
         protocol: 'https',
-        hostname: '*.blob.vercel-storage.com',
-        port: '',
+        hostname: '**.blob.vercel-storage.com',
         pathname: '/**',
       },
-      // รองรับ blob storage โดยตรง
       {
         protocol: 'https',
         hostname: 'blob.vercel-storage.com',
-        port: '',
         pathname: '/**',
       },
     ],
