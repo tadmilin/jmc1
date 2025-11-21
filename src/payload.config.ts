@@ -85,8 +85,9 @@ export default buildConfig({
                   if (prefix) {
                     return `${prefix}/${filename}`
                   }
-                  // Fallback: ใช้ PayloadCMS built-in media endpoint
-                  return `${serverURL}/api/media/${filename}`
+                  // สำหรับ development ที่อาจไม่มี Blob Storage
+                  // ควรไม่เกิดขึ้นใน production แต่เก็บเป็น fallback
+                  return `${serverURL}/api/collections/media/file/${filename}`
                 },
               },
             },

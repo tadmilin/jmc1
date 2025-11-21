@@ -22,18 +22,18 @@ const nextConfig = {
   // Images configuration for PayloadCMS v3 + Vercel Blob Storage
   images: {
     remotePatterns: [
-      // Development - PayloadCMS media API
+      // Development - PayloadCMS collections API
       {
         protocol: 'http',
         hostname: 'localhost',
         port: '3000',
-        pathname: '/api/media/**',
+        pathname: '/api/collections/**',
       },
-      // Production - PayloadCMS media API
+      // Production - PayloadCMS collections API
       {
         protocol: 'https',
         hostname: 'jmc111.vercel.app',
-        pathname: '/api/media/**',
+        pathname: '/api/collections/**',
       },
       // Vercel Blob Storage - Direct access
       {

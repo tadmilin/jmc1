@@ -57,13 +57,11 @@ export const Image: React.FC<Props> = (props) => {
 
     // PayloadCMS v3 with Blob Storage provides absolute URLs directly
     if (url) {
-      // PayloadCMS จัดการ URL ให้เสร็จสรรพแล้ว - ไม่ต้องสร้าง custom API
+      // PayloadCMS จัดการ URL ให้เสร็จสรรพแล้ว - ใช้ URL โดยตรง
       src = url
-    } else if (filename) {
-      // Fallback: ใช้ PayloadCMS built-in media endpoint
-      const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
-      src = `${baseUrl}/api/media/${filename}`
     } else {
+      // ถ้าไม่มี URL ให้ใช้ placeholder แทน (ไม่ควรเกิดขึ้นกับ Blob Storage)
+      console.warn('⚠️ Media object missing URL:', { filename, resource })
       src = srcFromProps as string
     }
   }
