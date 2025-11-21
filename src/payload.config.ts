@@ -1,13 +1,11 @@
 // storage-adapter-import-placeholder
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import sharp from 'sharp'
 
+import sharp from 'sharp' // sharp-import
 import path from 'path'
-import { buildConfig } from 'payload'
+import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
 
 import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
@@ -21,82 +19,125 @@ import { Header } from './Header/config'
 import { CategoryShowcase } from './CategoryShowcase/config'
 import { SiteSettings } from './globals/SiteSettings'
 import { plugins } from './plugins'
+import { defaultLexical } from './fields/defaultLexical'
+import { getServerSideURL } from './utilities/getURL'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-// Production URL handling
-const serverURL =
-  process.env.NEXT_PUBLIC_SERVER_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+// Ensure DATABASE_URI is provided for production
+const databaseUri = process.env.DATABASE_URI
+if (!databaseUri) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('DATABASE_URI environment variable is required for production')
+  }
+  console.warn('DATABASE_URI not provided, using fallback for development')
+}
 
 export default buildConfig({
-  serverURL,
   admin: {
-    user: Users.slug,
+    components: {
+      // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
+      // Feel free to delete this at any time. Simply remove the line below and the import `BeforeLogin` statement on line 15.
+      // beforeLogin: ['@/components/BeforeLogin'],
+      // The `BeforeDashboard` component renders the 'welcome' block that you see after logging into your admin panel.
+      // Feel free to delete this at any time. Simply remove the line below and the import `BeforeDashboard` statement on line 15.
+      // beforeDashboard: ['@/components/BeforeDashboard'],
+    },
     importMap: {
       baseDir: path.resolve(dirname),
     },
-    meta: {
-      titleSuffix: '- จงมีชัยค้าวัสดุ',
+    user: Users.slug,
+    livePreview: {
+      breakpoints: [
+        {
+          label: 'Mobile',
+          name: 'mobile',
+          width: 375,
+          height: 667,
+        },
+        {
+          label: 'Tablet',
+          name: 'tablet',
+          width: 768,
+          height: 1024,
+        },
+        {
+          label: 'Desktop',
+          name: 'desktop',
+          width: 1440,
+          height: 900,
+        },
+      ],
     },
   },
-
-  // Secret key setting
-  secret: process.env.PAYLOAD_SECRET || '8ecc0ba2b1c8c461f2daba9d',
-
-  // Simplified database configuration
-  collections: [Categories, Media, Pages, Posts, Products, Users, QuoteRequests],
-
+  // This config helps us configure global or default features that the other editors can inherit
+  editor: defaultLexical,
   db: mongooseAdapter({
-    url: process.env.DATABASE_URI || '',
-  }),
-
-  // Set lexicalEditor as the default editor
-  editor: lexicalEditor({}),
-
-  upload: {
-    limits: {
-      fileSize: 5000000, // 5MB
+    url:
+      databaseUri ||
+      (process.env.NODE_ENV === 'development' ? 'mongodb://localhost:27017/jmc-dev' : ''),
+    connectOptions: {
+      // Add connection timeout and retry options
+      serverSelectionTimeoutMS: 10000, // 10 seconds
+      socketTimeoutMS: 45000, // 45 seconds
+      maxPoolSize: 10,
+      retryWrites: true,
+      w: 'majority',
     },
-  },
-
-  // เพิ่ม sharp configuration สำหรับ image resizing
-  sharp,
-
-  typescript: {
-    outputFile: path.resolve(dirname, './payload-types.ts'),
-  },
-
+  }),
+  collections: [Pages, Posts, Media, Categories, Users, Products, QuoteRequests],
+  cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer, CategoryShowcase, SiteSettings],
-  cors: [serverURL].filter(Boolean),
   plugins: [
     ...plugins,
-    // ใช้ Vercel Blob Storage ถ้ามี token (ทั้ง dev และ production)
-    ...(process.env.BLOB_READ_WRITE_TOKEN
-      ? [
-          vercelBlobStorage({
-            enabled: true,
-            collections: {
-              media: {
-                prefix: 'media',
-                generateFileURL: ({ filename, prefix }) => {
-                  // Vercel Blob Storage จะให้ prefix (absolute URL) เสมอ
-                  if (prefix) {
-                    return `${prefix}/${filename}`
-                  }
-                  // สำหรับ development ที่อาจไม่มี Blob Storage
-                  // ควรไม่เกิดขึ้นใน production แต่เก็บเป็น fallback
-                  return `${serverURL}/api/collections/media/file/${filename}`
-                },
-              },
-            },
-            token: process.env.BLOB_READ_WRITE_TOKEN,
-            addRandomSuffix: true,
-            cacheControlMaxAge: 365 * 24 * 60 * 60,
-            clientUploads: false,
-          }),
-        ]
-      : []),
+    // storage-adapter-placeholder
+    vercelBlobStorage({
+      collections: {
+        media: true,
+      },
+      token: process.env.BLOB_READ_WRITE_TOKEN || '',
+    }),
   ],
+  secret: process.env.PAYLOAD_SECRET || '',
+  sharp,
+  typescript: {
+    outputFile: path.resolve(dirname, 'payload-types.ts'),
+  },
+  jobs: {
+    access: {
+      run: ({ req }: { req: PayloadRequest }): boolean => {
+        // Allow logged in users to execute this endpoint (default)
+        if (req.user) return true
+
+        // If there is no logged in user, then check
+        // for the Vercel Cron secret to be present as an
+        // Authorization header:
+        const authHeader = req.headers.get('authorization')
+        return authHeader === `Bearer ${process.env.CRON_SECRET}`
+      },
+    },
+    tasks: [],
+  },
+  async onInit(payload) {
+    // Only seed in development
+    if (process.env.NODE_ENV === 'development') {
+      const existingUsers = await payload.find({
+        collection: 'users',
+        limit: 1,
+      })
+
+      if (existingUsers.docs.length === 0) {
+        await payload.create({
+          collection: 'users',
+          data: {
+            name: 'Dev Admin',
+            email: 'dev@payloadcms.com',
+            password: 'test',
+            role: 'admin',
+          },
+        })
+      }
+    }
+  },
 })
