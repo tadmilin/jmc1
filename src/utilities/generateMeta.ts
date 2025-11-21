@@ -71,16 +71,16 @@ const getImageURL = (
     }
 
     if (finalUrl && finalUrl !== 'undefined') {
-      // ถ้า URL เป็น absolute URL แล้ว ใช้เลย
+      // ตามเอกสาร PayloadCMS v3 + Vercel Blob Storage
+      // media.url จะเป็น absolute URL จาก Blob Storage เสมอ
       if (finalUrl.startsWith('http')) {
+        // Absolute URL จาก Blob Storage - ใช้โดยตรง (ถูกต้องตามเอกสาร)
         url = finalUrl
-      } else if (finalUrl.startsWith('media/')) {
-        // PayloadCMS Blob Storage path - เพิ่ม / หน้า
-        url = `${serverUrl}/${finalUrl}`
       } else {
-        // ถ้าเป็น relative URL ให้เพิ่ม server URL (อย่าลืมลบ slash ซ้ำ)
-        const cleanUrl = finalUrl.startsWith('/') ? finalUrl : `/${finalUrl}`
-        url = `${serverUrl}${cleanUrl}`
+        // Fallback: ถ้าเป็น relative path (ไม่ควรเกิดขึ้นกับ Blob Storage)
+        // ใช้ API route เป็น fallback
+        console.warn('⚠️ Unexpected relative path from PayloadCMS:', finalUrl)
+        url = `${serverUrl}/api/media/file/${finalUrl.replace(/^\/?(media\/)?/, '')}`
       }
     }
 

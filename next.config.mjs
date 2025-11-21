@@ -19,30 +19,29 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  // เพิ่มการตั้งค่าสำหรับแก้ปัญหา ESM
-  transpilePackages: ['@payloadcms/next'],
-  // เพิ่มการตั้งค่าสำหรับ images
+  // Images configuration สำหรับ PayloadCMS v3 + Vercel Blob Storage
   images: {
     remotePatterns: [
-      // สำหรับ localhost development
+      // Development localhost
       {
         protocol: 'http',
         hostname: 'localhost',
         port: '3000',
-        pathname: '/**',
+        pathname: '/api/**',
       },
+      // Production domain
       {
         protocol: 'https',
         hostname: 'jmc111.vercel.app',
-        pathname: '/**',
+        pathname: '/api/**',
       },
-      // เพิ่ม pattern สำหรับ Vercel preview deployments
+      // Vercel preview deployments
       {
         protocol: 'https',
-        hostname: '**-tadmilins-projects.vercel.app',
-        pathname: '/**',
+        hostname: '**.vercel.app',
+        pathname: '/api/**',
       },
-      // Vercel Blob Storage - รองรับทุกแบบ
+      // Vercel Blob Storage - Official domains
       {
         protocol: 'https',
         hostname: '**.blob.vercel-storage.com',
@@ -54,22 +53,14 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
-    // การตั้งค่าสำหรับประสิทธิภาพ
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    formats: ['image/webp'],
-    minimumCacheTTL: 60,
-    dangerouslyAllowSVG: true, // เปิดสำหรับ placeholder SVG
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;", // เพิ่มความปลอดภัยสำหรับ SVG
-    unoptimized: false, // เปิด image optimization
+    // Optimization settings
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 31536000, // 1 year cache for blob storage
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-  // เพิ่ม rewrites สำหรับ admin panel
-  async rewrites() {
-    return [
-      // ไม่ต้องมี rewrite สำหรับ admin เพราะ Payload จัดการเอง
-    ]
-  },
-  // เพิ่มการตั้งค่าสำหรับ headers ที่รองรับ blob storage
+  // PayloadCMS v3 handles admin routes automatically - no rewrites needed
+  // Security headers
   async headers() {
     return [
       {
@@ -77,7 +68,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Access-Control-Allow-Origin',
-            value: '*',
+            value: process.env.NODE_ENV === 'development' ? '*' : 'https://jmc111.vercel.app',
           },
           {
             key: 'Access-Control-Allow-Methods',
@@ -85,15 +76,10 @@ const nextConfig = {
           },
           {
             key: 'Access-Control-Allow-Headers',
-            value: 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
-          },
-          {
-            key: 'Access-Control-Allow-Credentials',
-            value: 'true',
+            value: 'Content-Type, Authorization, X-API-Key',
           },
         ],
       },
-      // เพิ่ม headers สำหรับ admin routes
       {
         source: '/admin/:path*',
         headers: [
@@ -113,22 +99,16 @@ const nextConfig = {
       },
     ]
   },
-  // เพิ่มการตั้งค่า webpack สำหรับ optimization
-  webpack: (config, { isServer, dev }) => {
+  // Webpack configuration for PayloadCMS v3
+  webpack: (config, { isServer }) => {
+    // Client-side fallbacks for Node.js modules
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
         path: false,
         os: false,
-      }
-    }
-
-    // แก้ปัญหา Payload CMS hydration
-    if (dev) {
-      config.watchOptions = {
-        ...config.watchOptions,
-        ignored: ['**/node_modules/**', '**/.git/**'],
+        crypto: false,
       }
     }
 
