@@ -18,8 +18,8 @@ interface Props {
   width?: number
 }
 
-const isMedia = (resource: any): resource is Media => {
-  return resource && typeof resource === 'object' && 'url' in resource
+const isMedia = (resource: Props['resource']): resource is Media => {
+  return resource !== null && typeof resource === 'object' && 'url' in resource
 }
 
 export const Image: React.FC<Props> = (props) => {
@@ -55,18 +55,12 @@ export const Image: React.FC<Props> = (props) => {
     height_final = height_final || heightFromResource || 800
     alt = altFromProps || altFromResource || filename || 'รูปภาพ'
 
+    // ใช้ URL จาก resource ถ้ามี ไม่งั้นสร้าง URL ใหม่
     src = url || (srcFromProps as string)
   }
 
-  // แก้ไขปัญหา: ให้ localhost/api/media/file ทำงานได้ แต่ block production URLs ใน development
-  const isBlockedProductionUrl =
-    src &&
-    (src.includes('jmc111-mv7jkkd-tadmilins-projects.vercel.app/api/media/file/') ||
-      src.includes('blob.vercel-storage.com'))
-  // ลบ localhost check ออกเพราะ localhost/api/media/file เป็น valid URL
-
-  // ถ้าไม่มี src หรือ src ไม่ถูกต้อง หรือเป็น production URL ใน development ให้ใช้ placeholder
-  if (!src || src === '' || isBlockedProductionUrl) {
+  // ถ้าไม่มี src ใช้ placeholder
+  if (!src || src === '') {
     src =
       'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+CiAgPHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzlmYTZiNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPuC4o+C4ueC4m+C4oOC4suC4nuC4quC4oeC4geC4qOC4tDwvdGV4dD4KICA8L3N2Zz4K'
     alt = 'ไม่มีรูปภาพ'
@@ -75,7 +69,18 @@ export const Image: React.FC<Props> = (props) => {
   }
 
   // จัดการ priority และ loading ให้ไม่ขัดแย้งกัน
-  const imageProps: any = {
+  const imageProps: {
+    alt: string
+    className?: string
+    fill?: boolean
+    height?: number
+    quality: number
+    sizes?: string
+    src: string
+    width?: number
+    priority?: boolean
+    loading?: 'lazy' | 'eager'
+  } = {
     alt: alt || '',
     className: imgClassName,
     fill,
@@ -84,18 +89,6 @@ export const Image: React.FC<Props> = (props) => {
     sizes,
     src,
     width: !fill ? width_final : undefined,
-  }
-
-  // Media files เป็น public access แล้ว ไม่ต้องเพิ่ม API key
-  // if (typeof src === 'string' && src.includes('/api/media/file/')) {
-  //   const apiKey = process.env.NEXT_PUBLIC_API_KEY || ''
-  //   const separator = src.includes('?') ? '&' : '?'
-  //   imageProps.src = `${src}${separator}key=${apiKey}`
-  // }
-
-  // เพิ่ม unoptimized สำหรับ localhost ใน development
-  if (process.env.NODE_ENV === 'development' && src && src.includes('localhost')) {
-    imageProps.unoptimized = true
   }
 
   // ถ้า priority = true จะไม่ใส่ loading (จะ default เป็น eager)

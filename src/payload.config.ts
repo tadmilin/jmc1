@@ -81,8 +81,8 @@ export default buildConfig({
               media: {
                 prefix: 'media',
                 generateFileURL: ({ filename }) => {
-                  // ใช้ route เดียว ที่รองรับทั้ง session cookie (Admin) และ API key (Public)
-                  return `/api/media/file/${filename}`
+                  // สร้าง URL ที่สมบูรณ์ โดยใช้ serverURL
+                  return `${serverURL}/api/media/file/${filename}`
                 },
               },
             },
