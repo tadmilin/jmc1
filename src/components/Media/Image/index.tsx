@@ -19,7 +19,9 @@ interface Props {
 }
 
 const isMedia = (resource: Props['resource']): resource is Media => {
-  return resource !== null && typeof resource === 'object' && 'url' in resource
+  if (resource === null || typeof resource !== 'object') return false
+  const obj = resource as unknown as Record<string, unknown>
+  return 'url' in obj || 'filename' in obj
 }
 
 export const Image: React.FC<Props> = (props) => {
@@ -49,20 +51,52 @@ export const Image: React.FC<Props> = (props) => {
       height: heightFromResource,
       url,
       width: widthFromResource,
+      sizes,
+      prefix,
     } = resource
 
-    width_final = width_final || widthFromResource || 1200
-    height_final = height_final || heightFromResource || 800
+    // พยายามคำนวณขนาดจากตัวไฟล์จริงก่อน ถ้าไม่มีค่อยไปดูจาก sizes
+    let computedWidth = widthFromResource || undefined
+    let computedHeight = heightFromResource || undefined
+    let candidateURL: string | undefined = undefined
+
+    // ลำดับความสำคัญในการเลือก URL:
+    // 1) url หลักจาก Payload/Storage
+    // 2) ขนาดย่อยที่มี (feature > card > thumbnail)
+    // 3) prefix + filename (Vercel Blob / adapter อื่น)
+    // 4) สุดท้าย fallback เป็น serverURL + collections path (กรณี local dev)
+
+    if (url) {
+      candidateURL = url
+    } else if (sizes?.feature?.url) {
+      candidateURL = sizes.feature.url
+      computedWidth = computedWidth || sizes.feature.width || undefined
+      computedHeight = computedHeight || sizes.feature.height || undefined
+    } else if (sizes?.card?.url) {
+      candidateURL = sizes.card.url
+      computedWidth = computedWidth || sizes.card.width || undefined
+      computedHeight = computedHeight || sizes.card.height || undefined
+    } else if (sizes?.thumbnail?.url) {
+      candidateURL = sizes.thumbnail.url
+      computedWidth = computedWidth || sizes.thumbnail.width || undefined
+      computedHeight = computedHeight || sizes.thumbnail.height || undefined
+    } else if (prefix && filename) {
+      candidateURL = `${prefix}/${filename}`
+    } else if (filename) {
+      const base = process.env.NEXT_PUBLIC_SERVER_URL || ''
+      candidateURL = `${base}/api/collections/media/file/${filename}`
+    }
+
+    width_final = width_final || computedWidth || 1200
+    height_final = height_final || computedHeight || 800
     alt = altFromProps || altFromResource || filename || 'รูปภาพ'
 
-    // PayloadCMS v3 with Blob Storage provides absolute URLs directly
-    if (url) {
-      // PayloadCMS จัดการ URL ให้เสร็จสรรพแล้ว - ใช้ URL โดยตรง
-      src = url
+    if (candidateURL) {
+      src = candidateURL
     } else {
-      // ถ้าไม่มี URL ให้ใช้ placeholder แทน (ไม่ควรเกิดขึ้นกับ Blob Storage)
-      console.warn('⚠️ Media object missing URL:', { filename, resource })
-      src = srcFromProps as string
+      // ถ้าไม่มี URL ใดๆ เลย ให้ลองใช้ src จาก props และแจ้งเตือน
+      console.warn('⚠️ Media object missing URL and sizes:', { filename, resource })
+      src = (srcFromProps as string) || ''
     }
   }
 
