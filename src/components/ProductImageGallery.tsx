@@ -28,7 +28,12 @@ export function ProductImageGallery({
       {/* Main Image - Always show main product images */}
       <div className="relative aspect-square bg-white rounded-2xl overflow-hidden shadow-lg">
         {mainImages && mainImages.length > 0 && mainImages[0] ? (
-          <Media resource={mainImages[0]} className="w-full h-full object-cover" size="600px" />
+          <Media
+            resource={mainImages[0]}
+            fill
+            imgClassName="object-cover"
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-400">
             <div className="text-center">
@@ -72,8 +77,11 @@ export function ProductImageGallery({
       {mainImages && mainImages.length > 1 && (
         <div className="grid grid-cols-4 gap-2">
           {mainImages.slice(1, 5).map((img, index) => (
-            <div key={index} className="aspect-square bg-white rounded-lg overflow-hidden shadow">
-              {img && <Media resource={img} className="w-full h-full object-cover" size="150px" />}
+            <div
+              key={index}
+              className="aspect-square bg-white rounded-lg overflow-hidden shadow relative"
+            >
+              {img && <Media resource={img} fill imgClassName="object-cover" sizes="150px" />}
             </div>
           ))}
         </div>
@@ -87,11 +95,9 @@ export function ProductImageGallery({
             {variantImages.slice(0, 4).map((img, index) => (
               <div
                 key={index}
-                className="aspect-square bg-white rounded-xl overflow-hidden shadow-lg border-3 border-blue-300 hover:border-blue-500 transition-colors"
+                className="aspect-square bg-white rounded-xl overflow-hidden shadow-lg border-3 border-blue-300 hover:border-blue-500 transition-colors relative"
               >
-                {img && (
-                  <Media resource={img} className="w-full h-full object-cover" size="500px" />
-                )}
+                {img && <Media resource={img} fill imgClassName="object-cover" sizes="500px" />}
               </div>
             ))}
           </div>
