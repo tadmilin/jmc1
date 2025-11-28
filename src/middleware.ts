@@ -8,14 +8,20 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Force server-side rendering for pages with server components
-  if (pathname.startsWith('/catalogs')) {
-    const response = NextResponse.next()
-    response.headers.set('x-middleware-next', '1')
-    return response
+  const response = NextResponse.next()
+
+  // เพิ่ม headers เพื่อบังคับ browser ตรวจสอบเวอร์ชันใหม่
+  if (!pathname.startsWith('/api') && !pathname.startsWith('/_next')) {
+    response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate, s-maxage=60')
+    response.headers.set('Vary', 'Accept-Encoding')
+    // เพิ่ม timestamp เพื่อให้ browser รู้ว่าควรตรวจสอบใหม่
+    response.headers.set('X-Content-Version', Date.now().toString())
   }
 
-  const response = NextResponse.next()
+  // Force server-side rendering for catalogs page
+  if (pathname.startsWith('/catalogs')) {
+    response.headers.set('x-middleware-cache', 'no-cache')
+  }
 
   // จัดการเฉพาะ API routes
   if (pathname.startsWith('/api')) {

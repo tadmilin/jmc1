@@ -58,8 +58,33 @@ const nextConfig = {
   async headers() {
     return [
       {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate, s-maxage=60, stale-while-revalidate=300',
+          },
+          {
+            key: 'Vary',
+            value: 'Accept-Encoding, User-Agent',
+          },
+        ],
+      },
+      {
         source: '/api/:path*',
         headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate, max-age=0',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
           {
             key: 'Access-Control-Allow-Origin',
             value: process.env.NODE_ENV === 'development' ? '*' : 'https://jmc111.vercel.app',
