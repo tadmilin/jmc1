@@ -53,6 +53,8 @@ export const Image: React.FC<Props> = (props) => {
       width: widthFromResource,
       sizes,
       prefix,
+      focalX,
+      focalY,
     } = resource
 
     // พยายามคำนวณขนาดจากตัวไฟล์จริงก่อน ถ้าไม่มีค่อยไปดูจาก sizes
@@ -121,6 +123,7 @@ export const Image: React.FC<Props> = (props) => {
     width?: number
     priority?: boolean
     loading?: 'lazy' | 'eager'
+    style?: React.CSSProperties
   } = {
     alt: alt || '',
     className: imgClassName,
@@ -130,6 +133,15 @@ export const Image: React.FC<Props> = (props) => {
     sizes,
     src,
     width: !fill ? width_final : undefined,
+  }
+
+  // เพิ่ม object-position จาก focalPoint
+  if (isMedia(resource) && fill) {
+    const focalX = (resource as Media).focalX || 50
+    const focalY = (resource as Media).focalY || 50
+    imageProps.style = {
+      objectPosition: `${focalX}% ${focalY}%`,
+    }
   }
 
   // ถ้า priority = true จะไม่ใส่ loading (จะ default เป็น eager)

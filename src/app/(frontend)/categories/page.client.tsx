@@ -188,8 +188,9 @@ function CategoryCard({ category }: { category: Category }) {
             <div className="relative w-full h-full">
               <Media
                 resource={imageResource}
-                size="300px"
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                fill
+                imgClassName="object-cover transition-transform duration-300 group-hover:scale-110"
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               />
               {/* Gradient Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

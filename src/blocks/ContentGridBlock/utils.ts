@@ -4,7 +4,7 @@ import { GRID_CLASSES } from './constants'
 /**
  * Get URL from internal link object
  */
-export const getInternalUrl = (link: any): string => {
+export const getInternalUrl = (link: { relationTo: string; value: string | { slug: string } }): string => {
   if (!link) return '#'
 
   const relationTo = link.relationTo
@@ -38,7 +38,7 @@ export const getGridClasses = (columns: keyof typeof GRID_CLASSES): string => {
 /**
  * Build API URL with query parameters
  */
-export const buildApiUrl = (endpoint: string, params: Record<string, any>): string => {
+export const buildApiUrl = (endpoint: string, params: Record<string, unknown>): string => {
   const url = new URL(endpoint, window.location.origin)
 
   Object.entries(params).forEach(([key, value]) => {

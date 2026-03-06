@@ -48,7 +48,6 @@ export const Media: CollectionConfig = {
       'image/jpeg',
       'image/jpg',
       'image/png',
-      'application/pdf',
       'image/gif',
       'image/webp',
       'image/svg+xml',
@@ -58,8 +57,8 @@ export const Media: CollectionConfig = {
     ],
     filesRequiredOnCreate: false,
     adminThumbnail: 'thumbnail',
-    focalPoint: false,
-    crop: false,
+    focalPoint: true,
+    crop: true,
     formatOptions: {
       format: 'webp',
       options: {

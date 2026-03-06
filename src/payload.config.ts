@@ -16,7 +16,7 @@ import { Users } from './collections/Users'
 import { QuoteRequests } from './collections/QuoteRequests'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
-import { CategoryShowcase } from './CategoryShowcase/config'
+
 import { SiteSettings } from './globals/SiteSettings'
 import { plugins } from './plugins'
 import { defaultLexical } from './fields/defaultLexical'
@@ -88,7 +88,7 @@ export default buildConfig({
   }),
   collections: [Pages, Posts, Media, Categories, Users, Products, QuoteRequests],
   cors: [getServerSideURL()].filter(Boolean),
-  globals: [Header, Footer, CategoryShowcase, SiteSettings],
+  globals: [Header, Footer, SiteSettings],
   plugins: [
     ...plugins,
     // storage-adapter-placeholder

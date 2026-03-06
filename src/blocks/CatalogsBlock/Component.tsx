@@ -70,7 +70,7 @@ export const CatalogsBlock: React.FC<CatalogsBlockProps> = ({
   }, [items])
 
   const containerClass =
-    layout === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-6'
+    layout === 'grid' ? 'grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6' : 'space-y-6'
 
   if (!items?.length) {
     return (
@@ -91,37 +91,41 @@ export const CatalogsBlock: React.FC<CatalogsBlockProps> = ({
               key={index}
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
             >
-              <div className="relative w-full aspect-video bg-gray-100">
+              <div className="relative w-full aspect-[3/4] bg-gray-100">
                 {item.thumbnailImage ? (
                   <Image
                     src={getMediaUrl(item.thumbnailImage)}
                     alt={item.name || 'รูปภาพแคตตาล็อก'}
                     fill
-                    className="object-cover rounded-t-lg"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-contain p-1 md:p-2"
+                    sizes="(max-width: 768px) 50vw, 25vw"
                     unoptimized={true}
                   />
                 ) : (
-                  <div className="flex items-center justify-center w-full h-full bg-gray-200 text-gray-500 rounded-t-lg">
+                  <div className="flex items-center justify-center w-full h-full bg-gray-200 text-gray-500 text-xs md:text-base">
                     📷 ไม่มีรูปภาพ
                   </div>
                 )}
               </div>
-              <div className="p-6">
-                <h3 className="text-xl font-semibold mb-2 text-black">{item.name}</h3>
+              <div className="p-2 md:p-4">
+                <h3 className="text-sm md:text-lg font-semibold mb-1 md:mb-2 text-black line-clamp-2">
+                  {item.name}
+                </h3>
                 {item.category && (
-                  <span className="inline-block px-3 py-1 bg-gray-100 text-sm text-gray-600 rounded-full mb-3">
+                  <span className="inline-block px-2 py-0.5 md:py-1 bg-gray-100 text-xs text-gray-600 rounded-full mb-1 md:mb-2">
                     {item.category}
                   </span>
                 )}
                 {item.description && (
-                  <p className="text-gray-700 mb-4 line-clamp-3">{item.description}</p>
+                  <p className="text-gray-700 text-xs md:text-sm mb-2 md:mb-3 line-clamp-2 hidden md:block">
+                    {item.description}
+                  </p>
                 )}
                 <a
                   href={getMediaUrl(item.pdfFile)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center w-full px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  className="inline-flex items-center justify-center w-full px-2 md:px-4 py-1.5 md:py-2 bg-blue-600 text-white text-xs md:text-sm rounded-md hover:bg-blue-700 transition-colors"
                   download
                   onClick={(e) => {
                     const url = getMediaUrl(item.pdfFile)
@@ -131,7 +135,7 @@ export const CatalogsBlock: React.FC<CatalogsBlockProps> = ({
                     }
                   }}
                 >
-                  📄 ดาวน์โหลด PDF
+                  📄 ดาวน์โหลด Catalog
                 </a>
               </div>
             </div>
