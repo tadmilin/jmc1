@@ -4,7 +4,7 @@ import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 
 import sharp from 'sharp' // sharp-import
 import path from 'path'
-import { buildConfig, PayloadRequest } from 'payload'
+import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 
 import { Categories } from './collections/Categories'
@@ -78,10 +78,15 @@ export default buildConfig({
       databaseUri ||
       (process.env.NODE_ENV === 'development' ? 'mongodb://localhost:27017/jmc-dev' : ''),
     connectOptions: {
-      // Add connection timeout and retry options
-      serverSelectionTimeoutMS: 10000, // 10 seconds
-      socketTimeoutMS: 45000, // 45 seconds
-      maxPoolSize: 10,
+      // M0 Free Tier = 500 connections max
+      // Serverless rule: maxPoolSize: 1 → supports 500 concurrent instances safely
+      // (maxPoolSize: 10 = only 50 instances before hitting limit)
+      maxPoolSize: 1,
+      minPoolSize: 0, // close idle connections immediately — critical for serverless
+      maxIdleTimeMS: 10000, // release connection after 10s idle
+      serverSelectionTimeoutMS: 5000, // fail fast, don't hold connection waiting
+      socketTimeoutMS: 30000,
+      connectTimeoutMS: 10000,
       retryWrites: true,
       w: 'majority',
     },
@@ -104,21 +109,8 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  jobs: {
-    access: {
-      run: ({ req }: { req: PayloadRequest }): boolean => {
-        // Allow logged in users to execute this endpoint (default)
-        if (req.user) return true
-
-        // If there is no logged in user, then check
-        // for the Vercel Cron secret to be present as an
-        // Authorization header:
-        const authHeader = req.headers.get('authorization')
-        return authHeader === `Bearer ${process.env.CRON_SECRET}`
-      },
-    },
-    tasks: [],
-  },
+  // jobs disabled — no tasks defined, prevents unnecessary Vercel Cron connections
+  // jobs: { ... },
   async onInit(payload) {
     // Only seed in development
     if (process.env.NODE_ENV === 'development') {
