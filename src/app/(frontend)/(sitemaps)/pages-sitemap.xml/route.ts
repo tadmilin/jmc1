@@ -1,15 +1,10 @@
-
 import { unstable_cache } from 'next/cache'
+import { getServerSideURL } from '@/utilities/getURL'
 
 const getPagesSitemap = unstable_cache(
   async () => {
-    try {
-      const SITE_URL =
-        process.env.NEXT_PUBLIC_SERVER_URL ||
-        process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-        'https://jmc111.vercel.app'
-
-      const dateFallback = new Date().toISOString()
+    const SITE_URL = getServerSideURL()
+    const dateFallback = new Date().toISOString()
 
       // ใช้ fallback data ที่ถูกต้องแทน เพื่อหลีกเลี่ยง URL ซ้ำ
       const sitemap = [
@@ -61,41 +56,15 @@ const getPagesSitemap = unstable_cache(
           changefreq: 'monthly',
           priority: 0.5,
         },
+        {
+          loc: `${SITE_URL}/catalogs`,
+          lastmod: dateFallback,
+          changefreq: 'weekly',
+          priority: 0.8,
+        },
       ]
 
       return sitemap
-    } catch (error) {
-      console.error('Error generating pages sitemap:', error)
-
-      // Emergency fallback
-      const SITE_URL =
-        process.env.NEXT_PUBLIC_SERVER_URL ||
-        process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-        'https://jmc111.vercel.app'
-
-      const dateFallback = new Date().toISOString()
-
-      return [
-        {
-          loc: `${SITE_URL}/`,
-          lastmod: dateFallback,
-          changefreq: 'daily',
-          priority: 1.0,
-        },
-        {
-          loc: `${SITE_URL}/aboutus`,
-          lastmod: dateFallback,
-          changefreq: 'monthly',
-          priority: 0.6,
-        },
-        {
-          loc: `${SITE_URL}/contact`,
-          lastmod: dateFallback,
-          changefreq: 'monthly',
-          priority: 0.7,
-        },
-      ]
-    }
   },
   ['pages-sitemap'],
   {

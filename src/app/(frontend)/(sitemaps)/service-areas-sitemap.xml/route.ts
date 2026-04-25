@@ -14,13 +14,16 @@ const serviceAreas = [
 ]
 
 export async function GET(): Promise<Response> {
+  const SITE_URL = getServerSideURL()
+  // ใช้ static date เพื่อให้ CDN cache ได้นาน ไม่เปลี่ยนทุก request
+  const lastmod = '2025-01-01T00:00:00.000Z'
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${serviceAreas
   .map((area) => {
     return `  <url>
-    <loc>${getServerSideURL()}/service-areas/${area.slug}</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
+    <loc>${SITE_URL}/service-areas/${area.slug}</loc>
+    <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>`
@@ -32,6 +35,7 @@ ${serviceAreas
     status: 200,
     headers: {
       'Content-Type': 'application/xml',
+      'Cache-Control': 'public, max-age=86400, s-maxage=86400',
     },
   })
 }

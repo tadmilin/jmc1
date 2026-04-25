@@ -14,12 +14,12 @@ export function generateContactPageSchema() {
     url: `${baseUrl}/contactus-`,
     mainEntity: {
       '@type': 'LocalBusiness',
-      '@id': `${baseUrl}/#organization`,
+      '@id': `${baseUrl}/#hardware-store`,
       name: 'ร้านวัสดุก่อสร้าง จงมีชัยค้าวัสดุ ตลิ่งชัน ใกล้ฉัน',
       alternateName: 'จงมีชัยค้าวัสดุ',
-      description: 'ร้านวัสดุก่อสร้างราคาถูกครบวงจร ตลิ่งชัน ปากซอยชักพระ6 ใกล้ฉัน',
+      description: 'ร้านวัสดุก่อสร้างราคาถูกครบวงจร ตลิ่งชัน ปากซอยชักพระ66 ใกล้ฉัน',
       url: baseUrl,
-      telephone: '02-434-8319',
+      telephone: '+6624348319',
       email: 'tadeyes1@gmail.com',
       address: {
         '@type': 'PostalAddress',
@@ -40,6 +40,12 @@ export function generateContactPageSchema() {
           dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
           opens: '07:00',
           closes: '17:00',
+        },
+        {
+          '@type': 'OpeningHoursSpecification',
+          dayOfWeek: ['Sunday'],
+          opens: '08:00',
+          closes: '16:00',
         },
       ],
       areaServed: [

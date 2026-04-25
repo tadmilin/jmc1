@@ -113,7 +113,7 @@ export function generateProductStructuredData(
       condition: mapCondition(product.structuredData?.condition || 'new'),
       seller: {
         '@type': 'Organization',
-        name: 'JMC Company', // TODO: Make this configurable
+        name: 'จงมีชัยค้าวัสดุ',
       },
     },
   }

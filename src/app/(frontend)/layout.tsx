@@ -50,11 +50,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const description =
     siteDescription ||
-    'ร้านวัสดุก่อสร้างใกล้ฉัน จงมีชัยค้าวัสดุ ตลิ่งชัน ปากซอยชักพระ6 วัสดุก่อสร้างครบวงจร ราคาถูก ส่งด่วนถึงไซต์งาน อิฐ หิน ปูน ทราย เหล็ก ประปา ไฟฟ้าใกล้ฉัน บริการพื้นที่ ตลิ่งชัน บางพลัด ท่าพระ'
+    'ร้านวัสดุก่อสร้างใกล้ฉัน แถวตลิ่งชัน จงมีชัยค้าวัสดุ ปากซอยชักพระ6 จำหน่ายวัสดุก่อสร้างครบวงจร ราคาถูก ส่งฟรีถึงไซต์งาน อิฐแดง อิฐมอญ ปูนซีเมนต์ ทราย หิน เหล็กเส้น ท่อ PVC สี ประปา ไฟฟ้า กระเบื้อง ประตูหน้าต่าง บริการพื้นที่ ตลิ่งชัน ปิ่นเกล้า จรัญ บางขุนนนท์ บรม สวนผัก พระราม5 บางกรวย โทร 02-434-8319'
 
   const keywords =
     siteKeywords ||
-    'วัสดุก่อสร้างใกล้ฉัน, ร้านวัสดุก่อสร้างใกล้ฉัน, วัสดุใกล้ฉัน, อิฐใกล้ฉัน, ปูนใกล้ฉัน, ทรายใกล้ฉัน, หินใกล้ฉัน, เหล็กใกล้ฉัน, ประปาใกล้ฉัน, ไฟฟ้าใกล้ฉัน, วัสดุก่อสร้าง ตลิ่งชัน, ร้านวัสดุก่อสร้าง ตลิ่งชัน, วัสดุก่อสร้าง เขตตลิ่งชัน, วัสดุก่อสร้าง ปากซอยชักพระ6, วัสดุก่อสร้าง บางพลัด, วัสดุก่อสร้าง ท่าพระ, วัสดุก่อสร้าง บางกอกน้อย, ร้านค้าวัสดุใกล้ฉัน, หาร้านวัสดุใกล้ฉัน, ปั๊มน้ำใกล้ฉัน, ท่อประปาใกล้ฉัน, สายไฟใกล้ฉัน, ประตูหน้าต่างใกล้ฉัน, เครื่องผสมสีใกล้ฉัน, ส่งวัสดุถึงไซต์งาน, วัสดุก่อสร้างราคาถูกใกล้ฉัน'
+    'ร้านวัสดุก่อสร้างใกล้ฉัน, วัสดุก่อสร้างใกล้ฉัน, ร้านวัสดุก่อสร้างแถวตลิ่งชัน, วัสดุก่อสร้างแถวตลิ่งชัน, ร้านวัสดุก่อสร้างย่านตลิ่งชัน, ร้านวัสดุก่อสร้าง ตลิ่งชัน, วัสดุก่อสร้าง ตลิ่งชัน, วัสดุก่อสร้าง, ร้านวัสดุก่อสร้าง, จงมีชัยค้าวัสดุ, อิฐใกล้ฉัน, อิฐแดง, อิฐมอญ, ปูนใกล้ฉัน, ปูนซีเมนต์ใกล้ฉัน, ทรายใกล้ฉัน, หินใกล้ฉัน, เหล็กใกล้ฉัน, เหล็กเส้นใกล้ฉัน, ประปาใกล้ฉัน, ท่อ PVC ใกล้ฉัน, ปั๊มน้ำใกล้ฉัน, ไฟฟ้าใกล้ฉัน, สายไฟใกล้ฉัน, สีทาบ้านใกล้ฉัน, กระเบื้องใกล้ฉัน, ประตูหน้าต่างใกล้ฉัน, วัสดุก่อสร้างราคาถูก, ส่งวัสดุถึงไซต์งาน, วัสดุก่อสร้าง ปิ่นเกล้า, วัสดุก่อสร้าง จรัญ, วัสดุก่อสร้าง บางขุนนนท์, วัสดุก่อสร้าง บรม, วัสดุก่อสร้าง สวนผัก, วัสดุก่อสร้าง พระราม5, วัสดุก่อสร้าง บางกรวย, วัสดุก่อสร้าง บางพลัด, วัสดุก่อสร้าง ท่าพระ, วัสดุก่อสร้าง บางกอกน้อย, ต่อเติมบ้าน, ซ่อมแซมบ้าน, รีโนเวทบ้าน, hardware store near me'
 
   // Use OG image from CMS or fallback
   const ogImageUrl =
@@ -131,7 +131,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="robots" content="index, follow" />
         <InitTheme />
         {/* Dynamic favicon จากรูปที่อัพโหลดใน Admin Dashboard */}
         <link href={faviconUrl} rel="icon" type="image/png" />
@@ -142,6 +141,22 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="theme-color" content="#1E40AF" />
         <meta name="msapplication-TileColor" content="#1E40AF" />
         <meta name="msapplication-config" content="none" />
+
+        {/* Geo tags — Google Maps Local Pack signals */}
+        <meta name="geo.region" content="TH-10" />
+        <meta name="geo.placename" content="Taling Chan, Bangkok, Thailand" />
+        <meta name="geo.position" content="13.780839;100.462298" />
+        <meta name="ICBM" content="13.780839, 100.462298" />
+        <meta name="business:contact_data:street_address" content="38,40 ปากซอยชักพระ6 ถนนชักพระ" />
+        <meta name="business:contact_data:locality" content="ตลิ่งชัน" />
+        <meta name="business:contact_data:region" content="กรุงเทพมหานคร" />
+        <meta name="business:contact_data:postal_code" content="10170" />
+        <meta name="business:contact_data:country_name" content="Thailand" />
+        <meta name="business:contact_data:phone_number" content="+66-2-434-8319" />
+
+        {/* hreflang — language/region targeting */}
+        <link rel="alternate" hrefLang="th" href="https://jmc111.vercel.app/" />
+        <link rel="alternate" hrefLang="x-default" href="https://jmc111.vercel.app/" />
 
         {/* Global Structured Data */}
         <StructuredData data={organizationSchema} />

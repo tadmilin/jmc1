@@ -1,12 +1,15 @@
+const _envUrl = process.env.NEXT_PUBLIC_SERVER_URL || ''
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SERVER_URL ||
-  process.env.VERCEL_PROJECT_PRODUCTION_URL ||
+  (_envUrl && !_envUrl.includes('localhost') ? _envUrl : null) ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : null) ||
   'https://jmc111.vercel.app'
 
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
   siteUrl: SITE_URL,
-  generateRobotsTxt: true,
+  generateRobotsTxt: false, // manual public/robots.txt is used instead
   exclude: ['/admin', '/admin/*', '/api/*', '/next/*'],
   robotsTxtOptions: {
     policies: [
@@ -26,6 +29,7 @@ module.exports = {
     additionalSitemaps: [
       `${SITE_URL}/pages-sitemap.xml`,
       `${SITE_URL}/posts-sitemap.xml`,
+      `${SITE_URL}/products-sitemap.xml`,
       `${SITE_URL}/service-areas-sitemap.xml`,
     ],
   },

@@ -2,15 +2,18 @@ import { getServerSideURL } from '@/utilities/getURL'
 
 export type OrganizationSchema = {
   '@context': 'https://schema.org'
-  '@type': 'LocalBusiness'
+  '@id'?: string
+  '@type': string
   name: string
   alternateName?: string
   description: string
   url: string
-  logo: string
+  logo: string | { '@type': 'ImageObject'; url: string; width: number; height: number }
   image: string[]
   telephone: string
   email: string
+  hasMap?: string
+  photo?: string[]
   address: {
     '@type': 'PostalAddress'
     streetAddress: string
@@ -33,7 +36,7 @@ export type OrganizationSchema = {
   priceRange: string
   paymentAccepted: string[]
   currenciesAccepted: string
-  areaServed: string[]
+  areaServed: object[]
   keywords: string
   serviceType: string[]
   founder: {
@@ -63,6 +66,11 @@ export type OrganizationSchema = {
     price?: string
     priceCurrency?: string
   }[]
+  hasOfferCatalog?: {
+    '@type': 'OfferCatalog'
+    name: string
+    itemListElement: { '@type': 'OfferCatalog'; name: string }[]
+  }
 }
 
 export type WebSiteSchema = {
@@ -99,15 +107,23 @@ export function generateOrganizationSchema(): OrganizationSchema {
 
   return {
     '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
+    '@id': `${baseUrl}/#hardware-store`,
+    '@type': 'HardwareStore',
     name: 'จงมีชัยค้าวัสดุ',
-    alternateName: 'ร้านวัสดุก่อสร้าง ตลิ่งชัน ใกล้ฉัน JMC ปากซอยชักพระ6',
+    alternateName: 'ร้านวัสดุก่อสร้าง ตลิ่งชัน ใกล้ฉัน แถวตลิ่งชัน JMC ปากซอยชักพระ6',
     description:
-      'ร้านวัสดุก่อสร้าง ตลิ่งชัน ใกล้ฉัน ปากซอยชักพระ6 ราคาถูก ส่งฟรี ครบวงจร อิฐ หิน ปูน ทราย เหล็ก ประปา ไฟฟ้า บริการพื้นที่ ตลิ่งชัน ปิ่นเกล้า จรัญ บางขุนนนท์ บรม สวนผัก พระราม5 บางกรวย ช่างมืออาชีพ โทร 02-434-8319',
+      'ร้านวัสดุก่อสร้าง แถวตลิ่งชัน ใกล้ฉัน ปากซอยชักพระ6 ราคาถูก ส่งฟรี ครบวงจร อิฐ หิน ปูน ทราย เหล็ก ประปา ไฟฟ้า บริการพื้นที่ ตลิ่งชัน ปิ่นเกล้า จรัญ บางขุนนนท์ บรม สวนผัก พระราม5 บางกรวย ช่างมืออาชีพ โทร 02-434-8319',
     url: baseUrl,
-    logo: `${baseUrl}/jmc-og-image.svg`,
+    hasMap: 'https://share.google/TxjtGXd6tcJBmaMCd',
+    logo: {
+      '@type': 'ImageObject',
+      url: `${baseUrl}/jmc-og-image.svg`,
+      width: 600,
+      height: 314,
+    },
     image: [`${baseUrl}/jmc-og-image.svg`],
-    telephone: '02-434-8319',
+    photo: [`${baseUrl}/jmc-og-image.svg`],
+    telephone: '+6624348319',
     email: 'tadeyes1@gmail.com',
     address: {
       '@type': 'PostalAddress',
@@ -129,34 +145,51 @@ export function generateOrganizationSchema(): OrganizationSchema {
         opens: '07:00',
         closes: '17:00',
       },
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Sunday'],
+        opens: '08:00',
+        closes: '16:00',
+      },
     ],
     priceRange: '฿฿',
     paymentAccepted: ['Cash', 'Credit Card', 'Bank Transfer', 'Promptpay'],
     currenciesAccepted: 'THB',
     areaServed: [
-      'ตลิ่งชัน',
-      'ปากซอยชักพระ6',
-      'ถนนชักพระ',
-      'แขวงตลิ่งชัน',
-      'เขตตลิ่งชัน',
-      'ปิ่นเกล้า',
-      'จรัญสนิทวงศ์',
-      'บางขุนนนท์',
-      'บางพลัด',
-      'ท่าพระ',
-      'บางกอกน้อย',
-      'บางบำหรุ',
-      'ธนบุรี',
+      { '@type': 'City', name: 'ตลิ่งชัน', sameAs: 'https://www.wikidata.org/wiki/Q2368578' },
+      { '@type': 'AdministrativeArea', name: 'แขวงตลิ่งชัน' },
+      { '@type': 'AdministrativeArea', name: 'เขตตลิ่งชัน' },
+      { '@type': 'Neighborhood', name: 'ปากซอยชักพระ6' },
+      { '@type': 'Neighborhood', name: 'ถนนชักพระ' },
+      { '@type': 'Neighborhood', name: 'ปิ่นเกล้า' },
+      { '@type': 'Neighborhood', name: 'จรัญสนิทวงศ์' },
+      { '@type': 'Neighborhood', name: 'บางขุนนนท์' },
+      { '@type': 'Neighborhood', name: 'บางพลัด' },
+      { '@type': 'Neighborhood', name: 'ท่าพระ' },
+      { '@type': 'Neighborhood', name: 'บางกอกน้อย' },
+      { '@type': 'Neighborhood', name: 'บางบำหรุ' },
+      { '@type': 'Neighborhood', name: 'บรมราชชนนี' },
+      { '@type': 'Neighborhood', name: 'สวนผัก' },
+      { '@type': 'City', name: 'ธนบุรี' },
+      { '@type': 'AdministrativeArea', name: 'พระราม 5' },
+      { '@type': 'City', name: 'บางกรวย' },
     ],
     keywords:
-      'วัสดุก่อสร้างใกล้ฉัน, ร้านวัสดุก่อสร้างใกล้ฉัน, วัสดุใกล้ฉัน, อิฐใกล้ฉัน, ปูนใกล้ฉัน, ทรายใกล้ฉัน, หินใกล้ฉัน, เหล็กใกล้ฉัน, ประปาใกล้ฉัน, ไฟฟ้าใกล้ฉัน, วัสดุก่อสร้าง ตลิ่งชัน, ร้านวัสดุก่อสร้าง ตลิ่งชัน',
+      'ร้านวัสดุก่อสร้างใกล้ฉัน, วัสดุก่อสร้างใกล้ฉัน, ร้านวัสดุก่อสร้างแถวตลิ่งชัน, วัสดุก่อสร้างแถวตลิ่งชัน, ร้านวัสดุก่อสร้างย่านตลิ่งชัน, ร้านวัสดุก่อสร้าง ตลิ่งชัน, วัสดุก่อสร้าง ตลิ่งชัน, วัสดุก่อสร้างราคาถูก, จำหน่ายวัสดุก่อสร้าง, อิฐใกล้ฉัน, อิฐแดง, อิฐมอญ, อิฐบล็อก, อิฐมวลเบา, ปูนใกล้ฉัน, ปูนซีเมนต์ใกล้ฉัน, ปูนก่อ, ปูนฉาบ, ปูนสำเร็จรูป, ทรายใกล้ฉัน, ทรายก่อสร้าง, ทรายหยาบ, หินใกล้ฉัน, หิน 3/4, หินคลุก, เหล็กใกล้ฉัน, เหล็กเส้น, เหล็กฉาก, เหล็กกล่อง, ท่อ PVC ใกล้ฉัน, ท่อน้ำ, ปั๊มน้ำใกล้ฉัน, สายไฟใกล้ฉัน, สีทาบ้านใกล้ฉัน, กระเบื้องใกล้ฉัน, กระเบื้องหลังคา, ประตูหน้าต่างใกล้ฉัน, อุปกรณ์ก่อสร้างใกล้ฉัน, ส่งวัสดุฟรีถึงไซต์งาน, ต่อเติมบ้าน, ซ่อมแซมบ้าน, รีโนเวทบ้าน',
     serviceType: [
       'ร้านวัสดุก่อสร้าง ตลิ่งชัน',
+      'ร้านวัสดุก่อสร้าง แถวตลิ่งชัน',
+      'ร้านวัสดุก่อสร้าง ย่านตลิ่งชัน',
+      'ร้านวัสดุก่อสร้าง เขตตลิ่งชัน',
       'วัสดุก่อสร้าง ใกล้ฉัน',
+      'วัสดุก่อสร้าง แถวตลิ่งชัน',
       'ร้านวัสดุก่อสร้าง ปากซอยชักพระ6',
       'วัสดุก่อสร้าง ปิ่นเกล้า',
+      'วัสดุก่อสร้าง แถวปิ่นเกล้า',
       'วัสดุก่อสร้าง จรัญ',
+      'วัสดุก่อสร้าง แถวจรัญ',
       'วัสดุก่อสร้าง บางขุนนนท์',
+      'วัสดุก่อสร้าง แถวบางขุนนนท์',
       'อิฐ หิน ปูน ทราย ตลิ่งชัน',
       'เหล็ก ประปา ไฟฟ้า ตลิ่งชัน',
       'อุปกรณ์ก่อสร้าง ตลิ่งชัน',
@@ -185,7 +218,7 @@ export function generateOrganizationSchema(): OrganizationSchema {
       bestRating: '5',
       worstRating: '1',
     },
-    openingHours: 'Mo-Sa 07:00-17:00',
+    openingHours: 'Mo-Sa 07:00-17:00 Su 08:00-16:00',
     additionalProperty: [
       {
         '@type': 'PropertyValue',
@@ -195,20 +228,31 @@ export function generateOrganizationSchema(): OrganizationSchema {
       {
         '@type': 'PropertyValue',
         name: 'service_area',
-        value: 'ตลิ่งชัน ปิ่นเกล้า จรัญ บางขุนนนท์',
+        value: 'แถวตลิ่งชัน ย่านตลิ่งชัน เขตตลิ่งชัน ปิ่นเกล้า จรัญ บางขุนนนท์',
       },
       {
         '@type': 'PropertyValue',
-        name: 'keywords',
-        value: 'วัสดุก่อสร้าง ใกล้ฉัน, ร้านวัสดุก่อสร้าง ตลิ่งชัน, ปากซอยชักพระ6',
+        name: 'near_me_keywords',
+        value: 'ร้านวัสดุก่อสร้างใกล้ฉัน วัสดุก่อสร้างแถวตลิ่งชัน ร้านวัสดุก่อสร้างย่านตลิ่งชัน',
+      },
+      {
+        '@type': 'PropertyValue',
+        name: 'google_maps_url',
+        value: 'https://share.google/TxjtGXd6tcJBmaMCd',
       },
     ],
     makesOffer: [
       {
         '@type': 'Offer',
-        name: 'ส่งฟรี วัสดุก่อสร้าง',
-        description: 'บริการส่งฟรี วัสดุก่อสร้าง ในพื้นที่ ตลิ่งชัน ปิ่นเกล้า จรัญ',
-        areaServed: 'ตลิ่งชัน, ปิ่นเกล้า, จรัญสนิทวงศ์',
+        name: 'ส่งฟรี วัสดุก่อสร้าง แถวตลิ่งชัน',
+        description: 'บริการส่งฟรี วัสดุก่อสร้าง ในพื้นที่แถวตลิ่งชัน ปิ่นเกล้า จรัญ บางขุนนนท์',
+        areaServed: 'แถวตลิ่งชัน, ย่านตลิ่งชัน, ปิ่นเกล้า, จรัญสนิทวงศ์',
+      },
+      {
+        '@type': 'Offer',
+        name: 'วัสดุก่อสร้าง แถวตลิ่งชัน ราคาถูก',
+        description: 'จำหน่ายวัสดุก่อสร้างครบวงจร แถวตลิ่งชัน อิฐ หิน ปูน ทราย เหล็ก ราคาถูก',
+        areaServed: 'ตลิ่งชัน, แถวตลิ่งชัน, เขตตลิ่งชัน',
       },
       {
         '@type': 'Offer',
@@ -219,6 +263,19 @@ export function generateOrganizationSchema(): OrganizationSchema {
         priceCurrency: 'THB',
       },
     ],
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'วัสดุก่อสร้าง แถวตลิ่งชัน ครบวงจร',
+      itemListElement: [
+        { '@type': 'OfferCatalog', name: 'อิฐ หิน ปูน ทราย' },
+        { '@type': 'OfferCatalog', name: 'เหล็กก่อสร้าง' },
+        { '@type': 'OfferCatalog', name: 'อุปกรณ์ประปา' },
+        { '@type': 'OfferCatalog', name: 'อุปกรณ์ไฟฟ้า' },
+        { '@type': 'OfferCatalog', name: 'สีทาบ้าน' },
+        { '@type': 'OfferCatalog', name: 'ประตูและหน้าต่าง' },
+        { '@type': 'OfferCatalog', name: 'ท่อ PVC และอุปกรณ์' },
+      ],
+    },
   }
 }
 

@@ -82,7 +82,7 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // เฉพาะ API routes เท่านั้น
-    '/api/:path*',
+    // ครอบคลุม frontend routes ทั้งหมด ยกเว้น static assets
+    '/((?!_next/static|_next/image|favicon|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
   ],
 }

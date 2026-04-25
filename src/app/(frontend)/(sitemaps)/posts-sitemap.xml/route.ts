@@ -1,60 +1,53 @@
 import { unstable_cache } from 'next/cache'
+import { getServerSideURL } from '@/utilities/getURL'
+import configPromise from '@payload-config'
+import { getPayload } from 'payload'
 
 const getPostsSitemap = unstable_cache(
   async () => {
+    const SITE_URL = getServerSideURL()
+    const dateFallback = new Date().toISOString()
+
     try {
-      const SITE_URL =
-        process.env.NEXT_PUBLIC_SERVER_URL ||
-        process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-        'https://jmc111.vercel.app'
+      const payload = await getPayload({ config: configPromise })
 
-      const dateFallback = new Date().toISOString()
+      const posts = await payload.find({
+        collection: 'posts',
+        draft: false,
+        limit: 5000,
+        pagination: false,
+        where: {
+          _status: {
+            equals: 'published',
+          },
+        },
+        select: {
+          slug: true,
+          updatedAt: true,
+        },
+        depth: 0,
+      })
 
-      // ใช้ fallback data แทนเพราะ posts ใน database มี slug ผิด
-      const sitemap = [
+      const postEntries = posts.docs
+        .filter((p) => !!p.slug && !p.slug.startsWith('-'))
+        .map((p) => ({
+          loc: `${SITE_URL}/posts/${p.slug}`,
+          lastmod: p.updatedAt ?? dateFallback,
+          changefreq: 'monthly',
+          priority: 0.6,
+        }))
+
+      return [
         {
           loc: `${SITE_URL}/posts`,
           lastmod: dateFallback,
           changefreq: 'weekly',
           priority: 0.7,
         },
-        {
-          loc: `${SITE_URL}/posts/construction-materials-guide`,
-          lastmod: dateFallback,
-          changefreq: 'monthly',
-          priority: 0.6,
-        },
-        {
-          loc: `${SITE_URL}/posts/building-materials-tips`,
-          lastmod: dateFallback,
-          changefreq: 'monthly',
-          priority: 0.6,
-        },
-        {
-          loc: `${SITE_URL}/posts/concrete-mixing-guide`,
-          lastmod: dateFallback,
-          changefreq: 'monthly',
-          priority: 0.6,
-        },
-        {
-          loc: `${SITE_URL}/posts/steel-selection-tips`,
-          lastmod: dateFallback,
-          changefreq: 'monthly',
-          priority: 0.6,
-        },
+        ...postEntries,
       ]
-
-      return sitemap
     } catch (error) {
       console.error('Error generating posts sitemap:', error)
-
-      // Emergency fallback
-      const SITE_URL =
-        process.env.NEXT_PUBLIC_SERVER_URL ||
-        process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-        'https://jmc111.vercel.app'
-
-      const dateFallback = new Date().toISOString()
 
       return [
         {
@@ -69,7 +62,7 @@ const getPostsSitemap = unstable_cache(
   ['posts-sitemap'],
   {
     tags: ['posts-sitemap'],
-    revalidate: 3600, // 1 hour
+    revalidate: 3600,
   },
 )
 

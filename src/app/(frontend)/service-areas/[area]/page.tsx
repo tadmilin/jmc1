@@ -234,44 +234,26 @@ export default async function ServiceArea({ params }: ServiceAreaPageProps) {
           {/* Products Section */}
           <section className="mb-12">
             <h2 className="text-3xl font-bold text-blue-800 mb-6">
-              🏗️ วัสดุก่อสร้าง ส่ง{areaData.name}
+              🏗️ วัสดุก่อสร้าง ส่ง{areaData.name} ครบทุกชนิด
             </h2>
             <div className="grid md:grid-cols-3 gap-6">
               {[
-                {
-                  name: 'อิฐแดง อิฐมอญ',
-                  desc: 'คุณภาพเยี่ยม ราคาโรงงาน',
-                  price: 'เริ่มต้น 2.50 บาท/ก้อน',
-                },
-                {
-                  name: 'ปูนซีเมนต์',
-                  desc: 'ตราช้าง ตราเสือ คุณภาพดี',
-                  price: 'เริ่มต้น 185 บาท/ถุง',
-                },
-                {
-                  name: 'ทรายก่อสร้าง',
-                  desc: 'ทรายหยาบ ทรายละเอียด สะอาด',
-                  price: 'เริ่มต้น 180 บาท/คิว',
-                },
-                {
-                  name: 'หินคลุก หิน 1-2-3',
-                  desc: 'หินแกรนิต คุณภาพเกรด A',
-                  price: 'เริ่มต้น 280 บาท/คิว',
-                },
-                { name: 'ท่อ PVC อุปกรณ์', desc: 'บราเดีย ไทยยา ครบครัน', price: 'ราคาโรงงาน' },
-                {
-                  name: 'เหล็กก่อสร้าง',
-                  desc: 'เหล็กเส้น แผ่นเหล็ก เหล็กฉาก',
-                  price: 'ราคาโรงงาน',
-                },
-              ].map((product, index) => (
+                { name: 'อิฐ หิน ปูน ทราย', desc: 'คุณภาพดี รับประกัน', icon: '🧱' },
+                { name: 'เหล็ก ประปา ไฟฟ้า', desc: 'ของแท้ ครบครัน', icon: '⚡' },
+                { name: 'ท่อ PVC อุปกรณ์', desc: 'ครบชุด ทุกขนาด', icon: '🔧' },
+                { name: 'สีทาบ้าน', desc: 'คำนวณสีฟรี', icon: '🎨' },
+                { name: 'ปั๊มน้ำ', desc: 'ติดตั้งให้ฟรี', icon: '💧' },
+                { name: 'ช่างรับเหมา', desc: 'มืออาชีพ', icon: '👷' },
+              ].map((product) => (
                 <div
-                  key={index}
-                  className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500"
+                  key={product.name}
+                  className="bg-white border border-gray-200 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
                 >
-                  <h3 className="font-semibold text-gray-800 mb-2">{product.name}</h3>
-                  <p className="text-gray-600 text-sm mb-2">{product.desc}</p>
-                  <p className="text-blue-600 font-semibold">{product.price}</p>
+                  <div className="text-3xl mb-3 text-center">{product.icon}</div>
+                  <h3 className="font-bold text-lg text-gray-900 mb-2 text-center">
+                    {product.name}
+                  </h3>
+                  <p className="text-gray-600 text-center">{product.desc}</p>
                 </div>
               ))}
             </div>
