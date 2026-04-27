@@ -6,6 +6,9 @@ import { cache } from 'react'
 import ProductDetailClient from './page.client'
 import { generateMeta } from '@/utilities/generateMeta'
 
+// ISR — render ครั้งแรกตาม request, cache 1 ชั่วโมง
+export const revalidate = 3600
+
 type Args = {
   params: Promise<{
     slug: string
@@ -54,26 +57,3 @@ const queryProductBySlug = cache(async ({ slug }: { slug: string }) => {
   return result.docs?.[0] || null
 })
 
-export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
-  
-  const products = await payload.find({
-    collection: 'products',
-    limit: 1000,
-    pagination: false,
-    where: {
-      status: {
-        equals: 'active',
-      },
-    },
-    select: {
-      slug: true,
-    },
-  })
-
-  return (
-    products.docs?.map(({ slug }) => ({
-    slug,
-  })) || []
-  )
-} 
