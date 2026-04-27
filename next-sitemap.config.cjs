@@ -10,7 +10,13 @@ const SITE_URL =
 module.exports = {
   siteUrl: SITE_URL,
   generateRobotsTxt: false, // manual public/robots.txt is used instead
-  exclude: ['/admin', '/admin/*', '/api/*', '/next/*'],
+  exclude: [
+    '/admin', '/admin/*', '/api/*', '/next/*',
+    // จัดการโดย dynamic sitemaps แล้ว — ป้องกัน URL ซ้ำ
+    '/products', '/products/*',
+    '/posts', '/posts/*',
+    '/service-areas', '/service-areas/*',
+  ],
   robotsTxtOptions: {
     policies: [
       {
@@ -34,6 +40,10 @@ module.exports = {
     ],
   },
   transform: async (config, path) => {
+    // กรอง slug ที่ไม่ valid (ภาษาไทยที่ convert เป็น - ล้วน)
+    const lastSegment = path.split('/').pop() || ''
+    if (/^-+$/.test(lastSegment)) return null
+
     // กำหนด priority และ changefreq
     if (path === '/') {
       return {

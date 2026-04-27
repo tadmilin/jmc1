@@ -62,6 +62,12 @@ const getPagesSitemap = unstable_cache(
           changefreq: 'weekly',
           priority: 0.8,
         },
+        {
+          loc: `${SITE_URL}/categories`,
+          lastmod: dateFallback,
+          changefreq: 'weekly',
+          priority: 0.8,
+        },
       ]
 
       return sitemap
