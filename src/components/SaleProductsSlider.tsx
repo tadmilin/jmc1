@@ -44,11 +44,7 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
         })
 
         console.log('SaleProductsSlider: Fetching products for sale filtering...')
-        const response = await fetch(`/api/products?${params.toString()}`, {
-          headers: {
-            'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '',
-          },
-        })
+        const response = await fetch(`/api/public/products?${params.toString()}`)
 
         if (!response.ok) {
           console.error('SaleProductsSlider API failed:', response.status, response.statusText)

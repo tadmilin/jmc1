@@ -107,13 +107,11 @@ export interface Config {
   globals: {
     header: Header;
     footer: Footer;
-    'category-showcase': CategoryShowcase;
     'site-settings': SiteSetting;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
-    'category-showcase': CategoryShowcaseSelect<false> | CategoryShowcaseSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
   };
   locale: null;
@@ -1013,82 +1011,25 @@ export interface ContentGridBlock {
     [k: string]: unknown;
   } | null;
   /**
-   * เลือกประเภทของเนื้อหาที่ต้องการแสดง
-   */
-  contentType: 'custom' | 'posts' | 'products';
-  /**
-   * เพิ่มรายการเนื้อหาที่ต้องการแสดงใน grid
-   */
-  customItems?:
-    | {
-        /**
-         * หัวข้อของเนื้อหา
-         */
-        title: string;
-        /**
-         * คำอธิบายย่อของเนื้อหา (ตัวเลือก)
-         */
-        description?: string | null;
-        /**
-         * รูปภาพที่จะแสดงในการ์ด
-         */
-        image: string | Media;
-        linkType: 'internal' | 'external';
-        /**
-         * เลือกหน้าหรือบทความที่ต้องการลิงก์ไป
-         */
-        internalLink?:
-          | ({
-              relationTo: 'pages';
-              value: string | Page;
-            } | null)
-          | ({
-              relationTo: 'posts';
-              value: string | Post;
-            } | null);
-        /**
-         * ใส่ URL เต็ม เช่น https://example.com
-         */
-        externalLink?: string | null;
-        /**
-         * ข้อความที่แสดงบนปุ่ม
-         */
-        buttonText?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * กรองบทความตามหมวดหมู่ที่เลือก (ถ้าไม่เลือกจะแสดงทุกหมวดหมู่)
-   */
-  categories?: (string | Category)[] | null;
-  /**
-   * จำนวนรายการสูงสุดที่จะแสดงใน grid
+   * จำนวนบทความสูงสุดที่จะแสดงใน grid
    */
   limit?: number | null;
   /**
    * จำนวนคอลัมน์ที่จะแสดงในแต่ละแถว
    */
-  columns?: ('auto' | '2' | '3' | '4') | null;
+  columns?: ('2' | '3' | '4') | null;
   /**
-   * แสดงปุ่มลิงก์ไปหน้าอื่นที่ด้านล่าง grid
+   * แสดงปุ่มลิงก์ไปหน้าบทความที่ด้านล่าง grid
    */
   showMoreButton?: boolean | null;
   /**
-   * ข้อความที่แสดงบนปุ่ม "ดูทั้งหมด"
+   * ข้อความที่แสดงบนปุ่ม
    */
   moreButtonText?: string | null;
   /**
-   * หน้าที่จะลิงก์ไปเมื่อคลิกปุ่ม "ดูทั้งหมด"
+   * URL ที่จะลิงก์ไปเมื่อคลิกปุ่ม เช่น /posts
    */
-  moreButtonLink?:
-    | ({
-        relationTo: 'pages';
-        value: string | Page;
-      } | null)
-    | ({
-        relationTo: 'posts';
-        value: string | Post;
-      } | null);
+  moreButtonLink?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'contentGrid';
@@ -1999,20 +1940,6 @@ export interface CategoryGridBlockSelect<T extends boolean = true> {
 export interface ContentGridBlockSelect<T extends boolean = true> {
   title?: T;
   subtitle?: T;
-  contentType?: T;
-  customItems?:
-    | T
-    | {
-        title?: T;
-        description?: T;
-        image?: T;
-        linkType?: T;
-        internalLink?: T;
-        externalLink?: T;
-        buttonText?: T;
-        id?: T;
-      };
-  categories?: T;
   limit?: T;
   columns?: T;
   showMoreButton?: T;
@@ -2694,41 +2621,6 @@ export interface Footer {
   createdAt?: string | null;
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "category-showcase".
- */
-export interface CategoryShowcase {
-  id: string;
-  /**
-   * หมวดหมู่สินค้าที่จะแสดงในส่วนแนะนำของหน้าแรก (แนะนำให้แสดง 4 หมวดหมู่)
-   */
-  categories?:
-    | {
-        title: string;
-        subtitle?: string | null;
-        image: string | Media;
-        link: {
-          type?: ('reference' | 'custom') | null;
-          newTab?: boolean | null;
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: string | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: string | Post;
-              } | null);
-          url?: string | null;
-          label: string;
-        };
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
  * จัดการข้อมูล SEO และการตั้งค่าทั่วไปของเว็บไซต์
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2834,32 +2726,6 @@ export interface FooterSelect<T extends boolean = true> {
   navItems?:
     | T
     | {
-        link?:
-          | T
-          | {
-              type?: T;
-              newTab?: T;
-              reference?: T;
-              url?: T;
-              label?: T;
-            };
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "category-showcase_select".
- */
-export interface CategoryShowcaseSelect<T extends boolean = true> {
-  categories?:
-    | T
-    | {
-        title?: T;
-        subtitle?: T;
-        image?: T;
         link?:
           | T
           | {

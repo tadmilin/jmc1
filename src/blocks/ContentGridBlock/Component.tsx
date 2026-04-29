@@ -47,11 +47,7 @@ export const ContentGridBlock: React.FC<{
       setIsLoading(true)
       try {
         const url = `/api/posts?depth=1&limit=${limit}&sort=-createdAt`
-        const response = await fetch(url, {
-          headers: {
-            'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '',
-          },
-        })
+        const response = await fetch(url)
 
         if (!response.ok) throw new Error('Failed to fetch posts')
 

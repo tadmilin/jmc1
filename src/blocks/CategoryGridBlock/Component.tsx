@@ -67,7 +67,7 @@ export const CategoryGridBlock: React.FC<{
 
       try {
         // ดึงข้อมูลหมวดหมู่ตามเงื่อนไขที่กำหนด
-        let url = '/api/categories?depth=1'
+        let url = '/api/public/categories?depth=1'
 
         // กรณีเลือกหมวดหมู่เอง
         if (
@@ -92,11 +92,7 @@ export const CategoryGridBlock: React.FC<{
         // เพิ่ม limit parameter
         url += `&limit=${blockConfig.limit}`
 
-        const response = await fetch(url, {
-          headers: {
-            'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '',
-          },
-        })
+        const response = await fetch(url)
         if (!response.ok) throw new Error('ไม่สามารถดึงข้อมูลหมวดหมู่ได้')
 
         const data = await response.json()

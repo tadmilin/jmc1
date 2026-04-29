@@ -83,11 +83,7 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
             params.append('sort', '-createdAt')
         }
 
-        const response = await fetch(`/api/products?${params.toString()}`, {
-          headers: {
-            'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '',
-          },
-        })
+        const response = await fetch(`/api/public/products?${params.toString()}`)
 
         if (response.ok) {
           const data = await response.json()

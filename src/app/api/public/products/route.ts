@@ -82,8 +82,8 @@ export async function GET(request: NextRequest) {
       title: product.title,
       slug: product.slug,
       price: product.price,
-      salePrice: product.salePrice, // เพิ่ม salePrice สำหรับสินค้าลดราคา
-      variants: product.variants, // เพิ่ม variants สำหรับตัวเลือกสินค้า
+      salePrice: product.salePrice,
+      variants: product.variants,
       images: product.images,
       shortDescription: product.shortDescription,
       categories: product.categories,

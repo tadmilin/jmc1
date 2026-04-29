@@ -86,7 +86,7 @@ GET /api/posts?depth=2&limit=6&sort=-createdAt&where={categories:{in:["category1
 
 ### Products API
 ```
-GET /api/products?depth=2&limit=6&sort=-createdAt
+GET /api/public/products?depth=2&limit=6&sort=-createdAt
 ```
 
 ## การตั้งค่าเริ่มต้น

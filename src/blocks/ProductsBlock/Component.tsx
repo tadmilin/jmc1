@@ -65,11 +65,7 @@ export const ProductsBlock: React.FC<ProductsBlockProps & { colorTheme?: string 
         })
 
         console.log('ProductsBlock: Fetching products...', { showOnlyOnSale, limit: fetchLimit })
-        const response = await fetch(`/api/products?${params.toString()}`, {
-          headers: {
-            'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '',
-          },
-        })
+        const response = await fetch(`/api/public/products?${params.toString()}`)
 
         if (!response.ok) {
           console.error('ProductsBlock API failed:', response.status, response.statusText)

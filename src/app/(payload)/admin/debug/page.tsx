@@ -65,7 +65,7 @@ export default async function DebugPage() {
             <ul className="text-gray-700 space-y-1">
               <li><a href="/admin" className="text-blue-600 hover:underline">Admin Panel</a></li>
               <li><a href="/api/users/me" className="text-blue-600 hover:underline">Current User API</a></li>
-              <li><a href="/api/products" className="text-blue-600 hover:underline">Products API</a></li>
+              <li><a href="/api/public/products" className="text-blue-600 hover:underline">Products API</a></li>
             </ul>
           </div>
         </div>

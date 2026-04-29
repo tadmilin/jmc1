@@ -322,12 +322,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
       try {
         setIsLoadingCategories(true)
         const response = await fetch(
-          `/api/categories?limit=${categoriesLimit}&depth=0&sort=displayOrder`,
-          {
-            headers: {
-              'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '',
-            },
-          },
+          `/api/public/categories?limit=${categoriesLimit}&depth=0&sort=displayOrder`,
         )
 
         if (!response.ok) throw new Error('ไม่สามารถดึงข้อมูลหมวดหมู่ได้')
