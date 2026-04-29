@@ -743,10 +743,10 @@ export const generateMeta = async (args: {
     })
   }
 
-  // Generate canonical URL
+  // Generate canonical URL — 'home' slug maps to root, not /home
   const canonicalUrl = Array.isArray(doc?.slug)
     ? `${getServerSideURL()}/${doc?.slug.join('/')}`
-    : doc?.slug
+    : doc?.slug && doc.slug !== 'home'
       ? `${getServerSideURL()}/${doc.slug}`
       : getServerSideURL()
 

@@ -55,19 +55,6 @@ export const mergeOpenGraph = async (
 
     const siteSettings = result as SiteSettings
 
-    console.log('🔍 Merge OG - Site Settings:', {
-      exists: !!siteSettings,
-      siteName: siteSettings?.siteName,
-      hasOgImage: !!siteSettings?.ogImage,
-      ogImageType: typeof siteSettings?.ogImage,
-      ogImageUrl:
-        siteSettings?.ogImage &&
-        typeof siteSettings.ogImage === 'object' &&
-        'url' in siteSettings.ogImage
-          ? siteSettings.ogImage.url
-          : 'N/A',
-    })
-
     if (siteSettings) {
       const siteName = siteSettings.siteName || defaultOpenGraph.siteName
       const siteTagline = siteSettings.siteTagline || 'ท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปา'

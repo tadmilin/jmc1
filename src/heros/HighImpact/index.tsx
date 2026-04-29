@@ -100,8 +100,6 @@ const HeroActionSlotsRenderer: React.FC<{
   slots: HeroActionSlot[] | null | undefined
   colorTheme?: string
 }> = ({ slots, colorTheme }) => {
-  // Debug: แสดงจำนวน slots ที่ได้รับจริง
-  console.log('Hero Action Slots received:', slots?.length || 0, slots)
 
   if (!slots || slots.length === 0) return null
 
@@ -256,7 +254,7 @@ interface SocialMediaButton {
   newTab?: boolean
 }
 
-export const HighImpactHero: React.FC<Page['hero']> = ({
+export const HighImpactHero: React.FC<Page['hero'] & { pageTitle?: string }> = ({
   links,
   media,
   richText,
@@ -274,6 +272,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
   framedHeroContent,
   heroActionSlots,
   socialMediaButtons,
+  pageTitle,
 }) => {
   const { setHeaderTheme } = useHeaderTheme()
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -455,7 +454,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
         />
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/90 to-indigo-600/90 flex items-center justify-center">
           <div className="text-center text-white">
-            <h3 className="text-2xl md:text-3xl font-bold mb-2">จงมีชัยค้าวัสดุ</h3>
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">จงมีชัยค้าวัสดุ</h1>
             <p className="text-lg opacity-90">ร้านวัสดุก่อสร้าง ตลิ่งชัน ปากซอยชักพระ6</p>
           </div>
         </div>
@@ -637,6 +636,8 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
               colorTheme={colorTheme ?? 'light'}
             />
             <div className="space-y-6">
+              {/* H1 — always present for SEO; sr-only when richText provides visual heading */}
+              {pageTitle && richText && <h1 className="sr-only">{pageTitle}</h1>}
               {richText && (
                 <RichText
                   className={`hero-content text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r ${
@@ -647,6 +648,17 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                   data={richText}
                   enableGutter={false}
                 />
+              )}
+              {pageTitle && !richText && (
+                <h1
+                  className={`text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r ${
+                    colorTheme === 'dark'
+                      ? 'from-blue-300 to-indigo-300'
+                      : 'from-blue-600 to-indigo-600'
+                  } bg-clip-text text-transparent`}
+                >
+                  {pageTitle}
+                </h1>
               )}
               {Array.isArray(links) && links.length > 0 && (
                 <ul className="flex flex-wrap justify-center gap-4">
@@ -719,6 +731,8 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                 colorTheme={colorTheme ?? 'light'}
               />
               <div className="space-y-6">
+                {/* H1 — always present for SEO; sr-only when richText provides visual heading */}
+                {pageTitle && richText && <h1 className="sr-only">{pageTitle}</h1>}
                 {richText && (
                   <RichText
                     className={`hero-content text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r ${
@@ -729,6 +743,17 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                     data={richText}
                     enableGutter={false}
                   />
+                )}
+                {pageTitle && !richText && (
+                  <h1
+                    className={`text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r ${
+                      colorTheme === 'dark'
+                        ? 'from-blue-300 to-indigo-300'
+                        : 'from-blue-600 to-indigo-600'
+                    } bg-clip-text text-transparent`}
+                  >
+                    {pageTitle}
+                  </h1>
                 )}
                 {Array.isArray(links) && links.length > 0 && (
                   <ul className="flex flex-wrap gap-4">

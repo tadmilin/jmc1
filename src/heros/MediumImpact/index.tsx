@@ -18,7 +18,7 @@ interface SocialMediaButton {
   newTab?: boolean
 }
 
-export const MediumImpactHero: React.FC<Page['hero']> = ({
+export const MediumImpactHero: React.FC<Page['hero'] & { pageTitle?: string }> = ({
   links,
   media,
   richText,
@@ -31,6 +31,7 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
   showCategoriesDropdown = true,
   categoriesLimit = 10,
   socialMediaButtons,
+  pageTitle,
 }) => {
   const { setHeaderTheme } = useHeaderTheme()
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -316,12 +317,21 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
       <div className="container mx-auto px-4 py-8 z-10 relative">
         {isCentered ? (
           <div className="text-center max-w-4xl mx-auto">
+            {/* H1 — always present for SEO; sr-only when richText provides visual heading */}
+            {pageTitle && richText && <h1 className="sr-only">{pageTitle}</h1>}
             {richText && (
               <RichText
                 className={`hero-content text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r ${colorTheme === 'dark' ? 'from-blue-300 to-indigo-300' : 'from-blue-600 to-indigo-600'} bg-clip-text text-transparent mb-6`}
                 data={richText}
                 enableGutter={false}
               />
+            )}
+            {pageTitle && !richText && (
+              <h1
+                className={`hero-content text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r ${colorTheme === 'dark' ? 'from-blue-300 to-indigo-300' : 'from-blue-600 to-indigo-600'} bg-clip-text text-transparent mb-6`}
+              >
+                {pageTitle}
+              </h1>
             )}
 
             {/* Social Media Buttons in centered layout */}
@@ -478,12 +488,21 @@ export const MediumImpactHero: React.FC<Page['hero']> = ({
               flex flex-col items-center text-center lg:items-start lg:text-left w-full
             `}
             >
+              {/* H1 — always present for SEO; sr-only when richText provides visual heading */}
+              {pageTitle && richText && <h1 className="sr-only">{pageTitle}</h1>}
               {richText && (
                 <RichText
                   className={`hero-content text-3xl md:text-4xl lg:text-5xl font-bold leading-tight bg-gradient-to-r ${colorTheme === 'dark' ? 'from-blue-300 to-indigo-300' : 'from-blue-600 to-indigo-600'} bg-clip-text text-transparent mb-6`}
                   data={richText}
                   enableGutter={false}
                 />
+              )}
+              {pageTitle && !richText && (
+                <h1
+                  className={`hero-content text-3xl md:text-4xl lg:text-5xl font-bold leading-tight bg-gradient-to-r ${colorTheme === 'dark' ? 'from-blue-300 to-indigo-300' : 'from-blue-600 to-indigo-600'} bg-clip-text text-transparent mb-6`}
+                >
+                  {pageTitle}
+                </h1>
               )}
 
               {/* Social Media Buttons ใน mobile - แสดงหลัง richText */}
