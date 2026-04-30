@@ -11,7 +11,7 @@ export function generateContactPageSchema() {
     '@type': 'ContactPage',
     name: 'ติดต่อร้านวัสดุก่อสร้าง JMC',
     description: 'ติดต่อร้านวัสดุก่อสร้าง จงมีชัยค้าวัสดุ ตลิ่งชัน ปากซอยชักพระ6 ใกล้ฉัน',
-    url: `${baseUrl}/contactus-`,
+    url: `${baseUrl}/contact`,
     mainEntity: {
       '@type': 'LocalBusiness',
       '@id': `${baseUrl}/#hardware-store`,
@@ -127,7 +127,7 @@ export function generateContactPageSchema() {
       priceRange: '฿฿',
       currenciesAccepted: 'THB',
       paymentAccepted: ['Cash', 'Bank Transfer'],
-      hasMap: `${baseUrl}/contactus-`,
+      hasMap: `${baseUrl}/contact`,
       isicV4: '4663', // Wholesale of construction materials
     },
   }

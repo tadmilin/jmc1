@@ -12,6 +12,8 @@ import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
+import StructuredData from '@/components/SEO/StructuredData'
+import { generatePageSchemas } from '@/utils/contact-about-schema'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -66,6 +68,11 @@ export default async function Page({ params: paramsPromise }: Args) {
   const { hero, layout, title, meta } = page
   const pageTitle = (meta?.title || (typeof title === 'string' ? title : '')) ?? ''
 
+  const pageSchemas =
+    slug === 'contact' ? generatePageSchemas('contact')
+    : slug === 'aboutus' ? generatePageSchemas('about')
+    : []
+
   return (
     <article className="pb-24">
       <PageClient />
@@ -73,6 +80,10 @@ export default async function Page({ params: paramsPromise }: Args) {
       <PayloadRedirects disableNotFound url={url} />
 
       {draft && <LivePreviewListener />}
+
+      {pageSchemas.map((schema, i) => (
+        <StructuredData key={i} data={schema} />
+      ))}
 
       <RenderHero {...hero} pageTitle={pageTitle} />
       <RenderBlocks blocks={layout} />

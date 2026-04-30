@@ -8,16 +8,20 @@ import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
 import PageClient from '../[slug]/page.client'
 import StructuredData from '@/components/SEO/StructuredData'
+import { getServerSideURL } from '@/utilities/getURL'
 
 // หน้า Local SEO: ร้านวัสดุก่อสร้าง ใกล้ฉัน (English URL) — แสดง content จากหน้า home
 export default async function ConstructionMaterialsNearMePage() {
+  const baseUrl = getServerSideURL()
+  const pageUrl = `${baseUrl}/construction-materials-near-me`
+
   const localSchema = {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     name: 'ร้านวัสดุก่อสร้าง ใกล้ฉัน - จงมีชัยค้าวัสดุ ตลิ่งชัน',
     description:
       'ร้านวัสดุก่อสร้าง ใกล้ฉัน ตลิ่งชัน ปากซอยชักพระ6 ราคาถูก ส่งฟรี อิฐ หิน ปูน ทราย เหล็ก ประปา ไฟฟ้า ครบวงจร ให้บริการพื้นที่ ตลิ่งชัน ปิ่นเกล้า จรัญ บางขุนนนท์ บรม สวนผัก พระราม5 บางกรวย โทร 02-434-8319',
-    url: 'https://jmc111.vercel.app/construction-materials-near-me',
+    url: pageUrl,
     address: {
       '@type': 'PostalAddress',
       streetAddress: '38,40 ปากซอยชักพระ6 ถนนชักพระ แขวงตลิ่งชัน',
@@ -130,20 +134,25 @@ export default async function ConstructionMaterialsNearMePage() {
   )
 }
 
-export const metadata: Metadata = {
-  title: 'ร้านวัสดุก่อสร้าง ใกล้ฉัน ตลิ่งชัน ปากซอยชักพระ6 ราคาถูก ส่งฟรี | จงมีชัยค้าวัสดุ',
-  description:
-    'ร้านวัสดุก่อสร้าง ใกล้ฉันที่สุด ตลิ่งชัน ปากซอยชักพระ6 ราคาถูก ส่งฟรี ครบวงจร อิฐ หิน ปูน ทราย เหล็ก ประปา ไฟฟ้า ช่างมืออาชีพ บริการพื้นที่ ตลิ่งชัน ปิ่นเกล้า จรัญ บางขุนนนท์ บรม สวนผัก พระราม5 บางกรวย โทร 02-434-8319',
-  keywords:
-    'ร้านวัสดุก่อสร้าง ใกล้ฉัน, วัสดุก่อสร้าง ตลิ่งชัน, ร้านวัสดุก่อสร้าง ปากซอยชักพระ6, วัสดุก่อสร้าง ใกล้ฉัน ราคาถูก, ร้านวัสดุก่อสร้าง ส่งฟรี, อิฐ หิน ปูน ทราย ใกล้ฉัน, เหล็ก ประปา ไฟฟ้า ตลิ่งชัน, construction materials near me, hardware store near me',
-  openGraph: {
-    title: 'ร้านวัสดุก่อสร้าง ใกล้ฉัน ตลิ่งชัน | จงมีชัยค้าวัสดุ',
-    description: 'ร้านวัสดุก่อสร้าง ใกล้ฉันที่สุด ตลิ่งชัน ราคาถูก ส่งฟรี ครบวงจร โทร 02-434-8319',
-    locale: 'th_TH',
-    type: 'website',
-    url: 'https://jmc111.vercel.app/construction-materials-near-me',
-  },
-  alternates: {
-    canonical: 'https://jmc111.vercel.app/construction-materials-near-me',
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const baseUrl = getServerSideURL()
+  const pageUrl = `${baseUrl}/construction-materials-near-me`
+
+  return {
+    title: 'ร้านวัสดุก่อสร้าง ใกล้ฉัน ตลิ่งชัน ปากซอยชักพระ6 ราคาถูก ส่งฟรี | จงมีชัยค้าวัสดุ',
+    description:
+      'ร้านวัสดุก่อสร้าง ใกล้ฉันที่สุด ตลิ่งชัน ปากซอยชักพระ6 ราคาถูก ส่งฟรี ครบวงจร อิฐ หิน ปูน ทราย เหล็ก ประปา ไฟฟ้า ช่างมืออาชีพ บริการพื้นที่ ตลิ่งชัน ปิ่นเกล้า จรัญ บางขุนนนท์ บรม สวนผัก พระราม5 บางกรวย โทร 02-434-8319',
+    keywords:
+      'ร้านวัสดุก่อสร้าง ใกล้ฉัน, วัสดุก่อสร้าง ตลิ่งชัน, ร้านวัสดุก่อสร้าง ปากซอยชักพระ6, วัสดุก่อสร้าง ใกล้ฉัน ราคาถูก, ร้านวัสดุก่อสร้าง ส่งฟรี, อิฐ หิน ปูน ทราย ใกล้ฉัน, เหล็ก ประปา ไฟฟ้า ตลิ่งชัน, construction materials near me, hardware store near me',
+    openGraph: {
+      title: 'ร้านวัสดุก่อสร้าง ใกล้ฉัน ตลิ่งชัน | จงมีชัยค้าวัสดุ',
+      description: 'ร้านวัสดุก่อสร้าง ใกล้ฉันที่สุด ตลิ่งชัน ราคาถูก ส่งฟรี ครบวงจร โทร 02-434-8319',
+      locale: 'th_TH',
+      type: 'website',
+      url: pageUrl,
+    },
+    alternates: {
+      canonical: pageUrl,
+    },
+  }
 }

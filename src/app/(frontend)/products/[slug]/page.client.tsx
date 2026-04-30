@@ -17,8 +17,9 @@ import {
   type LinkData,
 } from '@/utils/link-navigation'
 import { generateProductSEO } from '@/utils/seo'
-import StructuredData from '@/components/SEO/StructuredData'
+import StructuredData, { ImageGalleryStructuredData } from '@/components/SEO/StructuredData'
 import { generateBreadcrumbSchema } from '@/utils/organization-schema'
+import { getMediaUrl } from '@/utilities/getMediaUrl'
 
 // Type for product variant
 type ProductVariant = {
@@ -169,11 +170,35 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     return <div className="container mx-auto px-4 py-8">กำลังโหลด...</div>
   }
 
+  // Build image list for ImageGallery structured data
+  const galleryImages = (images || [])
+    .map((item) => {
+      const img = item.image
+      if (typeof img === 'object' && img !== null) {
+        const url = getMediaUrl(img.url)
+        return url
+          ? {
+              url,
+              alt: item.alt || img.alt || title,
+              width: img.width || 1200,
+              height: img.height || 630,
+            }
+          : null
+      }
+      return null
+    })
+    .filter(Boolean) as { url: string; alt: string; width: number; height: number }[]
+
   return (
     <>
       {/* Structured Data for SEO */}
       {seoData.structuredData && <StructuredData data={seoData.structuredData} />}
       {Object.keys(breadcrumbSchema).length > 0 && <StructuredData data={breadcrumbSchema} />}
+      <ImageGalleryStructuredData
+        images={galleryImages}
+        title={title}
+        description={shortDescription || title}
+      />
 
       <div className="min-h-screen bg-white">
         <div className="container mx-auto px-4 py-8">

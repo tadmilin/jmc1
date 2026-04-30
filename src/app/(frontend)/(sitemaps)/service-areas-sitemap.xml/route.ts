@@ -1,4 +1,5 @@
 import { getServerSideURL } from '@/utilities/getURL'
+import { unstable_cache } from 'next/cache'
 
 const serviceAreas = [
   { thai: 'ปิ่นเกล้า', slug: 'pinklao' },
@@ -13,21 +14,38 @@ const serviceAreas = [
   { thai: 'ธนบุรี', slug: 'thonburi' },
 ]
 
+const getServiceAreasSitemap = unstable_cache(
+  async () => {
+    const SITE_URL = getServerSideURL()
+    const lastmod = new Date().toISOString()
+
+    return serviceAreas.map((area) => ({
+      loc: `${SITE_URL}/service-areas/${area.slug}`,
+      lastmod,
+    }))
+  },
+  ['service-areas-sitemap'],
+  {
+    tags: ['service-areas-sitemap'],
+    revalidate: 86400, // revalidate ทุก 24 ชั่วโมง
+  },
+)
+
 export async function GET(): Promise<Response> {
   const SITE_URL = getServerSideURL()
-  // ใช้ static date เพื่อให้ CDN cache ได้นาน ไม่เปลี่ยนทุก request
-  const lastmod = '2025-01-01T00:00:00.000Z'
+  const items = await getServiceAreasSitemap()
+
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${serviceAreas
-  .map((area) => {
-    return `  <url>
-    <loc>${SITE_URL}/service-areas/${area.slug}</loc>
-    <lastmod>${lastmod}</lastmod>
+${items
+  .map(
+    (item) => `  <url>
+    <loc>${item.loc}</loc>
+    <lastmod>${item.lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-  </url>`
-  })
+  </url>`,
+  )
   .join('\n')}
 </urlset>`
 
