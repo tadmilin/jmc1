@@ -43,7 +43,7 @@ export default async function DebugPage() {
             </p>
             {users.docs.length > 0 && (
               <p className="text-yellow-700">
-                Latest User: {users.docs[0].email}
+                Latest User: {users.docs[0]?.email}
               </p>
             )}
           </div>
@@ -55,7 +55,7 @@ export default async function DebugPage() {
             </p>
             {products.docs.length > 0 && (
               <p className="text-purple-700">
-                Latest Product: {products.docs[0].title}
+                Latest Product: {products.docs[0]?.title}
               </p>
             )}
           </div>

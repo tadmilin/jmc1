@@ -4,11 +4,10 @@ import type { ProductsBlock as ProductsBlockProps } from '@/payload-types'
 import { ProductCard, type ProductCardData } from '@/components/ProductCard'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination, Autoplay } from 'swiper/modules'
-
-// Import Swiper styles
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
+
 
 // Custom styles for pagination
 const customPaginationStyles = `

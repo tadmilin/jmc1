@@ -52,7 +52,6 @@ export const Image: React.FC<Props> = (props) => {
       url,
       width: widthFromResource,
       sizes,
-      prefix,
       focalX,
       focalY,
     } = resource
@@ -82,8 +81,6 @@ export const Image: React.FC<Props> = (props) => {
       candidateURL = sizes.thumbnail.url
       computedWidth = computedWidth || sizes.thumbnail.width || undefined
       computedHeight = computedHeight || sizes.thumbnail.height || undefined
-    } else if (prefix && filename) {
-      candidateURL = `${prefix}/${filename}`
     } else if (filename) {
       const base = process.env.NEXT_PUBLIC_SERVER_URL || ''
       candidateURL = `${base}/api/collections/media/file/${filename}`

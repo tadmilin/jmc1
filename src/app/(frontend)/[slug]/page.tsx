@@ -86,7 +86,7 @@ export default async function Page({ params: paramsPromise }: Args) {
       ))}
 
       <RenderHero {...hero} pageTitle={pageTitle} />
-      <RenderBlocks blocks={layout} />
+      <RenderBlocks blocks={layout as unknown as Array<{ blockType: string } & Record<string, unknown>>} />
     </article>
   )
 }

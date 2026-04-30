@@ -128,7 +128,7 @@ export default async function ConstructionMaterialsNearMePage() {
       <article className="pb-24">
         <PageClient />
         <RenderHero {...hero} />
-        <RenderBlocks blocks={layout} />
+        <RenderBlocks blocks={layout as unknown as Array<{ blockType: string } & Record<string, unknown>>} />
       </article>
     </>
   )

@@ -46,9 +46,11 @@ const blockComponents = {
 
 type BlockType = keyof typeof blockComponents
 
-// Updated props type to include colorTheme
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyBlock = { blockType: string } & Record<string, any>
+
 export const RenderBlocks: React.FC<{
-  blocks: Array<{ blockType: BlockType } & Record<string, unknown>>
+  blocks: AnyBlock[]
   colorTheme?: string
 }> = (props) => {
   const { blocks, colorTheme = 'light' } = props
@@ -63,10 +65,10 @@ export const RenderBlocks: React.FC<{
             const { blockType } = block
 
             if (blockType && blockType in blockComponents) {
-              const Block = blockComponents[blockType]
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const Block = blockComponents[blockType as BlockType] as React.FC<Record<string, any>>
 
               if (Block) {
-                // กรณีที่ต้องส่งในรูปแบบพิเศษ (ส่งผ่าน block prop)
                 if (
                   blockType === 'categoryGrid' ||
                   blockType === 'contentGrid' ||
@@ -76,66 +78,45 @@ export const RenderBlocks: React.FC<{
                 ) {
                   return (
                     <div key={index}>
-                      {/* @ts-expect-error Block component types mismatch */}
                       <Block block={block} colorTheme={colorTheme} />
                     </div>
                   )
                 }
 
-                // กรณี QuoteRequestFormBlock ส่งข้อมูลแบบพิเศษ
                 if (blockType === 'quoteRequestFormBlock') {
                   return (
                     <div key={index}>
-                      {/* @ts-expect-error QuoteRequestFormBlock props mismatch */}
                       <Block {...block} />
                     </div>
                   )
                 }
 
-                // กรณี ProductsBlock ส่ง colorTheme เพิ่มเติม
-                if (blockType === 'productsBlock') {
+                if (blockType === 'productsBlock' || blockType === 'saleProductsSliderBlock') {
                   return (
                     <div key={index}>
-                      {/* @ts-expect-error ProductsBlock colorTheme props */}
                       <Block {...block} colorTheme={colorTheme} />
                     </div>
                   )
                 }
 
-                // กรณี CatalogsBlock
                 if (blockType === 'catalogsBlock') {
                   return (
                     <div key={index}>
-                      {/* @ts-expect-error CatalogsBlock async component */}
                       <Block {...block} />
                     </div>
                   )
                 }
 
-                // กรณี SaleProductsSliderBlock ส่ง colorTheme เพิ่มเติม
-                if ((blockType as string) === 'saleProductsSliderBlock') {
-                  return (
-                    <div key={index}>
-                      {/* @ts-expect-error SaleProductsSliderBlock colorTheme props */}
-                      <Block {...block} colorTheme={colorTheme} />
-                    </div>
-                  )
-                }
-
-                // กรณี ArchiveBlock ส่ง colorTheme เพิ่มเติม
                 if (blockType === 'archive') {
                   return (
                     <div key={index}>
-                      {/* @ts-expect-error ArchiveBlock colorTheme props */}
                       <Block {...block} colorTheme={colorTheme} disableInnerContainer />
                     </div>
                   )
                 }
 
-                // กรณีอื่นๆ ใช้การส่งแบบเดิม
                 return (
                   <div key={index}>
-                    {/* @ts-expect-error Generic block props mismatch */}
                     <Block {...block} disableInnerContainer />
                   </div>
                 )
