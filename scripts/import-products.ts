@@ -163,8 +163,8 @@ async function uploadImage(
     await putToR2(processed.data, key, mimeType)
     const url = `${R2_PUBLIC_URL}/${key}`
 
-    // สร้าง media doc ด้วย metadata เต็ม + absolute URL
-    // ไม่ใส่ file → Payload's storage adapter ไม่ทำงาน (URL คงอยู่ตามที่เราใส่)
+    // Step 1: สร้าง media record โดยไม่ส่ง url
+    // → Payload จะไม่พยายาม fetch URL เพื่อ generate image sizes
     const media = await payload.create({
       collection: 'media',
       data: {
@@ -174,11 +174,19 @@ async function uploadImage(
         filesize: processed.data.length,
         width: processed.info.width,
         height: processed.info.height,
-        url,
         focalX: 50,
         focalY: 50,
       },
     })
+
+    // Step 2: อัปเดต url ตรง MongoDB — bypass Payload hooks ทั้งหมด
+    // (ถ้าส่ง url ผ่าน payload.create/update → Payload พยายาม fetch เพื่อ generate sizes → 403)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const MediaModel = (payload.db as any).collections?.['media']
+    if (MediaModel) {
+      await MediaModel.findByIdAndUpdate(media.id, { $set: { url } })
+    }
+
     return String(media.id)
   } catch (err) {
     console.warn(`  ⚠️  อัปโหลดรูปไม่สำเร็จ:`, err instanceof Error ? err.message : err)
