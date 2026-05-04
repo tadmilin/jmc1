@@ -7,12 +7,17 @@
  *   3. รัน: pnpm import:products
  */
 
+import dotenv from 'dotenv'
 import path from 'path'
 import fs from 'fs'
 import { fileURLToPath } from 'url'
 import { parse } from 'csv-parse/sync'
-import { getPayload } from 'payload'
-import configPromise from '../src/payload.config.js'
+
+// โหลด env ก่อนที่จะ import payload.config (สำคัญมาก!)
+// ESM imports ทั้งหมดจะรันก่อน code ดังนั้นต้องโหลด env ที่นี่
+// แล้วค่อย dynamic import payload หลังจากนั้น
+dotenv.config({ path: path.resolve(process.cwd(), '.env') })
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local'), override: true })
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const IMAGES_DIR = path.join(__dirname, 'images')
@@ -159,6 +164,9 @@ async function main() {
     process.exit(1)
   }
 
+  // Dynamic import — ต้องอยู่หลัง dotenv.config() ไม่งั้น env vars ยังไม่เข้า
+  const { getPayload } = await import('payload')
+  const configPromise = (await import('../src/payload.config.js')).default
   const payload = await getPayload({ config: configPromise })
 
   const rows = parse(fs.readFileSync(CSV_FILE, 'utf-8'), {

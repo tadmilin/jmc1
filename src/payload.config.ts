@@ -103,7 +103,7 @@ export default buildConfig({
           prefix: 'jmc',
         },
       },
-      bucket: process.env.R2_BUCKET || '',
+      bucket: process.env.R2_BUCKET_NAME || process.env.R2_BUCKET || '',
       config: {
         endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
         region: 'auto',
