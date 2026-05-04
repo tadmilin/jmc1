@@ -35,7 +35,7 @@ const nextConfig = {
         hostname: 'jmc111.vercel.app',
         pathname: '/api/collections/**',
       },
-      // Vercel Blob Storage - Direct access
+      // Vercel Blob Storage
       {
         protocol: 'https',
         hostname: '**.blob.vercel-storage.com',
@@ -44,6 +44,17 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'blob.vercel-storage.com',
+        pathname: '/**',
+      },
+      // Cloudflare R2 — รูปจาก import script
+      {
+        protocol: 'https',
+        hostname: '**.r2.dev',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.r2.cloudflarestorage.com',
         pathname: '/**',
       },
     ],
