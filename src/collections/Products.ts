@@ -413,7 +413,7 @@ export const Products: CollectionConfig = {
               name: 'enabled',
               type: 'checkbox',
               label: 'เปิดใช้งาน',
-              defaultValue: true,
+              defaultValue: false,
             },
             {
               name: 'label',
