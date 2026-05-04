@@ -9,5 +9,9 @@ node_modules
 # Payload default media upload directory
 public/media/
 
+# Import script images (ไม่ขึ้น git)
+scripts/images/
+scripts/products.csv
+
 public/robots.txt
 public/sitemap*.xml
