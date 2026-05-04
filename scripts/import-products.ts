@@ -12,8 +12,6 @@ import path from 'path'
 import fs from 'fs'
 import { fileURLToPath } from 'url'
 import { parse } from 'csv-parse/sync'
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
-import sharp from 'sharp'
 
 // โหลด env ก่อนที่จะ import payload.config (สำคัญมาก!)
 // ESM imports ทั้งหมดจะรันก่อน code ดังนั้นต้องโหลด env ที่นี่
@@ -23,50 +21,6 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.local'), override: true 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const IMAGES_DIR = path.join(__dirname, 'images')
-
-// === R2 (Cloudflare) — รูปใหม่จากสคริปอัปโหลดเข้า R2 โดยตรง ===
-// (admin panel ยังใช้ Vercel Blob สำหรับ uploads ปกติ — รูปเก่าใน DB ที่เป็น Blob URL ยังแสดงปกติ)
-const R2_BUCKET = process.env.R2_BUCKET_NAME || process.env.R2_BUCKET || ''
-const R2_ENDPOINT = process.env.R2_ACCOUNT_ID
-  ? `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`
-  : ''
-const R2_PUBLIC_URL = (process.env.R2_PUBLIC_URL || '').replace(/\/$/, '')
-const R2_PREFIX = 'jmc'
-
-if (!R2_BUCKET || !R2_ENDPOINT || !process.env.R2_ACCESS_KEY_ID || !process.env.R2_SECRET_ACCESS_KEY) {
-  console.error('❌ R2 credentials missing — required: R2_ACCOUNT_ID, R2_BUCKET_NAME, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY')
-  process.exit(1)
-}
-if (!R2_PUBLIC_URL) {
-  console.error('❌ R2_PUBLIC_URL missing — set to your R2 public dev URL (https://pub-<id>.r2.dev) or custom domain')
-  process.exit(1)
-}
-
-const r2Client = new S3Client({
-  endpoint: R2_ENDPOINT,
-  region: 'auto',
-  credentials: {
-    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
-  },
-  forcePathStyle: true,
-})
-
-async function putToR2(buffer: Buffer, key: string, contentType: string) {
-  await r2Client.send(
-    new PutObjectCommand({
-      Bucket: R2_BUCKET,
-      Key: key,
-      Body: buffer,
-      ContentType: contentType,
-      CacheControl: `public, max-age=${365 * 24 * 60 * 60}, immutable`,
-    }),
-  )
-}
-
-function sanitizeBaseName(name: string): string {
-  return name.replace(/[^\w\-]/g, '_').slice(0, 80) || 'image'
-}
 
 // รับ --file argument หรือใช้ products.csv เป็น default
 const args = process.argv.slice(2)
@@ -112,9 +66,7 @@ async function downloadImage(url: string) {
   return { buffer, filename, mimeType }
 }
 
-// อัปโหลดรูปเข้า R2 โดยตรง → สร้าง media doc พร้อม absolute URL → คืน media ID
-// **ไม่ส่ง file param ให้ payload.create** — เพื่อ bypass Vercel Blob storage adapter
-// (รูปจากสคริปจะอยู่ที่ R2, รูปจาก admin panel จะอยู่ที่ Vercel Blob ต่อไป)
+// อัปโหลดรูปผ่าน Payload → s3Storage adapter จัดการอัปไป R2 → คืน media ID
 async function uploadImage(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload: any,
@@ -123,12 +75,14 @@ async function uploadImage(
 ): Promise<string | null> {
   try {
     let buffer: Buffer
-    let originalName: string
+    let filename: string
+    let mimeType: string
 
     if (source.startsWith('http://') || source.startsWith('https://')) {
       const result = await downloadImage(source)
       buffer = result.buffer
-      originalName = result.filename
+      filename = result.filename
+      mimeType = result.mimeType
     } else {
       const fromImages = path.join(IMAGES_DIR, source)
       const fromRoot = path.join(process.cwd(), source)
@@ -145,48 +99,16 @@ async function uploadImage(
         return null
       }
       buffer = fs.readFileSync(localPath)
-      originalName = path.basename(localPath)
+      filename = path.basename(localPath)
+      const ext = path.extname(filename).slice(1).toLowerCase()
+      mimeType = ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' : `image/${ext}`
     }
 
-    // แปลงเป็น webp + resize ให้ตรง preset ของ Media collection (max 1920x1080)
-    const processed = await sharp(buffer)
-      .rotate() // auto-rotate ตาม EXIF
-      .resize({ width: 1920, height: 1080, fit: 'inside', withoutEnlargement: true })
-      .webp({ quality: 80 })
-      .toBuffer({ resolveWithObject: true })
-
-    const baseName = sanitizeBaseName(path.parse(originalName).name)
-    const filename = `${baseName}-${Date.now()}.webp`
-    const key = `${R2_PREFIX}/${filename}`
-    const mimeType = 'image/webp'
-
-    await putToR2(processed.data, key, mimeType)
-    const url = `${R2_PUBLIC_URL}/${key}`
-
-    // Step 1: สร้าง media record โดยไม่ส่ง url
-    // → Payload จะไม่พยายาม fetch URL เพื่อ generate image sizes
     const media = await payload.create({
       collection: 'media',
-      data: {
-        alt: altText,
-        filename,
-        mimeType,
-        filesize: processed.data.length,
-        width: processed.info.width,
-        height: processed.info.height,
-        focalX: 50,
-        focalY: 50,
-      },
+      data: { alt: altText },
+      file: { data: buffer, mimetype: mimeType, name: filename, size: buffer.length },
     })
-
-    // Step 2: อัปเดต url ตรง MongoDB — bypass Payload hooks ทั้งหมด
-    // (ถ้าส่ง url ผ่าน payload.create/update → Payload พยายาม fetch เพื่อ generate sizes → 403)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const MediaModel = (payload.db as any).collections?.['media']
-    if (MediaModel) {
-      await MediaModel.findByIdAndUpdate(media.id, { $set: { url } })
-    }
-
     return String(media.id)
   } catch (err) {
     console.warn(`  ⚠️  อัปโหลดรูปไม่สำเร็จ:`, err instanceof Error ? err.message : err)
