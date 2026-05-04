@@ -1,6 +1,6 @@
 // storage-adapter-import-placeholder
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
-import { s3Storage } from '@payloadcms/storage-s3'
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 
 import sharp from 'sharp' // sharp-import
 import path from 'path'
@@ -97,22 +97,18 @@ export default buildConfig({
   plugins: [
     ...plugins,
     // storage-adapter-placeholder
-    s3Storage({
+    // Vercel Blob เป็น primary adapter สำหรับ admin uploads + reads รูปเก่า
+    // (รูปเก่าถูกอัปโหลดเข้า Vercel Blob — URL ใน DB ชี้ไป *.public.blob.vercel-storage.com)
+    // รูปใหม่จาก import script → upload ตรงเข้า R2 ผ่าน S3 SDK (bypass adapter นี้)
+    vercelBlobStorage({
+      enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
       collections: {
-        media: {
-          prefix: 'jmc',
-        },
+        media: true,
       },
-      bucket: process.env.R2_BUCKET_NAME || process.env.R2_BUCKET || '',
-      config: {
-        endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-        region: 'auto',
-        credentials: {
-          accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
-          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
-        },
-        forcePathStyle: true,
-      },
+      token: process.env.BLOB_READ_WRITE_TOKEN || '',
+      addRandomSuffix: true,
+      cacheControlMaxAge: 365 * 24 * 60 * 60,
+      clientUploads: true,
     }),
   ],
   secret: process.env.PAYLOAD_SECRET || '',
