@@ -29,7 +29,7 @@ const getProductsSitemap = unstable_cache(
       return products.docs
         .filter((p) => !!p.slug && !p.slug.startsWith('-'))
         .map((p) => ({
-          loc: `${SITE_URL}/products/${p.slug}`,
+          loc: `${SITE_URL}/products/${encodeURIComponent(p.slug!)}`,
           lastmod: p.updatedAt ?? new Date().toISOString(),
           changefreq: 'weekly',
           priority: 0.8,

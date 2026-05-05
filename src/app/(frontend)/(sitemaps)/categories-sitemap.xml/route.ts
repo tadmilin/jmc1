@@ -22,9 +22,9 @@ const getCategoriesSitemap = unstable_cache(
       })
 
       return categories.docs
-        .filter((c) => !!c.slug)
+        .filter((c) => !!c.slug && !c.slug.startsWith('-'))
         .map((c) => ({
-          loc: `${SITE_URL}/categories/${c.slug}`,
+          loc: `${SITE_URL}/categories/${encodeURIComponent(c.slug!)}`,
           lastmod: c.updatedAt ?? new Date().toISOString(),
           changefreq: 'weekly',
           priority: 0.7,

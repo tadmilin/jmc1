@@ -36,6 +36,7 @@ module.exports = {
       `${SITE_URL}/pages-sitemap.xml`,
       `${SITE_URL}/posts-sitemap.xml`,
       `${SITE_URL}/products-sitemap.xml`,
+      `${SITE_URL}/categories-sitemap.xml`,
       `${SITE_URL}/service-areas-sitemap.xml`,
     ],
   },
