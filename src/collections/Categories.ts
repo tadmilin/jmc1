@@ -23,14 +23,10 @@ const safeRevalidate = async (path?: string, tag?: string) => {
 // Revalidation hook for categories
 const revalidateCategory: CollectionAfterChangeHook = async ({ doc, req: { context } }) => {
   if (!context.disableRevalidate) {
-    // Revalidate the specific category page
     const path = `/categories/${doc.slug}`
     await safeRevalidate(path)
-
-    // Revalidate the main categories page
     await safeRevalidate('/categories')
-
-    // Revalidate any other pages that might use categories
+    await safeRevalidate('/')
     await safeRevalidate(undefined, 'categories')
   }
 }

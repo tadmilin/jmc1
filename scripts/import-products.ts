@@ -131,6 +131,7 @@ async function getOrCreateCategory(
     collection: 'categories',
     where: { title: { equals: name.trim() } },
     limit: 1,
+    overrideAccess: true,
   })
 
   if (existing.docs.length > 0) {
@@ -141,10 +142,8 @@ async function getOrCreateCategory(
 
   const created = await payload.create({
     collection: 'categories',
-    data: {
-      title: name.trim(),
-      slug: name.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, ''),
-    },
+    data: { title: name.trim() },
+    overrideAccess: true,
   })
   const id = String(created.id)
   cache.set(key, id)

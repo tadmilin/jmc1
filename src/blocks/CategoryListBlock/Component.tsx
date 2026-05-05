@@ -61,43 +61,44 @@ export const CategoryListBlock: React.FC<{
       {categories && categories.length > 0 ? (
         <div className="category-list">
           {categories.map((category) => {
-            // Ensure category and image data exist and are populated
-            if (
-              typeof category === 'object' &&
-              category !== null &&
+            if (typeof category !== 'object' || category === null) return null
+
+            const slug = category.slug || ''
+            const handleCategoryClick = () => {
+              if (slug) router.push(`/categories/${slug}`)
+            }
+
+            const hasImage =
               typeof category.image === 'object' &&
               category.image !== null &&
               'url' in category.image &&
-              category.image.url &&
-              category.slug
-            ) {
-              const handleCategoryClick = () => {
-                router.push(`/categories/${category.slug}`)
-              }
+              !!category.image.url
 
-              return (
-                <button
-                  onClick={handleCategoryClick}
-                  key={category.id}
-                  className="category-item cursor-pointer"
-                >
-                  <div className="category-image-container">
-                  
+            return (
+              <button
+                onClick={handleCategoryClick}
+                key={category.id}
+                className="category-item cursor-pointer"
+              >
+                <div className="category-image-container">
+                  {hasImage ? (
                     <Image
-                      src={category.image.url}
+                      src={(category.image as { url: string }).url}
                       alt={category.title || 'Category Image'}
-                      fill // Use fill to cover the container
+                      fill
                       className="category-image"
                     />
-                  </div>
-                  <p className="category-title">{category.title}</p>
-                </button>
-              )
-            } else {
-              // Log if category or image data is invalid
-              console.warn('Invalid category or image data:', category)
-              return null
-            }
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-lg">
+                      <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+                <p className="category-title">{category.title}</p>
+              </button>
+            )
           })}
         </div>
       ) : (
