@@ -39,13 +39,17 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 const queryProductBySlug = cache(async ({ slug }: { slug: string }) => {
   const payload = await getPayload({ config: configPromise })
 
+  // decodeURIComponent handles Thai/Unicode slugs that may arrive percent-encoded
+  const decodedSlug = decodeURIComponent(slug)
+
   const result = await payload.find({
     collection: 'products',
     limit: 1,
     pagination: false,
+    overrideAccess: true,
     where: {
       slug: {
-        equals: slug,
+        equals: decodedSlug,
       },
       status: {
         equals: 'active',
