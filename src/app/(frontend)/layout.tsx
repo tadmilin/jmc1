@@ -103,6 +103,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
+  const baseURL = getServerSideURL()
 
   // Fetch header data เพื่อเอา logo มาใช้เป็น favicon
   const headerData = await getCachedGlobal('header', 1)()
@@ -155,8 +156,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="business:contact_data:phone_number" content="+66-2-434-8319" />
 
         {/* hreflang — language/region targeting */}
-        <link rel="alternate" hrefLang="th" href="https://jmc111.vercel.app/" />
-        <link rel="alternate" hrefLang="x-default" href="https://jmc111.vercel.app/" />
+        <link rel="alternate" hrefLang="th" href={`${baseURL}/`} />
+        <link rel="alternate" hrefLang="x-default" href={`${baseURL}/`} />
 
         {/* Global Structured Data */}
         <StructuredData data={organizationSchema} />

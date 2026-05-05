@@ -96,6 +96,14 @@ export function generateProductStructuredData(
   const currentPrice = getCurrentPrice(product)
   const images = getProductImages(product)
 
+  // Map product.status → schema.org availability (source of truth)
+  const availabilityFromStatus =
+    product.status === 'out_of_stock'
+      ? 'out_of_stock'
+      : product.status === 'inactive' || product.status === 'discontinued'
+        ? 'discontinued'
+        : 'in_stock'
+
   const structuredData: ProductStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -108,8 +116,9 @@ export function generateProductStructuredData(
     offers: {
       '@type': 'Offer',
       priceCurrency: 'THB',
-      price: currentPrice,
-      availability: mapAvailability(product.structuredData?.availability || 'in_stock'),
+      // price=0 means price not set — omit to avoid Google rejection
+      price: currentPrice > 0 ? currentPrice : (undefined as unknown as number),
+      availability: mapAvailability(availabilityFromStatus),
       condition: mapCondition(product.structuredData?.condition || 'new'),
       seller: {
         '@type': 'Organization',

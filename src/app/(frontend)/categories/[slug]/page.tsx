@@ -36,13 +36,15 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 const queryCategoryBySlug = cache(async ({ slug }: { slug: string }) => {
   const payload = await getPayload({ config: configPromise })
 
+  const decodedSlug = decodeURIComponent(slug)
+
   const result = await payload.find({
     collection: 'categories',
     limit: 1,
     pagination: false,
     where: {
       slug: {
-        equals: slug,
+        equals: decodedSlug,
       },
     },
     depth: 2,
@@ -64,8 +66,8 @@ export async function generateStaticParams() {
   })
 
   return (
-    categories.docs?.map(({ slug }) => ({
-      slug,
-    })) || []
+    categories.docs
+      ?.filter(({ slug }) => !!slug && !slug.startsWith('-'))
+      .map(({ slug }) => ({ slug })) || []
   )
 }

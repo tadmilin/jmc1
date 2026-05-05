@@ -20,6 +20,7 @@ import { generateProductSEO } from '@/utils/seo'
 import StructuredData, { ImageGalleryStructuredData } from '@/components/SEO/StructuredData'
 import { generateBreadcrumbSchema } from '@/utils/organization-schema'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
+import { getClientSideURL } from '@/utilities/getURL'
 
 // Type for product variant
 type ProductVariant = {
@@ -59,17 +60,12 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   // Generate SEO data for structured data
   const seoData = generateProductSEO(product)
 
-  // Generate breadcrumb schema
+  // Generate breadcrumb schema — use getClientSideURL() for SSR-safe absolute URLs
+  const siteURL = getClientSideURL()
   const breadcrumbs = [
-    { name: 'หน้าแรก', url: typeof window !== 'undefined' ? `${window.location.origin}/` : '/' },
-    {
-      name: 'สินค้า',
-      url: typeof window !== 'undefined' ? `${window.location.origin}/products` : '/products',
-    },
-    {
-      name: product.title,
-      url: typeof window !== 'undefined' ? window.location.href : `/products/${product.slug}`,
-    },
+    { name: 'หน้าแรก', url: `${siteURL}/` },
+    { name: 'สินค้า', url: `${siteURL}/products` },
+    { name: product.title, url: `${siteURL}/products/${product.slug}` },
   ]
   const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbs)
 
@@ -166,11 +162,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     }
   }
 
-  if (!isClient) {
-    return <div className="container mx-auto px-4 py-8">กำลังโหลด...</div>
-  }
-
-  // Build image list for ImageGallery structured data
+  // Build image list for ImageGallery structured data (must be before isClient guard)
   const galleryImages = (images || [])
     .map((item) => {
       const img = item.image
@@ -191,7 +183,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
   return (
     <>
-      {/* Structured Data for SEO */}
+      {/* Structured Data always in initial HTML — must not be gated behind isClient */}
       {seoData.structuredData && <StructuredData data={seoData.structuredData} />}
       {Object.keys(breadcrumbSchema).length > 0 && <StructuredData data={breadcrumbSchema} />}
       <ImageGalleryStructuredData
@@ -199,6 +191,10 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         title={title}
         description={shortDescription || title}
       />
+
+      {!isClient ? (
+        <div className="container mx-auto px-4 py-8">กำลังโหลด...</div>
+      ) : (
 
       <div className="min-h-screen bg-white">
         <div className="container mx-auto px-4 py-8">
@@ -504,6 +500,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           </div>
         </div>
       </div>
+      )}
     </>
   )
 }

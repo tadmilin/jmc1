@@ -30,17 +30,17 @@ const getImageURL = (image?: Media | string | null, fallbackUrl?: string): strin
 const defaultOpenGraph: Metadata['openGraph'] = {
   type: 'website',
   description:
-    'บริษัท เจเอ็มซี จำกัด ผู้จำหน่ายท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปาคุณภาพสูง ราคาย่อมเยา',
+    'จงมีชัยค้าวัสดุ ร้านวัสดุก่อสร้างครบวงจร ตลิ่งชัน ปากซอยชักพระ6 ราคาถูก ส่งฟรีถึงไซต์งาน อิฐ หิน ปูน ทราย เหล็ก ประปา ไฟฟ้า โทร 02-434-8319',
   images: [
     {
       url: getServerSideURL() + '/jmc-og-image.svg',
       width: 1200,
       height: 630,
-      alt: 'JMC Company - ท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปา',
+      alt: 'จงมีชัยค้าวัสดุ - ร้านวัสดุก่อสร้าง ตลิ่งชัน ใกล้ฉัน',
     },
   ],
-  siteName: 'JMC Company',
-  title: 'JMC Company - ท่อ PVC ข้อต่อ ปั๊มน้ำ และอุปกรณ์ประปา',
+  siteName: 'จงมีชัยค้าวัสดุ',
+  title: 'จงมีชัยค้าวัสดุ - ร้านวัสดุก่อสร้าง ตลิ่งชัน ใกล้ฉัน ราคาถูก',
 }
 
 export const mergeOpenGraph = async (
