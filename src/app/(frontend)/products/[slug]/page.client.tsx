@@ -140,8 +140,8 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     ? Math.round(((currentPrice - currentSalePrice) / currentPrice) * 100)
     : 0
   const isOutOfStock = selectedVariant
-    ? selectedVariant.variantStatus === 'out_of_stock' || selectedVariant.variantStock === 0
-    : status === 'out_of_stock' || stock === 0
+    ? selectedVariant.variantStatus === 'out_of_stock'
+    : status === 'out_of_stock'
   const isInactive = selectedVariant
     ? selectedVariant.variantStatus === 'inactive'
     : status === 'inactive' || status === 'discontinued'
@@ -301,7 +301,11 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
               {/* Price */}
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
-                  {isCurrentOnSale ? (
+                  {!currentPrice || currentPrice === 0 ? (
+                    <Badge className="bg-red-500 hover:bg-red-600 text-white text-xl px-4 py-2">
+                      ราคาพิเศษ
+                    </Badge>
+                  ) : isCurrentOnSale ? (
                     <>
                       <span className="text-3xl font-bold text-red-600">
                         ฿{currentSalePrice?.toLocaleString()}
@@ -385,7 +389,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                   <Badge variant="secondary">ไม่พร้อมขาย</Badge>
                 ) : (
                   <Badge variant="outline" className="text-green-600 border-green-600">
-                    มีสินค้า {currentStock && currentStock > 0 ? `${currentStock} ชิ้น` : ''}
+                    {currentStock && currentStock > 0 ? `มีสินค้า ${currentStock} ชิ้น` : 'พร้อมส่ง'}
                   </Badge>
                 )}
               </div>
