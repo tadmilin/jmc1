@@ -34,16 +34,13 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
       try {
         setLoading(true)
 
-        // เพิ่ม limit มากขึ้นเพื่อให้มีโอกาสหาสินค้าลดราคาได้มากขึ้น
-        const fetchLimit = Math.max(limit * 3, 50) // ดึงมาก่อน แล้วกรองทีหลัง
-
         const params = new URLSearchParams({
-          limit: fetchLimit.toString(),
+          limit: limit.toString(),
           depth: '1',
           'where[status][equals]': 'active',
+          'where[salePrice][greater_than]': '0',
         })
 
-        console.log('SaleProductsSlider: Fetching products for sale filtering...')
         const response = await fetch(`/api/public/products?${params.toString()}`)
 
         if (!response.ok) {
@@ -53,65 +50,16 @@ export const SaleProductsSlider: React.FC<SaleProductsSliderProps> = ({
         }
 
         const data = await response.json()
-        console.log(
-          'SaleProductsSlider: Received',
-          data.totalDocs,
-          'products, filtering for sales...',
-        )
 
-        // กรองสินค้าลดราคาอย่างละเอียด
+        // กรองให้แน่ใจว่า salePrice < price จริง (ไม่ใช่แค่ > 0)
         const saleProducts = (data.docs || []).filter((product: ProductCardData) => {
           if (!product || product.status !== 'active') return false
-
-          // เช็คสินค้าหลักว่ามีราคาลดหรือไม่
           const basePrice = product.price ? Number(product.price) : 0
           const baseSalePrice = product.salePrice ? Number(product.salePrice) : 0
-          const hasBaseSale = baseSalePrice > 0 && baseSalePrice < basePrice
-
-          // เช็ค variants ว่ามีราคาลดหรือไม่
-          const hasVariantSale =
-            product.variants &&
-            product.variants.length > 0 &&
-            product.variants.some((variant) => {
-              if (variant.variantStatus !== 'active') return false
-              const variantPrice = variant.variantPrice ? Number(variant.variantPrice) : 0
-              const variantSalePrice = variant.variantSalePrice
-                ? Number(variant.variantSalePrice)
-                : 0
-              return variantSalePrice > 0 && variantSalePrice < variantPrice
-            })
-
-          const isSaleProduct = hasBaseSale || hasVariantSale
-
-          if (isSaleProduct) {
-            console.log('✅ Sale product found:', product.title, {
-              hasBaseSale,
-              hasVariantSale,
-              basePrice,
-              baseSalePrice,
-              variantsCount: product.variants?.length || 0,
-            })
-          }
-
-          return isSaleProduct
+          return baseSalePrice > 0 && baseSalePrice < basePrice
         })
 
-        console.log(
-          '🎯 Final sale products:',
-          saleProducts.length,
-          'out of',
-          data.docs?.length || 0,
-        )
-
-        // จำกัดจำนวนตาม limit ที่ต้องการ
-        const finalProducts = saleProducts.slice(0, limit)
-        setProducts(finalProducts)
-
-        if (finalProducts.length === 0) {
-          console.warn(
-            '⚠️ No sale products found! Check if products have salePrice or variant salePrice set',
-          )
-        }
+        setProducts(saleProducts)
       } catch (err) {
         console.error('Error fetching sale products:', err)
         setProducts([])

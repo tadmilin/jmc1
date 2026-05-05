@@ -16,6 +16,8 @@
     "dev": "next dev",
     "dev:prod": "cross-env NODE_OPTIONS=--no-deprecation rm -rf .next && pnpm build && pnpm start",
     "import:products": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/import-products.ts",
+    "import:pile": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/import-products.ts --file \"scripts/pilefoundationpile - ชีต1 (4).csv\"",
+    "import:board": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/import-products.ts --file \"scripts/yibsom-board-JMC - ชีต1.csv\"",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "ii": "cross-env NODE_OPTIONS=--no-deprecation pnpm --ignore-workspace install",
