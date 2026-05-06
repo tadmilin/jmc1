@@ -45,10 +45,12 @@ export function middleware(request: NextRequest) {
 
     // Get the origin for CORS
     const origin = request.headers.get('origin')
-    const productionURL = process.env.NEXT_PUBLIC_SERVER_URL || 'https://jmc111.vercel.app'
+    const productionURL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
     const allowedOrigins = [
       productionURL,
-      'https://jmc111-git-main-tadmilins-projects.vercel.app',
+      ...(process.env.RAILWAY_PUBLIC_DOMAIN
+        ? [`https://${process.env.RAILWAY_PUBLIC_DOMAIN}`]
+        : []),
       ...(process.env.NODE_ENV === 'development'
         ? ['http://localhost:3000', 'http://localhost:3001']
         : []),

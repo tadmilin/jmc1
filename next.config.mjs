@@ -29,13 +29,27 @@ const nextConfig = {
         port: '3000',
         pathname: '/api/collections/**',
       },
-      // Production - PayloadCMS collections API
-      {
-        protocol: 'https',
-        hostname: 'jmc111.vercel.app',
-        pathname: '/api/collections/**',
-      },
-      // Vercel Blob Storage
+      // Production - dynamic hostname from env (Railway or custom domain)
+      ...(process.env.NEXT_PUBLIC_SERVER_URL
+        ? [
+            {
+              protocol: 'https',
+              hostname: new URL(process.env.NEXT_PUBLIC_SERVER_URL).hostname,
+              pathname: '/api/collections/**',
+            },
+          ]
+        : []),
+      // Railway public domain fallback
+      ...(process.env.RAILWAY_PUBLIC_DOMAIN
+        ? [
+            {
+              protocol: 'https',
+              hostname: process.env.RAILWAY_PUBLIC_DOMAIN,
+              pathname: '/api/collections/**',
+            },
+          ]
+        : []),
+      // Vercel Blob Storage (kept for legacy media fallback)
       {
         protocol: 'https',
         hostname: '**.blob.vercel-storage.com',
@@ -98,7 +112,10 @@ const nextConfig = {
           },
           {
             key: 'Access-Control-Allow-Origin',
-            value: process.env.NODE_ENV === 'development' ? '*' : 'https://jmc111.vercel.app',
+            value:
+              process.env.NODE_ENV === 'development'
+                ? '*'
+                : process.env.NEXT_PUBLIC_SERVER_URL || '',
           },
           {
             key: 'Access-Control-Allow-Methods',

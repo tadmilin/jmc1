@@ -1,4 +1,3 @@
-import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { redirectsPlugin } from '@payloadcms/plugin-redirects'
@@ -41,7 +40,7 @@ const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
     return baseUrl
   } catch (error) {
     console.error('Error generating URL:', error)
-    return 'https://jmc111.vercel.app'
+    return process.env.NEXT_PUBLIC_SERVER_URL || 'https://jongmeechai.com'
   }
 }
 
@@ -111,5 +110,4 @@ export const plugins: Plugin[] = [
       },
     },
   }),
-  payloadCloudPlugin(),
 ]

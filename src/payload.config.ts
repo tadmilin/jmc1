@@ -78,13 +78,14 @@ export default buildConfig({
       databaseUri ||
       (process.env.NODE_ENV === 'development' ? 'mongodb://localhost:27017/jmc-dev' : ''),
     connectOptions: {
-      // M0 Free Tier = 500 connections max
-      // Serverless rule: maxPoolSize: 1 → supports 500 concurrent instances safely
-      // (maxPoolSize: 10 = only 50 instances before hitting limit)
-      maxPoolSize: 1,
-      minPoolSize: 0, // close idle connections immediately — critical for serverless
-      maxIdleTimeMS: 10000, // release connection after 10s idle
-      serverSelectionTimeoutMS: 5000, // fail fast, don't hold connection waiting
+      // Railway = persistent server → higher pool is safe and improves throughput.
+      // Vercel serverless needed maxPoolSize:1 to avoid exhausting Atlas M0 (500 conn limit).
+      // With Railway's single always-on instance, 5 connections is comfortable and
+      // leaves headroom for future scaling (Atlas M0 limit: 500 total).
+      maxPoolSize: parseInt(process.env.MONGODB_MAX_POOL_SIZE || '5'),
+      minPoolSize: parseInt(process.env.MONGODB_MIN_POOL_SIZE || '1'),
+      maxIdleTimeMS: 30000,
+      serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 30000,
       connectTimeoutMS: 10000,
       retryWrites: true,

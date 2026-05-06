@@ -1,10 +1,13 @@
 const _envUrl = process.env.NEXT_PUBLIC_SERVER_URL || ''
 const SITE_URL =
   (_envUrl && !_envUrl.includes('localhost') ? _envUrl : null) ||
+  (process.env.RAILWAY_PUBLIC_DOMAIN
+    ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+    : null) ||
   (process.env.VERCEL_PROJECT_PRODUCTION_URL
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : null) ||
-  'https://jmc111.vercel.app'
+  'https://jongmeechai.com'
 
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
