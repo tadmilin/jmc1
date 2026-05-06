@@ -25,17 +25,14 @@ import { getServerSideURL } from './utilities/getURL'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-// DATABASE_URI validation — defensive, NOT throwing at module load
-// Throwing here breaks `next build` page-data collection because the layout
-// transitively imports this config. Mongoose will throw a real connection
-// error at runtime if the URI is missing/invalid — that's the right place.
 const databaseUri = process.env.DATABASE_URI
-if (!databaseUri && process.env.NODE_ENV === 'production') {
-  console.error(
-    '⚠️  DATABASE_URI not set — runtime DB calls will fail until configured in Railway',
-  )
-} else if (!databaseUri) {
-  console.warn('DATABASE_URI not provided, using fallback for development')
+const fallbackUri =
+  process.env.NODE_ENV === 'development'
+    ? 'mongodb://localhost:27017/jmc-dev'
+    : 'mongodb://127.0.0.2:1/invalid-no-db-uri-set'
+
+if (!databaseUri) {
+  console.error('⚠️  DATABASE_URI is not set — DB connection will fail. Set it in Railway Variables.')
 }
 
 export default buildConfig({
@@ -78,9 +75,7 @@ export default buildConfig({
   // This config helps us configure global or default features that the other editors can inherit
   editor: defaultLexical,
   db: mongooseAdapter({
-    url:
-      databaseUri ||
-      (process.env.NODE_ENV === 'development' ? 'mongodb://localhost:27017/jmc-dev' : ''),
+    url: databaseUri || fallbackUri,
     connectOptions: {
       // Railway = persistent server → higher pool is safe and improves throughput.
       // Vercel serverless needed maxPoolSize:1 to avoid exhausting Atlas M0 (500 conn limit).
