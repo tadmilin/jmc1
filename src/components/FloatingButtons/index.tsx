@@ -48,12 +48,6 @@ const FloatingButtons: React.FC = () => {
     window.location.href = `tel:${phone}`
   }
 
-  const handleLineChat = () => {
-    const lineId = settings?.line || '@308aoxno'
-    // Clean LINE ID (remove @ if exists)
-    const cleanLineId = lineId.startsWith('@') ? lineId.substring(1) : lineId
-    window.open(`https://line.me/ti/p/@${cleanLineId}`, '_blank', 'noopener,noreferrer')
-  }
 
   const handleFacebookPage = () => {
     const facebookUrl = settings?.facebook || 'https://www.facebook.com/jmc1990lekmor'
@@ -84,11 +78,13 @@ const FloatingButtons: React.FC = () => {
         </button>
 
         {/* LINE Button */}
-        <button
-          onClick={handleLineChat}
+        <a
+          href="https://lin.ee/uSpo9iT"
+          target="_blank"
+          rel="noopener noreferrer"
           className="group relative flex items-center justify-center w-14 h-14 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-green-300"
-          aria-label={`LINE Chat ${settings?.line || '@308aoxno'}`}
-          title={`LINE Chat ${settings?.line || '@308aoxno'}`}
+          aria-label="LINE Chat จงมีชัยค้าวัสดุ"
+          title="LINE Chat จงมีชัยค้าวัสดุ"
         >
           {/* LINE Icon - Official Logo */}
           <svg className="w-6 h-6" viewBox="0 0 195 195">
@@ -117,7 +113,7 @@ const FloatingButtons: React.FC = () => {
             💬 LINE: {settings?.line || '@308aoxno'}
             <div className="absolute top-1/2 left-full transform -translate-y-1/2 border-l-4 border-l-gray-900 border-y-4 border-y-transparent"></div>
           </div>
-        </button>
+        </a>
 
         {/* Facebook Button */}
         <button
