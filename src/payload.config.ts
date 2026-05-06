@@ -25,12 +25,16 @@ import { getServerSideURL } from './utilities/getURL'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-// Ensure DATABASE_URI is provided for production
+// DATABASE_URI validation — defensive, NOT throwing at module load
+// Throwing here breaks `next build` page-data collection because the layout
+// transitively imports this config. Mongoose will throw a real connection
+// error at runtime if the URI is missing/invalid — that's the right place.
 const databaseUri = process.env.DATABASE_URI
-if (!databaseUri) {
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('DATABASE_URI environment variable is required for production')
-  }
+if (!databaseUri && process.env.NODE_ENV === 'production') {
+  console.error(
+    '⚠️  DATABASE_URI not set — runtime DB calls will fail until configured in Railway',
+  )
+} else if (!databaseUri) {
   console.warn('DATABASE_URI not provided, using fallback for development')
 }
 

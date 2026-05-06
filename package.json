@@ -102,7 +102,7 @@
     "webpack-bundle-analyzer": "4.10.2"
   },
   "engines": {
-    "node": "24.x"
+    "node": "22.x"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
