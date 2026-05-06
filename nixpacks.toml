@@ -1,0 +1,8 @@
+[phases.install]
+cmds = [
+  "npm install -g pnpm@8.15.4",
+  "pnpm install --frozen-lockfile"
+]
+
+[phases.build]
+cmds = ["pnpm run build"]
