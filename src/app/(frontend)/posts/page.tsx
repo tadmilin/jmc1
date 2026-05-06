@@ -9,24 +9,28 @@ import React from 'react'
 import PageClient from './page.client'
 import { generateMeta } from '@/utilities/generateMeta'
 
-export const dynamic = 'force-static'
 export const revalidate = 600
 
 export default async function Page() {
-  const payload = await getPayload({ config: configPromise })
-
-  const posts = await payload.find({
-    collection: 'posts',
-    depth: 1,
-    limit: 12,
-    overrideAccess: false,
-    select: {
-      title: true,
-      slug: true,
-      categories: true,
-      meta: true,
-    },
-  })
+  let posts = { docs: [] as any[], page: 1, totalDocs: 0, totalPages: 1 }
+  try {
+    const payload = await getPayload({ config: configPromise })
+    const result = await payload.find({
+      collection: 'posts',
+      depth: 1,
+      limit: 12,
+      overrideAccess: false,
+      select: {
+        title: true,
+        slug: true,
+        categories: true,
+        meta: true,
+      },
+    })
+    posts = result
+  } catch {
+    // DB unavailable at build time — ISR will populate on first runtime request
+  }
 
   return (
     <div className="pt-24 pb-24">

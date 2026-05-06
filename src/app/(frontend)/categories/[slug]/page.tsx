@@ -53,21 +53,25 @@ const queryCategoryBySlug = cache(async ({ slug }: { slug: string }) => {
   return result.docs?.[0] || null
 })
 
+export const dynamicParams = true
+
 export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
+  try {
+    const payload = await getPayload({ config: configPromise })
 
-  const categories = await payload.find({
-    collection: 'categories',
-    limit: 1000,
-    pagination: false,
-    select: {
-      slug: true,
-    },
-  })
+    const categories = await payload.find({
+      collection: 'categories',
+      limit: 1000,
+      pagination: false,
+      select: { slug: true },
+    })
 
-  return (
-    categories.docs
-      ?.filter(({ slug }) => !!slug && !slug.startsWith('-'))
-      .map(({ slug }) => ({ slug })) || []
-  )
+    return (
+      categories.docs
+        ?.filter(({ slug }) => !!slug && !slug.startsWith('-'))
+        .map(({ slug }) => ({ slug })) ?? []
+    )
+  } catch {
+    return []
+  }
 }

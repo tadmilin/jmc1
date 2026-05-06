@@ -21,7 +21,12 @@ import { getServerSideURL } from '@/utilities/getURL'
 
 // Generate dynamic metadata from CMS
 export async function generateMetadata(): Promise<Metadata> {
-  const siteSettings = await getCachedGlobal('site-settings', 1)()
+  let siteSettings: Awaited<ReturnType<ReturnType<typeof getCachedGlobal>>> | null = null
+  try {
+    siteSettings = await getCachedGlobal('site-settings', 1)()
+  } catch {
+    // DB unavailable at build time — fall back to static defaults below
+  }
   const baseURL = getServerSideURL()
 
   // Type-safe access to settings with fallbacks
@@ -106,7 +111,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const baseURL = getServerSideURL()
 
   // Fetch header data เพื่อเอา logo มาใช้เป็น favicon
-  const headerData = await getCachedGlobal('header', 1)()
+  let headerData: Awaited<ReturnType<ReturnType<typeof getCachedGlobal>>> | null = null
+  try {
+    headerData = await getCachedGlobal('header', 1)()
+  } catch {
+    // DB unavailable — fall back to /favicon.svg below
+  }
   const logoImageUrl =
     typeof headerData === 'object' &&
     headerData !== null &&

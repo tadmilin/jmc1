@@ -109,17 +109,23 @@ export default async function ConstructionMaterialsNearMePage() {
 
   const { isEnabled: draft } = await draftMode()
 
-  const payload = await getPayload({ config: configPromise })
-  const result = await payload.find({
-    collection: 'pages',
-    draft,
-    limit: 1,
-    overrideAccess: false,
-    where: { slug: { equals: 'home' } },
-  })
-
-  const page = result.docs?.[0] ?? homeStatic
-  const { hero, layout } = page as typeof homeStatic
+  let page: typeof homeStatic = homeStatic
+  try {
+    const payload = await getPayload({ config: configPromise })
+    const result = await payload.find({
+      collection: 'pages',
+      draft,
+      limit: 1,
+      overrideAccess: false,
+      where: { slug: { equals: 'home' } },
+    })
+    if (result.docs?.[0]) {
+      page = result.docs[0] as typeof homeStatic
+    }
+  } catch {
+    // DB unavailable — render with homeStatic fallback
+  }
+  const { hero, layout } = page
 
   return (
     <>
