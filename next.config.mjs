@@ -29,15 +29,12 @@ const nextConfig = {
         pathname: '/api/collections/**',
       },
       // Production - dynamic hostname from env (Railway or custom domain)
-      ...(process.env.NEXT_PUBLIC_SERVER_URL
-        ? [
-            {
-              protocol: 'https',
-              hostname: new URL(process.env.NEXT_PUBLIC_SERVER_URL).hostname,
-              pathname: '/api/collections/**',
-            },
-          ]
-        : []),
+      ...((() => {
+        try {
+          const h = process.env.NEXT_PUBLIC_SERVER_URL
+          return h ? [{ protocol: 'https', hostname: new URL(h).hostname, pathname: '/api/collections/**' }] : []
+        } catch { return [] }
+      })()),
       // Railway public domain fallback
       ...(process.env.RAILWAY_PUBLIC_DOMAIN
         ? [
@@ -77,7 +74,24 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-  // PayloadCMS v3 handles admin routes automatically - no rewrites needed
+  // 301 permanent redirects — ส่ง SEO juice จาก domain เก่าทั้งหมดมาที่ jongmeechai.com
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'jmc111.vercel.app' }],
+        destination: 'https://jongmeechai.com/:path*',
+        permanent: true,
+      },
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'jmc1-production.up.railway.app' }],
+        destination: 'https://jongmeechai.com/:path*',
+        permanent: true,
+      },
+    ]
+  },
+
   // Security headers
   async headers() {
     return [
