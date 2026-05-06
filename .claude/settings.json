@@ -5,7 +5,10 @@
       "Bash(pnpm import:products --file \"scripts/pilefoundationpile - ชีต1 \\(3\\).csv\")",
       "Bash(git commit -m 'fix: query saleProducts server-side to avoid pagination miss *)",
       "Bash(git commit -m 'fix\\(seo\\): add categories-sitemap to index + percent-encode Thai slugs in sitemaps *)",
-      "Bash(git commit -m 'fix\\(seo\\): 5 production SEO correctness issues *)"
+      "Bash(git commit -m 'fix\\(seo\\): 5 production SEO correctness issues *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(ls -la .env*)"
     ]
   }
 }

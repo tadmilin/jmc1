@@ -4,6 +4,7 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { cache } from 'react'
 import { generateMeta } from '@/utilities/generateMeta'
+import { hasDatabaseUri } from '@/utilities/buildUtils'
 import CategoryDetailClient from './page.client'
 
 type Args = {
@@ -56,6 +57,7 @@ const queryCategoryBySlug = cache(async ({ slug }: { slug: string }) => {
 export const dynamicParams = true
 
 export async function generateStaticParams() {
+  if (!hasDatabaseUri()) return []
   try {
     const payload = await getPayload({ config: configPromise })
 

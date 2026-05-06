@@ -1,9 +1,18 @@
-FROM node:22-alpine
+### ── Stage 1: install dependencies ───────────────────────────────
+FROM node:22.15.0-alpine3.21 AS deps
 
 WORKDIR /app
 
-# Build args — Railway exposes service variables to Docker build via ARG
-# (declared explicitly here; without ARG they're invisible to RUN steps)
+RUN npm install -g pnpm@8.15.4
+
+COPY package.json pnpm-lock.yaml .npmrc ./
+RUN pnpm install --frozen-lockfile
+
+### ── Stage 2: build ─────────────────────────────────────────────
+FROM node:22.15.0-alpine3.21 AS builder
+
+WORKDIR /app
+
 ARG DATABASE_URI
 ARG PAYLOAD_SECRET
 ARG NEXT_PUBLIC_SERVER_URL
@@ -16,7 +25,6 @@ ARG CRON_SECRET
 ARG PREVIEW_SECRET
 ARG PRIVATE_API_KEY
 
-# Promote build args to env vars so `pnpm run build` (Next.js + Payload) sees them
 ENV DATABASE_URI=$DATABASE_URI \
     PAYLOAD_SECRET=$PAYLOAD_SECRET \
     NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL \
@@ -29,18 +37,32 @@ ENV DATABASE_URI=$DATABASE_URI \
     PREVIEW_SECRET=$PREVIEW_SECRET \
     PRIVATE_API_KEY=$PRIVATE_API_KEY
 
-# Install pnpm directly — bypasses corepack (avoids keyid signature failures)
 RUN npm install -g pnpm@8.15.4
 
-# Cache layer: lockfile changes less often than source
-COPY package.json pnpm-lock.yaml .npmrc ./
-RUN pnpm install --frozen-lockfile
-
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+RUN npx -y update-browserslist-db@latest
 RUN pnpm run build
 
+### ── Stage 3: production runtime ────────────────────────────────
+FROM node:22.15.0-alpine3.21 AS runner
+
+WORKDIR /app
+
 ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+
 EXPOSE 3000
 
-CMD ["pnpm", "start"]
+CMD ["node", "server.js"]

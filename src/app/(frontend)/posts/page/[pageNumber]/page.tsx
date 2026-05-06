@@ -8,6 +8,7 @@ import { getPayload } from 'payload'
 import React from 'react'
 import PageClient from './page.client'
 import { notFound } from 'next/navigation'
+import { hasDatabaseUri } from '@/utilities/buildUtils'
 
 export const revalidate = 600
 
@@ -73,6 +74,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 export const dynamicParams = true
 
 export async function generateStaticParams() {
+  if (!hasDatabaseUri()) return []
   try {
     const payload = await getPayload({ config: configPromise })
     const { totalDocs } = await payload.count({
@@ -80,7 +82,7 @@ export async function generateStaticParams() {
       overrideAccess: false,
     })
 
-    const totalPages = Math.ceil(totalDocs / 10)
+    const totalPages = Math.ceil(totalDocs / 12)
     const pages: { pageNumber: string }[] = []
     for (let i = 1; i <= totalPages; i++) {
       pages.push({ pageNumber: String(i) })

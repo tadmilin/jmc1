@@ -10,6 +10,7 @@ import { homeStatic } from '@/endpoints/seed/home-static'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
+import { hasDatabaseUri } from '@/utilities/buildUtils'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import StructuredData from '@/components/SEO/StructuredData'
@@ -18,6 +19,7 @@ import { generatePageSchemas } from '@/utils/contact-about-schema'
 export const dynamicParams = true
 
 export async function generateStaticParams() {
+  if (!hasDatabaseUri()) return []
   try {
     const payload = await getPayload({ config: configPromise })
     const pages = await payload.find({
@@ -35,7 +37,6 @@ export async function generateStaticParams() {
         .map(({ slug }) => ({ slug })) ?? []
     )
   } catch {
-    // DB unavailable at build time — pages render dynamically on first request
     return []
   }
 }
