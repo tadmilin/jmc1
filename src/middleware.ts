@@ -25,16 +25,19 @@ export function middleware(request: NextRequest) {
 
   // จัดการเฉพาะ API routes
   if (pathname.startsWith('/api')) {
+    // /api/health — ต้องเปิด public เพื่อให้ Railway/load-balancer healthcheck เข้าถึงได้
+    if (pathname === '/api/health') {
+      return NextResponse.next()
+    }
+
     // ป้องกัน sensitive API endpoints จาก external access
     if (
       pathname.startsWith('/api/admin-status') ||
-      pathname.startsWith('/api/health') ||
       pathname.startsWith('/api/env-check')
     ) {
       const referer = request.headers.get('referer')
       const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
 
-      // บล็อกถ้าไม่ได้มาจาก admin panel หรือไม่มี authentication
       if (
         !referer?.startsWith(serverURL + '/admin') &&
         !request.headers.get('cookie')?.includes('payload-token')
