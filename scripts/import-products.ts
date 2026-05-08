@@ -144,6 +144,17 @@ async function getOrCreateCategory(
 
   if (existing.docs.length > 0) {
     const id = String(existing.docs[0].id)
+    // ถ้ามี parentId แต่ของเดิมยังไม่มี parent → update ให้
+    const existingParent = existing.docs[0].parent
+    if (parentId && !existingParent) {
+      await payload.update({
+        collection: 'categories',
+        id,
+        data: { parent: parentId },
+        overrideAccess: true,
+      })
+      console.log(`  🔗 เชื่อม parent: ${name}`)
+    }
     cache.set(cacheKey, id)
     return id
   }
