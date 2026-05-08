@@ -70,6 +70,17 @@ export const Categories: CollectionConfig = {
       label: 'ชื่อหมวดหมู่',
     },
     {
+      name: 'parent',
+      type: 'relationship',
+      relationTo: 'categories',
+      label: 'หมวดหมู่แม่',
+      hasMany: false,
+      admin: {
+        position: 'sidebar',
+        description: 'ถ้าเป็นหมวดหมู่ย่อย ให้เลือกหมวดหมู่แม่ที่นี่',
+      },
+    },
+    {
       name: 'description',
       type: 'textarea',
       label: 'คำอธิบาย',

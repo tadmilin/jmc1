@@ -116,38 +116,49 @@ async function uploadImage(
   }
 }
 
-// หาหรือสร้าง category
+// หาหรือสร้าง category (รองรับ parent-child hierarchy)
 async function getOrCreateCategory(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload: any,
   name: string,
   cache: Map<string, string>,
+  parentId?: string | null,
 ): Promise<string | null> {
   if (!name.trim()) return null
-  const key = name.trim().toLowerCase()
-  if (cache.has(key)) return cache.get(key)!
+
+  // cache key รวม parentId เพื่อกัน collision (เช่น "ทั่วไป" ใต้ parent ต่างกัน)
+  const cacheKey = `${parentId ?? ''}::${name.trim().toLowerCase()}`
+  if (cache.has(cacheKey)) return cache.get(cacheKey)!
+
+  // ค้นหา category ที่มีชื่อตรงกัน + parent ตรงกัน
+  const whereClause = parentId
+    ? { and: [{ title: { equals: name.trim() } }, { parent: { equals: parentId } }] }
+    : { and: [{ title: { equals: name.trim() } }, { parent: { exists: false } }] }
 
   const existing = await payload.find({
     collection: 'categories',
-    where: { title: { equals: name.trim() } },
+    where: whereClause,
     limit: 1,
     overrideAccess: true,
   })
 
   if (existing.docs.length > 0) {
     const id = String(existing.docs[0].id)
-    cache.set(key, id)
+    cache.set(cacheKey, id)
     return id
   }
 
+  const data: Record<string, unknown> = { title: name.trim() }
+  if (parentId) data.parent = parentId
+
   const created = await payload.create({
     collection: 'categories',
-    data: { title: name.trim() },
+    data,
     overrideAccess: true,
   })
   const id = String(created.id)
-  cache.set(key, id)
-  console.log(`  ✅ สร้าง category ใหม่: ${name}`)
+  cache.set(cacheKey, id)
+  console.log(`  ✅ สร้าง category${parentId ? ' (ย่อย)' : ' (แม่)'}: ${name}`)
   return id
 }
 
@@ -191,15 +202,29 @@ async function main() {
     console.log(`[${i + 1}/${rows.length}] ${title}`)
 
     try {
-      // Categories — ใช้ Category เป็นหลัก
+      // Categories — รองรับ parent-child hierarchy
+      // CSV: "Parent Category" = หมวดแม่ (เช่น "เหล็ก"), "Category" = หมวดย่อย
       const categoryIds: string[] = []
+      const parentCategoryName = col(row, 'Parent Category')
       const categoryName = col(row, 'Category')
-      if (categoryName) {
-        const id = await getOrCreateCategory(payload, categoryName, categoryCache)
-        if (id) categoryIds.push(id)
+
+      // สร้าง/หา parent ก่อน
+      let parentId: string | null = null
+      if (parentCategoryName) {
+        parentId = await getOrCreateCategory(payload, parentCategoryName, categoryCache, null)
       }
+
+      // สร้าง/หา child พร้อม link parent
+      if (categoryName) {
+        const id = await getOrCreateCategory(payload, categoryName, categoryCache, parentId)
+        if (id) categoryIds.push(id)
+      } else if (parentId) {
+        // ถ้ามีแค่ parent ไม่มี child → ใช้ parent โดยตรง
+        categoryIds.push(parentId)
+      }
+
       if (categoryIds.length === 0) {
-        const id = await getOrCreateCategory(payload, 'ทั่วไป', categoryCache)
+        const id = await getOrCreateCategory(payload, 'ทั่วไป', categoryCache, null)
         if (id) categoryIds.push(id)
       }
 
