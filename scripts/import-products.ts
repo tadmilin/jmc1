@@ -126,26 +126,23 @@ async function getOrCreateCategory(
 ): Promise<string | null> {
   if (!name.trim()) return null
 
-  // cache key รวม parentId เพื่อกัน collision (เช่น "ทั่วไป" ใต้ parent ต่างกัน)
+  // cache key รวม parentId เพื่อกัน collision
   const cacheKey = `${parentId ?? ''}::${name.trim().toLowerCase()}`
   if (cache.has(cacheKey)) return cache.get(cacheKey)!
 
-  // ค้นหา category ที่มีชื่อตรงกัน + parent ตรงกัน
-  const whereClause = parentId
-    ? { and: [{ title: { equals: name.trim() } }, { parent: { equals: parentId } }] }
-    : { and: [{ title: { equals: name.trim() } }, { parent: { exists: false } }] }
-
+  // ค้นหาด้วยชื่ออย่างเดียว (ไม่กรอง parent) เพื่อป้องกันสร้างซ้ำ
+  // กรณีที่ category เดิมถูกสร้างก่อนจะมี field parent
   const existing = await payload.find({
     collection: 'categories',
-    where: whereClause,
+    where: { title: { equals: name.trim() } },
     limit: 1,
     overrideAccess: true,
   })
 
   if (existing.docs.length > 0) {
     const id = String(existing.docs[0].id)
-    // ถ้ามี parentId แต่ของเดิมยังไม่มี parent → update ให้
     const existingParent = existing.docs[0].parent
+    // ถ้ามี parentId แต่ของเดิมยังไม่มี parent → update ให้
     if (parentId && !existingParent) {
       await payload.update({
         collection: 'categories',
@@ -159,6 +156,7 @@ async function getOrCreateCategory(
     return id
   }
 
+  // ไม่เจอ → สร้างใหม่
   const data: Record<string, unknown> = { title: name.trim() }
   if (parentId) data.parent = parentId
 
