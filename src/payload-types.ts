@@ -534,10 +534,6 @@ export interface Post {
 export interface Category {
   id: string;
   title: string;
-  /**
-   * ถ้าเป็นหมวดหมู่ย่อย ให้เลือกหมวดหมู่แม่ที่นี่
-   */
-  parent?: (string | null) | Category;
   description?: string | null;
   /**
    * ขนาดแนะนำ 400x400 พิกเซล
@@ -554,6 +550,7 @@ export interface Category {
   isActive?: boolean | null;
   slug?: string | null;
   slugLock?: boolean | null;
+  parent?: (string | null) | Category;
   breadcrumbs?:
     | {
         doc?: (string | null) | Category;
@@ -2123,7 +2120,6 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface CategoriesSelect<T extends boolean = true> {
   title?: T;
-  parent?: T;
   description?: T;
   image?: T;
   sortOrder?: T;
@@ -2131,6 +2127,7 @@ export interface CategoriesSelect<T extends boolean = true> {
   isActive?: T;
   slug?: T;
   slugLock?: T;
+  parent?: T;
   breadcrumbs?:
     | T
     | {

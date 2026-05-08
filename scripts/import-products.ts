@@ -116,7 +116,7 @@ async function uploadImage(
   }
 }
 
-// หาหรือสร้าง category (รองรับ parent-child hierarchy)
+// หาหรือสร้าง category (รองรับ parent-child via nestedDocsPlugin)
 async function getOrCreateCategory(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload: any,
@@ -126,37 +126,39 @@ async function getOrCreateCategory(
 ): Promise<string | null> {
   if (!name.trim()) return null
 
-  // cache key รวม parentId เพื่อกัน collision
   const cacheKey = `${parentId ?? ''}::${name.trim().toLowerCase()}`
   if (cache.has(cacheKey)) return cache.get(cacheKey)!
 
-  // ค้นหาด้วยชื่ออย่างเดียว (ไม่กรอง parent) เพื่อป้องกันสร้างซ้ำ
-  // กรณีที่ category เดิมถูกสร้างก่อนจะมี field parent
+  // depth: 0 → parent จะ return เป็น ID string เท่านั้น (ไม่ populate เป็น object)
   const existing = await payload.find({
     collection: 'categories',
     where: { title: { equals: name.trim() } },
     limit: 1,
+    depth: 0,
     overrideAccess: true,
   })
 
   if (existing.docs.length > 0) {
-    const id = String(existing.docs[0].id)
-    const existingParent = existing.docs[0].parent
-    // ถ้ามี parentId แต่ของเดิมยังไม่มี parent → update ให้
-    if (parentId && !existingParent) {
+    const doc = existing.docs[0]
+    const id = String(doc.id)
+    const currentParent = doc.parent ?? null
+
+    // ถ้าต้องการ set parent และ parent ยังไม่ตรง → force update
+    if (parentId && currentParent !== parentId) {
       await payload.update({
         collection: 'categories',
         id,
         data: { parent: parentId },
         overrideAccess: true,
       })
-      console.log(`  🔗 เชื่อม parent: ${name}`)
+      console.log(`  🔗 เชื่อม "${name}" → parent`)
     }
     cache.set(cacheKey, id)
     return id
   }
 
-  // ไม่เจอ → สร้างใหม่
+  // ไม่เจอ → สร้างใหม่ พร้อม parent (ถ้ามี)
+  // nestedDocsPlugin จะ auto-generate breadcrumbs ผ่าน afterChange hook
   const data: Record<string, unknown> = { title: name.trim() }
   if (parentId) data.parent = parentId
 
