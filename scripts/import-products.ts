@@ -142,23 +142,26 @@ async function getOrCreateCategory(
     const doc = existing.docs[0]
     const id = String(doc.id)
     const currentParent = doc.parent ?? null
+    console.log(`    [DEBUG] พบ "${name}" (id: ${id}) parent ปัจจุบัน: ${currentParent ?? 'ไม่มี'} | ต้องการ parent: ${parentId ?? 'ไม่ต้อง'}`)
 
     // ถ้าต้องการ set parent และ parent ยังไม่ตรง → force update
     if (parentId && currentParent !== parentId) {
-      await payload.update({
+      const updated = await payload.update({
         collection: 'categories',
         id,
         data: { parent: parentId },
         overrideAccess: true,
+        context: { disableRevalidate: true },
       })
-      console.log(`  🔗 เชื่อม "${name}" → parent`)
+      console.log(`    [DEBUG] update result → parent: ${updated.parent}`)
+      console.log(`  🔗 เชื่อม "${name}" → parent (id: ${parentId})`)
     }
     cache.set(cacheKey, id)
     return id
   }
 
   // ไม่เจอ → สร้างใหม่ พร้อม parent (ถ้ามี)
-  // nestedDocsPlugin จะ auto-generate breadcrumbs ผ่าน afterChange hook
+  console.log(`    [DEBUG] ไม่พบ "${name}" ใน DB → สร้างใหม่ ${parentId ? `(parent: ${parentId})` : '(ไม่มี parent)'}`)
   const data: Record<string, unknown> = { title: name.trim() }
   if (parentId) data.parent = parentId
 
@@ -166,8 +169,10 @@ async function getOrCreateCategory(
     collection: 'categories',
     data,
     overrideAccess: true,
+    context: { disableRevalidate: true },
   })
   const id = String(created.id)
+  console.log(`    [DEBUG] สร้างสำเร็จ id: ${id}, parent: ${created.parent ?? 'null'}`)
   cache.set(cacheKey, id)
   console.log(`  ✅ สร้าง category${parentId ? ' (ย่อย)' : ' (แม่)'}: ${name}`)
   return id
@@ -301,11 +306,20 @@ async function main() {
         : { docs: [] }
 
       if (existing.docs.length > 0) {
-        await payload.update({ collection: 'products', id: String(existing.docs[0]!.id), data: productData })
+        await payload.update({
+          collection: 'products',
+          id: String(existing.docs[0]!.id),
+          data: productData,
+          context: { disableRevalidate: true },
+        })
         console.log(`  ↻  อัปเดต (SKU: ${sku})`)
         updated++
       } else {
-        await payload.create({ collection: 'products', data: productData })
+        await payload.create({
+          collection: 'products',
+          data: productData,
+          context: { disableRevalidate: true },
+        })
         console.log(`  ✨ สร้างใหม่`)
         created++
       }

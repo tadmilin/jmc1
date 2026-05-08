@@ -13,7 +13,8 @@ export default function CategoriesPageClient() {
   const [searchTerm, setSearchTerm] = useState('')
   const [filteredCategories, setFilteredCategories] = useState<Category[]>([])
 
-  // Fetch categories
+  // Fetch categories — แสดงเฉพาะ root categories (ที่ไม่มี parent)
+  // เมื่อคลิกเข้าไปจะเห็น subcategories ใน /categories/[slug]
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -21,8 +22,11 @@ export default function CategoriesPageClient() {
         const response = await fetch('/api/public/categories?limit=100&depth=1&sort=displayOrder')
         if (response.ok) {
           const data = await response.json()
-          setCategories(data.docs || [])
-          setFilteredCategories(data.docs || [])
+          const allDocs: Category[] = data.docs || []
+          // กรองเฉพาะ root categories (parent = null/undefined)
+          const rootCategories = allDocs.filter((cat) => !cat.parent)
+          setCategories(rootCategories)
+          setFilteredCategories(rootCategories)
         }
       } catch (error) {
         console.error('Error fetching categories:', error)

@@ -22,6 +22,7 @@ interface CategoryDetailClientProps {
 
 export default function CategoryDetailClient({ category }: CategoryDetailClientProps) {
   const [products, setProducts] = useState<ProductCardData[]>([])
+  const [subcategories, setSubcategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [sortBy, setSortBy] = useState('newest')
@@ -39,6 +40,24 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
   useEffect(() => {
     setIsClient(true)
   }, [])
+
+  // Fetch subcategories (หมวดลูก) ของ category นี้
+  useEffect(() => {
+    const fetchSubcategories = async () => {
+      try {
+        const response = await fetch(
+          `/api/public/categories?limit=50&depth=1&sort=displayOrder&where[parent][equals]=${category.id}`,
+        )
+        if (response.ok) {
+          const data = await response.json()
+          setSubcategories(data.docs || [])
+        }
+      } catch (error) {
+        console.error('Error fetching subcategories:', error)
+      }
+    }
+    fetchSubcategories()
+  }, [category.id])
 
   // Fetch products in this category
   useEffect(() => {
@@ -379,6 +398,45 @@ export default function CategoryDetailClient({ category }: CategoryDetailClientP
             </div>
           </div>
         </div>
+
+        {/* Subcategories (หมวดย่อย) */}
+        {subcategories.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">หมวดหมู่ย่อย</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+              {subcategories.map((sub) => {
+                const subImage = sub.image as MediaType | undefined
+                return (
+                  <Link key={sub.id} href={`/categories/${sub.slug}`}>
+                    <div className="group bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200 overflow-hidden">
+                      <div className="aspect-square relative bg-gray-50">
+                        {subImage ? (
+                          <Media
+                            resource={subImage}
+                            fill
+                            imgClassName="object-cover group-hover:scale-105 transition-transform duration-300"
+                            size="200px"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-300">
+                            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-3">
+                        <h3 className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 line-clamp-2">
+                          {sub.title}
+                        </h3>
+                      </div>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Results Info */}
         <div className="mb-6">
