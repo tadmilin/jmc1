@@ -284,11 +284,14 @@ async function main() {
 
       // Product data
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const priceRaw = col(row, 'Price')
+      const stockRaw = col(row, 'Stock')
       const productData: any = {
         title,
         shortDescription: col(row, 'Description (TH)') || undefined,
-        price: parseNum(col(row, 'Price')) ?? 0,
-        stock: parseNum(col(row, 'Stock')) ?? 0,
+        // ถ้า CSV ไม่มีราคา → ไม่ส่งไป (เก็บราคาเดิมใน DB ไว้)
+        ...(priceRaw ? { price: parseNum(priceRaw) ?? 0 } : {}),
+        ...(stockRaw ? { stock: parseNum(stockRaw) ?? 0 } : {}),
         status,
         featured: parseBool(col(row, 'Featured')),
         categories: categoryIds,
