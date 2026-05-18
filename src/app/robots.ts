@@ -5,19 +5,15 @@ export default function robots(): MetadataRoute.Robots {
   const baseUrl = getServerSideURL()
 
   return {
-    rules: {
-      userAgent: '*',
-      allow: ['/', '/api/collections/media/file/'],
-      disallow: ['/admin/', '/api/'],
-    },
-    sitemap: [
-      `${baseUrl}/sitemap.xml`,
-      `${baseUrl}/pages-sitemap.xml`,
-      `${baseUrl}/posts-sitemap.xml`,
-      `${baseUrl}/products-sitemap.xml`,
-      `${baseUrl}/categories-sitemap.xml`,
-      `${baseUrl}/service-areas-sitemap.xml`,
+    rules: [
+      {
+        userAgent: '*',
+        // อนุญาตรูปภาพสินค้าทั้งสอง path pattern ที่ Payload v3 ใช้จริง
+        allow: ['/', '/api/media/file/', '/api/collections/media/file/'],
+        disallow: ['/admin/', '/api/admin-status', '/api/env-check', '/_next/'],
+      },
     ],
+    sitemap: `${baseUrl}/sitemap.xml`,
     host: baseUrl,
   }
 }

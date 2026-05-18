@@ -10,12 +10,9 @@ export function middleware(request: NextRequest) {
 
   const response = NextResponse.next()
 
-  // เพิ่ม headers เพื่อบังคับ browser ตรวจสอบเวอร์ชันใหม่
   if (!pathname.startsWith('/api') && !pathname.startsWith('/_next')) {
-    response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate, s-maxage=60')
+    response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400')
     response.headers.set('Vary', 'Accept-Encoding')
-    // เพิ่ม timestamp เพื่อให้ browser รู้ว่าควรตรวจสอบใหม่
-    response.headers.set('X-Content-Version', Date.now().toString())
   }
 
   // Force server-side rendering for catalogs page

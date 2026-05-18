@@ -5,9 +5,30 @@ import { getPayload } from 'payload'
 import { cache } from 'react'
 import ProductDetailClient from './page.client'
 import { generateMeta } from '@/utilities/generateMeta'
+import { hasDatabaseUri } from '@/utilities/buildUtils'
 
-// ISR — render ครั้งแรกตาม request, cache 1 ชั่วโมง
 export const revalidate = 3600
+export const dynamicParams = true
+
+export async function generateStaticParams() {
+  if (!hasDatabaseUri()) return []
+  try {
+    const payload = await getPayload({ config: configPromise })
+    const products = await payload.find({
+      collection: 'products',
+      limit: 1000,
+      pagination: false,
+      where: { status: { equals: 'active' } },
+      select: { slug: true },
+      depth: 0,
+    })
+    return products.docs
+      .filter((p) => !!p.slug && !p.slug.startsWith('-'))
+      .map((p) => ({ slug: p.slug! }))
+  } catch {
+    return []
+  }
+}
 
 type Args = {
   params: Promise<{

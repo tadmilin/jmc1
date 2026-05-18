@@ -5,7 +5,7 @@ import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
 import React from 'react'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 import { AdminBar } from '@/components/AdminBar'
 import { Footer } from '@/Footer/Component'

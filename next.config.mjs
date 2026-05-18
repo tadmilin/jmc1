@@ -77,6 +77,7 @@ const nextConfig = {
   // 301 permanent redirects — ส่ง SEO juice จาก domain เก่าทั้งหมดมาที่ jongmeechai.com
   async redirects() {
     return [
+      // 301 ส่ง SEO juice จาก domain เก่า
       {
         source: '/:path*',
         has: [{ type: 'host', value: 'jmc111.vercel.app' }],
@@ -89,10 +90,25 @@ const nextConfig = {
         destination: 'https://jongmeechai.com/:path*',
         permanent: true,
       },
+
+      // 301 จาก URL โครงสร้างเก่า /iron/[slug] → /products/[slug]
+      // (Google พบ URL เหล่านี้ใน GSC เป็น 404)
+      {
+        source: '/iron/:slug*',
+        destination: '/products/:slug*',
+        permanent: true,
+      },
+
+      // 301 จาก root-level Thai slug ที่ไม่มี prefix → /products/[slug]
+      // ครอบคลุม URL เช่น /เหลกแผนดำ /อิฐแดง ฯลฯ ที่เคยมี
+      {
+        source: '/เหลกแผนดำ',
+        destination: '/products/เหลกแผนดำ',
+        permanent: true,
+      },
     ]
   },
 
-  // Security headers
   async headers() {
     return [
       {
@@ -100,11 +116,15 @@ const nextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=0, must-revalidate, s-maxage=60, stale-while-revalidate=300',
+            value: 'public, s-maxage=3600, stale-while-revalidate=86400',
           },
           {
             key: 'Vary',
-            value: 'Accept-Encoding, User-Agent',
+            value: 'Accept-Encoding',
+          },
+          {
+            key: 'X-Robots-Tag',
+            value: 'all',
           },
         ],
       },
@@ -154,6 +174,14 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, nofollow',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
           },
         ],
       },
