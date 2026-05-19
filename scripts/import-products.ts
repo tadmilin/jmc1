@@ -195,6 +195,8 @@ async function main() {
     columns: true,
     skip_empty_lines: true,
     trim: true,
+    relax_quotes: true,       // รองรับ description ที่มี " ไม่ escaped ใน CSV
+    relax_column_count: true, // รองรับแถวที่มี column ไม่ครบ
   }) as Row[]
 
   console.log(`📋 พบสินค้า ${rows.length} รายการ\n`)
@@ -218,11 +220,13 @@ async function main() {
     console.log(`[${i + 1}/${rows.length}] ${title}`)
 
     try {
-      // Categories — รองรับ parent-child hierarchy
-      // CSV: "Parent Category" = หมวดแม่ (เช่น "เหล็ก"), "Category" = หมวดย่อย
+      // Categories — รองรับทั้ง Parent Category/Category และ Category Level 1/2/3
       const categoryIds: string[] = []
-      const parentCategoryName = col(row, 'Parent Category')
-      const categoryName = col(row, 'Category')
+      // ลำดับ fallback: ใช้คอลัมน์ตรงก่อน ถ้าว่างค่อย fallback ไป Level columns
+      const parentCategoryName =
+        col(row, 'Parent Category') || col(row, 'Category Level 2') || col(row, 'Category Level 1')
+      const categoryName =
+        col(row, 'Category') || col(row, 'Category Level 3') || col(row, 'Category Level 2')
 
       // สร้าง/หา parent ก่อน
       let parentId: string | null = null
@@ -286,11 +290,20 @@ async function main() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const priceRaw = col(row, 'Price')
       const stockRaw = col(row, 'Stock')
+      const hasPrice = !!priceRaw && parseNum(priceRaw) !== undefined
+
+      // ถ้าไม่มีราคา → แสดงว่า "ราคาพิเศษ สอบถามได้" ใน shortDescription
+      const rawShortDesc = col(row, 'Description (TH)')
+      const priceLabel = !hasPrice ? '💡 ราคาพิเศษ สอบถามได้ โทร 02-434-8319\n\n' : ''
+      const shortDescription = rawShortDesc
+        ? `${priceLabel}${rawShortDesc.slice(0, 300)}`
+        : priceLabel || undefined
+
       const productData: any = {
         title,
-        shortDescription: col(row, 'Description (TH)') || undefined,
-        // ถ้า CSV ไม่มีราคา → ไม่ส่งไป (เก็บราคาเดิมใน DB ไว้)
-        ...(priceRaw ? { price: parseNum(priceRaw) ?? 0 } : {}),
+        shortDescription,
+        // ถ้า CSV ไม่มีราคา → เก็บราคาเดิมใน DB ไว้ (ไม่ overwrite)
+        ...(hasPrice ? { price: parseNum(priceRaw) ?? 0 } : { price: 0 }),
         ...(stockRaw ? { stock: parseNum(stockRaw) ?? 0 } : {}),
         status,
         featured: parseBool(col(row, 'Featured')),
