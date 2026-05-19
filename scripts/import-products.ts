@@ -303,19 +303,45 @@ async function main() {
       const salePrice = parseNum(col(row, 'Compare At Price'))
       if (salePrice !== undefined) productData.salePrice = salePrice
 
-      // Upsert
-      const existing = sku
-        ? await payload.find({ collection: 'products', where: { sku: { equals: sku } }, limit: 1 })
-        : { docs: [] }
+      // Upsert — 1) match by SKU  2) fallback match by title  3) create new
+      let existingDoc: { id: string } | null = null
+      let matchedBy = ''
 
-      if (existing.docs.length > 0) {
+      if (sku) {
+        const bySkuResult = await payload.find({
+          collection: 'products',
+          where: { sku: { equals: sku } },
+          limit: 1,
+          overrideAccess: true,
+        })
+        if (bySkuResult.docs.length > 0) {
+          existingDoc = bySkuResult.docs[0]!
+          matchedBy = 'SKU'
+        }
+      }
+
+      // ถ้าหาด้วย SKU ไม่เจอ → ลองหาด้วยชื่อสินค้า (กัน duplicate)
+      if (!existingDoc && title) {
+        const byTitleResult = await payload.find({
+          collection: 'products',
+          where: { title: { equals: title } },
+          limit: 1,
+          overrideAccess: true,
+        })
+        if (byTitleResult.docs.length > 0) {
+          existingDoc = byTitleResult.docs[0]!
+          matchedBy = 'title'
+        }
+      }
+
+      if (existingDoc) {
         await payload.update({
           collection: 'products',
-          id: String(existing.docs[0]!.id),
+          id: String(existingDoc.id),
           data: productData,
           context: { disableRevalidate: true },
         })
-        console.log(`  ↻  อัปเดต (SKU: ${sku})`)
+        console.log(`  ↻  อัปเดต (${matchedBy}: ${matchedBy === 'SKU' ? sku : title})`)
         updated++
       } else {
         await payload.create({
