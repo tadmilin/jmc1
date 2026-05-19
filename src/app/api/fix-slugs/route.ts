@@ -27,59 +27,71 @@ export async function GET(req: NextRequest) {
 
   const payload = await getPayload({ config: configPromise })
 
-  const fixed: { id: string; title: string; oldSlug: string; newSlug: string }[] = []
-  const skipped: number[] = []
-  const errors: { id: string; error: string }[] = []
+  type Change = { collection: string; id: string; title: string; oldSlug: string; newSlug: string }
+  const fixed: Change[] = []
+  let skipped = 0
+  const errors: { collection: string; id: string; error: string }[] = []
 
-  let page = 1
-  while (true) {
-    const result = await payload.find({
-      collection: 'products',
-      limit: 100,
-      page,
-      overrideAccess: true,
-      select: { id: true, title: true, slug: true },
-      depth: 0,
-    })
+  const collections = ['categories', 'products'] as const
 
-    if (result.docs.length === 0) break
+  for (const col of collections) {
+    let page = 1
+    while (true) {
+      const result = await payload.find({
+        collection: col,
+        limit: 100,
+        page,
+        overrideAccess: true,
+        select: { id: true, title: true, slug: true },
+        depth: 0,
+      })
 
-    for (const product of result.docs) {
-      const id = String(product.id)
-      const title = typeof product.title === 'string' ? product.title : ''
-      const oldSlug = typeof product.slug === 'string' ? product.slug : ''
-      if (!title) { skipped.push(0); continue }
+      if (result.docs.length === 0) break
 
-      const newSlug = format(title)
-      if (oldSlug === newSlug) { skipped.push(0); continue }
+      for (const doc of result.docs) {
+        const id = String(doc.id)
+        const title = typeof doc.title === 'string' ? doc.title : ''
+        const oldSlug = typeof doc.slug === 'string' ? doc.slug : ''
+        if (!title) { skipped++; continue }
 
-      if (!isDry) {
-        try {
-          await payload.update({
-            collection: 'products',
-            id,
-            data: { slug: newSlug },
-            overrideAccess: true,
-          })
-          fixed.push({ id, title, oldSlug, newSlug })
-        } catch (e) {
-          errors.push({ id, error: e instanceof Error ? e.message : String(e) })
+        const newSlug = format(title)
+        if (oldSlug === newSlug) { skipped++; continue }
+
+        if (!isDry) {
+          try {
+            await payload.update({
+              collection: col,
+              id,
+              data: { slug: newSlug },
+              overrideAccess: true,
+            })
+            fixed.push({ collection: col, id, title, oldSlug, newSlug })
+          } catch (e) {
+            errors.push({ collection: col, id, error: e instanceof Error ? e.message : String(e) })
+          }
+        } else {
+          fixed.push({ collection: col, id, title, oldSlug, newSlug })
         }
-      } else {
-        fixed.push({ id, title, oldSlug, newSlug })
       }
-    }
 
-    if (!result.hasNextPage) break
-    page++
+      if (!result.hasNextPage) break
+      page++
+    }
   }
+
+  const byCollection = fixed.reduce<Record<string, Change[]>>((acc, c) => {
+    ;(acc[c.collection] ??= []).push(c)
+    return acc
+  }, {})
 
   return NextResponse.json({
     mode: isDry ? 'dry-run (ไม่ได้แก้จริง)' : 'live (แก้แล้ว)',
     fixed: fixed.length,
-    skipped: skipped.length,
+    skipped,
     errors: errors.length,
-    changes: fixed,
+    byCollection: Object.fromEntries(
+      Object.entries(byCollection).map(([k, v]) => [k, { count: v.length, items: v }])
+    ),
     errorDetails: errors,
   }, { status: 200 })
 }
