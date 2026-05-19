@@ -151,16 +151,16 @@ export const ProductCard: React.FC<{
       )}
 
       {/* Image Section */}
-      <div className="relative w-full aspect-[4/3] sm:aspect-square overflow-hidden">
-        {!imageResource && (
-          <div
-            className={`w-full h-full flex items-center justify-center ${
-              isDarkTheme ? 'bg-gray-700 text-gray-400' : 'bg-gray-100 text-gray-500'
-            }`}
-          >
-            <div className="text-center">
+      <div
+        className={`relative w-full aspect-[4/3] sm:aspect-square overflow-hidden ${
+          isDarkTheme ? 'bg-gray-700' : 'bg-gray-100'
+        }`}
+      >
+        {!imageResource ? (
+          <div className="w-full h-full flex items-center justify-center">
+            <div className={`text-center ${isDarkTheme ? 'text-gray-400' : 'text-gray-400'}`}>
               <svg
-                className="w-16 h-16 mx-auto mb-2 opacity-50"
+                className="w-12 h-12 mx-auto mb-2 opacity-40"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -169,30 +169,34 @@ export const ProductCard: React.FC<{
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={1}
-                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                 />
               </svg>
-              <p className="text-sm">ไม่มีรูปภาพ</p>
+              <p className="text-xs">ไม่มีรูปภาพ</p>
             </div>
           </div>
-        )}
-        {imageResource && (
-          <div className="relative w-full h-full">
+        ) : (
+          <>
+            {/* fill=true + imgClassName ทำให้ NextImage cover ได้ถูกต้อง */}
             <Media
               resource={imageResource}
-              size="400px"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              fill={true}
+              htmlElement={null}
+              className="absolute inset-0 w-full h-full"
+              imgClassName="object-cover transition-transform duration-500 group-hover:scale-110"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             />
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+            {/* Gradient Overlay on hover */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10" />
 
             {/* Inactive Overlay */}
             {isInactive && (
-              <div className="absolute inset-0 bg-gray-900/50 flex items-center justify-center">
-                <span className="text-white font-semibold text-lg">ไม่พร้อมขาย</span>
+              <div className="absolute inset-0 bg-gray-900/60 flex items-center justify-center z-20">
+                <span className="text-white font-semibold text-base">ไม่พร้อมขาย</span>
               </div>
             )}
-          </div>
+          </>
         )}
       </div>
 
