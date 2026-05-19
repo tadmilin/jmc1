@@ -22,13 +22,21 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.local'), override: true 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const IMAGES_DIR = path.join(__dirname, 'images')
 
-// รับ --file argument หรือใช้ products.csv เป็น default
+// รับ arguments จาก CLI
 const args = process.argv.slice(2)
+
 const fileIdx = args.indexOf('--file')
 const csvArg = fileIdx !== -1 ? args[fileIdx + 1] : null
 const CSV_FILE = csvArg
   ? path.isAbsolute(csvArg) ? csvArg : path.join(process.cwd(), csvArg)
   : path.join(__dirname, 'products.csv')
+
+// --parent-category และ --category สำหรับ override หมวดหมู่ทุกสินค้าใน CSV
+const parentCatIdx = args.indexOf('--parent-category')
+const FORCE_PARENT_CATEGORY = parentCatIdx !== -1 ? args[parentCatIdx + 1] : null
+
+const catIdx = args.indexOf('--category')
+const FORCE_CATEGORY = catIdx !== -1 ? args[catIdx + 1] : null
 
 type Row = Record<string, string | undefined>
 
@@ -221,11 +229,13 @@ async function main() {
 
     try {
       // Categories — รองรับทั้ง Parent Category/Category และ Category Level 1/2/3
+      // --parent-category / --category จาก CLI จะ override ค่าจาก CSV ทั้งหมด
       const categoryIds: string[] = []
-      // ลำดับ fallback: ใช้คอลัมน์ตรงก่อน ถ้าว่างค่อย fallback ไป Level columns
       const parentCategoryName =
+        FORCE_PARENT_CATEGORY ||
         col(row, 'Parent Category') || col(row, 'Category Level 2') || col(row, 'Category Level 1')
       const categoryName =
+        FORCE_CATEGORY ||
         col(row, 'Category') || col(row, 'Category Level 3') || col(row, 'Category Level 2')
 
       // สร้าง/หา parent ก่อน
