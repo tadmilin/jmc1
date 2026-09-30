@@ -1,38 +1,45 @@
-import PageTemplate from './[slug]/page'
-import { generateMeta } from '@/utilities/generateMeta'
 import type { Metadata } from 'next'
+import React from 'react'
 
+import { BrandWall } from '@/components/home/BrandWall'
+import { CategoryBento } from '@/components/home/CategoryBento'
+import { ContactSection } from '@/components/home/ContactSection'
+import { DeliveryGallery } from '@/components/home/DeliveryGallery'
+import { Faq } from '@/components/home/Faq'
+import { FinalCta } from '@/components/home/FinalCta'
+import { Hero } from '@/components/home/Hero'
+import { HowItWorks } from '@/components/home/HowItWorks'
+import { ServiceArea } from '@/components/home/ServiceArea'
+import { site } from '@/content/site'
+import { getServerSideURL } from '@/utilities/getURL'
 
-export default PageTemplate
+/**
+ * Home is code-owned (docs/redesign-2026.md). The CMS "home" page document is no longer rendered;
+ * only the category tiles read Payload, through src/data/categories.ts.
+ */
+export const revalidate = 3600
 
-// เพิ่ม metadata เฉพาะสำหรับ homepage
 export async function generateMetadata(): Promise<Metadata> {
- 
-  try {
-
-    // SEO สำหรับหน้าแรกโดยเฉพาะ
-    const homeMetadata = await generateMeta({
-      doc: {
-        slug: 'home',
-        title: 'จงมีชัยค้าวัสดุ ตลิ่งชัน ปากซอยชักพระ6',
-        meta: {
-          title: 'จงมีชัยค้าวัสดุ ตลิ่งชัน ปากซอยชักพระ6 | วัสดุก่อสร้างใกล้ฉัน ราคาถูก ส่งด่วน',
-          description:
-            'ร้านวัสดุก่อสร้าง ร้านวัสดุก่อสร้างใกล้ฉัน ตลิ่งชัน ครบวงจร อิฐ หิน ปูน ทราย เหล็ก ประปา ไฟฟ้า ส่งเร็ว งานด่วน รับประกันคุณภาพ โทร 02-434-8319',
-        },
-      },
-      pageType: 'home',
-    })
-
-    return homeMetadata
-  } catch (error) {
-    console.error('Error generating home metadata:', error)
-
-    // Fallback metadata
-    return {
-      title: 'จงมีชัยค้าวัสดุ ตลิ่งชัน ปากซอยชักพระ6 | วัสดุก่อสร้าง ใกล้ฉัน ราคาถูก ส่งด่วน',
-      description:
-        'ร้านวัสดุก่อสร้าง ตลิ่งชัน ครบวงจร อิฐ หิน ปูน ทราย เหล็ก ท่อ PVC ราคาโรงงาน ส่งฟรี 24 ชม. บริการมืออาชีพ รับประกันคุณภาพ',
-    }
+  const baseURL = getServerSideURL()
+  return {
+    title: site.seo.title,
+    description: site.seo.description,
+    alternates: { canonical: `${baseURL}/` },
   }
+}
+
+export default function HomePage() {
+  return (
+    <main id="main">
+      <Hero />
+      <BrandWall />
+      <HowItWorks />
+      <DeliveryGallery />
+      <CategoryBento />
+      <ServiceArea />
+      <ContactSection />
+      <Faq />
+      <FinalCta />
+    </main>
+  )
 }

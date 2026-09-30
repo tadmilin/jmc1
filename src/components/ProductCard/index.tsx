@@ -282,6 +282,9 @@ export const ProductCard: React.FC<{
                   ฿{priceInfo.originalPrice.toLocaleString()}
                 </span>
               </div>
+            ) : !priceInfo.displayPrice || priceInfo.displayPrice <= 0 ? (
+              // No public price — the shop quotes on LINE/phone
+              <span className="text-sm font-semibold text-signal sm:text-base">สอบถามราคา</span>
             ) : (
               // Show regular price
               <span
@@ -311,7 +314,7 @@ export const ProductCard: React.FC<{
         <div className="flex gap-2">
           <button
             onClick={handleLinkClick}
-            className={`flex-1 text-center py-1.5 sm:py-2 px-2 sm:px-4 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-300 ${
+            className={`flex-1 text-center py-2 sm:py-2.5 px-2 sm:px-4 rounded-full font-semibold text-xs sm:text-sm transition-all duration-300 ${
               isInactive || isOutOfStock
                 ? isDarkTheme
                   ? 'bg-gray-700 text-gray-400 cursor-not-allowed'

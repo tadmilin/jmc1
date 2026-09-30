@@ -9,7 +9,7 @@ export const PRODUCT_BUTTON_CONFIG = {
   
   // Button labels
   labels: {
-    addLine: 'Add LINE',
+    addLine: 'ทักไลน์ ถามราคา',
     call: 'โทรหาเรา',
     quote: 'ขอเสนอราคา',
     share: 'แชร์สินค้า',
@@ -17,10 +17,10 @@ export const PRODUCT_BUTTON_CONFIG = {
   
   // CSS classes for buttons
   buttonStyles: {
-    line: 'gap-2 bg-green-50 border-green-500 text-green-700 hover:bg-green-100',
-    call: 'gap-2 bg-blue-50 border-blue-500 text-blue-700 hover:bg-blue-100',
-    quote: 'gap-2 bg-orange-50 border-orange-500 text-orange-700 hover:bg-orange-100',
-    share: 'w-full gap-2',
+    line: 'h-12 gap-2 rounded-full border-transparent bg-line font-semibold text-white hover:bg-line-dark hover:text-white',
+    call: 'h-12 gap-2 rounded-full border-hairline bg-white font-semibold text-ink hover:bg-concrete',
+    quote: 'h-12 gap-2 rounded-full border-transparent bg-signal font-semibold text-white hover:bg-signal-600 hover:text-white',
+    share: 'w-full gap-2 rounded-full',
   },
   
   // External URL patterns for detecting external links

@@ -1,4 +1,7 @@
 import { getServerSideURL } from '@/utilities/getURL'
+import { serviceAreas } from '@/content/areas'
+import { deliveries } from '@/content/deliveries'
+import { site } from '@/content/site'
 
 export type OrganizationSchema = {
   '@context': 'https://schema.org'
@@ -121,9 +124,9 @@ export function generateOrganizationSchema(): OrganizationSchema {
       width: 600,
       height: 314,
     },
-    image: [`${baseUrl}/jmc-og-image.svg`],
-    photo: [`${baseUrl}/jmc-og-image.svg`],
-    telephone: '+6624348319',
+    image: deliveries.slice(0, 4).map((d) => `${baseUrl}${d.src}`),
+    photo: deliveries.slice(0, 4).map((d) => `${baseUrl}${d.src}`),
+    telephone: site.phone.e164,
     email: 'tadeyes1@gmail.com',
     address: {
       '@type': 'PostalAddress',
@@ -141,38 +144,20 @@ export function generateOrganizationSchema(): OrganizationSchema {
     openingHoursSpecification: [
       {
         '@type': 'OpeningHoursSpecification',
-        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-        opens: '07:00',
-        closes: '17:00',
-      },
-      {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: ['Sunday'],
-        opens: '08:00',
-        closes: '16:00',
+        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        opens: site.hours.opens,
+        closes: site.hours.closes,
       },
     ],
     priceRange: '฿฿',
     paymentAccepted: ['Cash', 'Credit Card', 'Bank Transfer', 'Promptpay'],
     currenciesAccepted: 'THB',
     areaServed: [
-      { '@type': 'City', name: 'ตลิ่งชัน', sameAs: 'https://www.wikidata.org/wiki/Q2368578' },
-      { '@type': 'AdministrativeArea', name: 'แขวงตลิ่งชัน' },
-      { '@type': 'AdministrativeArea', name: 'เขตตลิ่งชัน' },
-      { '@type': 'Neighborhood', name: 'ปากซอยชักพระ6' },
+      { '@type': 'AdministrativeArea', name: 'เขตตลิ่งชัน', sameAs: 'https://www.wikidata.org/wiki/Q2368578' },
       { '@type': 'Neighborhood', name: 'ถนนชักพระ' },
-      { '@type': 'Neighborhood', name: 'ปิ่นเกล้า' },
-      { '@type': 'Neighborhood', name: 'จรัญสนิทวงศ์' },
-      { '@type': 'Neighborhood', name: 'บางขุนนนท์' },
-      { '@type': 'Neighborhood', name: 'บางพลัด' },
-      { '@type': 'Neighborhood', name: 'ท่าพระ' },
-      { '@type': 'Neighborhood', name: 'บางกอกน้อย' },
-      { '@type': 'Neighborhood', name: 'บางบำหรุ' },
-      { '@type': 'Neighborhood', name: 'บรมราชชนนี' },
-      { '@type': 'Neighborhood', name: 'สวนผัก' },
-      { '@type': 'City', name: 'ธนบุรี' },
-      { '@type': 'AdministrativeArea', name: 'พระราม 5' },
-      { '@type': 'City', name: 'บางกรวย' },
+      ...serviceAreas
+        .filter((a) => a.slug !== 'talingchan')
+        .map((a) => ({ '@type': 'Place', name: a.fullName, url: `${baseUrl}/service-areas/${a.slug}` })),
     ],
     keywords:
       'ร้านวัสดุก่อสร้างใกล้ฉัน, วัสดุก่อสร้างใกล้ฉัน, ร้านวัสดุก่อสร้างแถวตลิ่งชัน, วัสดุก่อสร้างแถวตลิ่งชัน, ร้านวัสดุก่อสร้างย่านตลิ่งชัน, ร้านวัสดุก่อสร้าง ตลิ่งชัน, วัสดุก่อสร้าง ตลิ่งชัน, วัสดุก่อสร้างราคาถูก, จำหน่ายวัสดุก่อสร้าง, อิฐใกล้ฉัน, อิฐแดง, อิฐมอญ, อิฐบล็อก, อิฐมวลเบา, ปูนใกล้ฉัน, ปูนซีเมนต์ใกล้ฉัน, ปูนก่อ, ปูนฉาบ, ปูนสำเร็จรูป, ทรายใกล้ฉัน, ทรายก่อสร้าง, ทรายหยาบ, หินใกล้ฉัน, หิน 3/4, หินคลุก, เหล็กใกล้ฉัน, เหล็กเส้น, เหล็กฉาก, เหล็กกล่อง, ท่อ PVC ใกล้ฉัน, ท่อน้ำ, ปั๊มน้ำใกล้ฉัน, สายไฟใกล้ฉัน, สีทาบ้านใกล้ฉัน, กระเบื้องใกล้ฉัน, กระเบื้องหลังคา, ประตูหน้าต่างใกล้ฉัน, อุปกรณ์ก่อสร้างใกล้ฉัน, ส่งวัสดุฟรีถึงไซต์งาน, ต่อเติมบ้าน, ซ่อมแซมบ้าน, รีโนเวทบ้าน',
@@ -207,7 +192,8 @@ export function generateOrganizationSchema(): OrganizationSchema {
     },
     foundingDate: '1990-01-01',
     sameAs: [
-      'https://www.facebook.com/jmc1990lekmor',
+      site.facebook,
+      site.line.addUrl,
       'https://page.line.me/308aoxno',
       'https://share.google/TxjtGXd6tcJBmaMCd',
     ],
@@ -218,7 +204,7 @@ export function generateOrganizationSchema(): OrganizationSchema {
       bestRating: '5',
       worstRating: '1',
     },
-    openingHours: 'Mo-Sa 07:00-17:00 Su 08:00-16:00',
+    openingHours: `Mo-Su ${site.hours.opens}-${site.hours.closes}`,
     additionalProperty: [
       {
         '@type': 'PropertyValue',

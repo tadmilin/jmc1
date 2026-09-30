@@ -1,5 +1,37 @@
 const tailwindcssAnimate = require('tailwindcss-animate')
 const typography = require('@tailwindcss/typography')
+const defaultColors = require('tailwindcss/colors')
+
+// Warm ink scale. Legacy components use blue/indigo utility classes; mapping those
+// scales here re-skins them to the redesign palette without touching each file.
+const ink = {
+  50: '#F5F4F0',
+  100: '#ECEAE4',
+  200: '#DAD7CE',
+  300: '#BDB9AE',
+  400: '#8F8B81',
+  500: '#3A3D42',
+  600: '#16191D',
+  700: '#0B0D10',
+  800: '#07080A',
+  900: '#050607',
+  950: '#030304',
+  DEFAULT: '#0B0D10',
+}
+
+const signal = {
+  50: '#FFF3EE',
+  100: '#FFE3D6',
+  200: '#FFC4A8',
+  300: '#FF9E73',
+  400: '#FF7A45',
+  500: '#FF5A1F',
+  600: '#E8440C',
+  700: '#BF3408',
+  800: '#972A0B',
+  900: '#7A250D',
+  DEFAULT: '#FF5A1F',
+}
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -84,6 +116,15 @@ module.exports = {
         sm: 'calc(var(--radius) - 4px)',
       },
       colors: {
+        ink,
+        signal,
+        paper: '#F7F6F2',
+        concrete: '#ECEAE4',
+        hairline: '#DAD7CE',
+        line: { DEFAULT: '#06C755', dark: '#05B34C' },
+        blue: ink,
+        indigo: ink,
+        gray: defaultColors.stone,
         accent: {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
@@ -122,8 +163,8 @@ module.exports = {
         warning: 'hsl(var(--warning))',
       },
       fontFamily: {
-        mono: ['var(--font-geist-mono)'],
-        sans: ['var(--font-geist-sans)'],
+        mono: ['var(--font-geist-mono)', 'ui-monospace', 'monospace'],
+        sans: ['var(--font-anuphan)', 'system-ui', 'sans-serif'],
       },
       keyframes: {
         'accordion-down': {
@@ -139,10 +180,13 @@ module.exports = {
         DEFAULT: {
           css: [
             {
-              '--tw-prose-body': 'var(--text)',
-              '--tw-prose-headings': 'var(--text)',
+              '--tw-prose-body': '#44403C',
+              '--tw-prose-headings': '#0B0D10',
+              '--tw-prose-links': '#0B0D10',
+              '--tw-prose-bold': '#0B0D10',
               h1: {
-                fontWeight: 'normal',
+                fontWeight: '600',
+                letterSpacing: '-0.03em',
                 marginBottom: '0.25em',
               },
             },

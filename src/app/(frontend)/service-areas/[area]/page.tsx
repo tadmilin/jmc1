@@ -1,332 +1,243 @@
-import React from 'react'
 import type { Metadata } from 'next'
+import Image from 'next/image'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { generateMeta } from '@/utilities/generateMeta'
-import { generateContactPageSchema } from '@/utils/contact-about-schema'
+import React from 'react'
+import { ArrowUpRight, MapPin, Phone } from 'lucide-react'
 
-const serviceAreas = {
-  pinklao: {
-    name: 'ปิ่นเกล้า',
-    searchName: 'ปิ่นเกล้า',
-    fullName: 'เขตปิ่นเกล้า',
-    distance: '8 กม.',
-    deliveryTime: '30-45 นาที',
-    landmarks: ['โรงพยาบาลศิริราช', 'ห้างสรรพสินค้าเซ็นทรัลปิ่นเกล้า', 'สะพานสมเด็จพระปิ่นเกล้า'],
-    description:
-      'ร้านวัสดุก่อสร้าง ใกล้ปิ่นเกล้า บริการย่านฝั่งธนบุรีทางทิศตะวันตกของกรุงเทพฯ ส่งฟรีทุกออเดอร์ มีอิฐ หิน ปูน ทราย ท่อ PVC คุณภาพดี ราคาถูก',
-    uniqueContent: 'พื้นที่ปิ่นเกล้าเป็นย่านที่อยู่อาศัยหนาแน่น มีโครงการก่อสร้างต่อเนื่อง ร้านเราอยู่ห่างเพียง 8 กม. ผ่านถนนจรัญสนิทวงศ์ สามารถส่งได้ทั้งโครงการขนาดใหญ่และงานซ่อมแซมบ้าน',
-  },
-  jaran: {
-    name: 'จรัญสนิทวงศ์',
-    searchName: 'จรัญ',
-    fullName: 'ถนนจรัญสนิทวงศ์',
-    distance: '7 กม.',
-    deliveryTime: '25-40 นาที',
-    landmarks: ['MRT สถานีจรัญ 13', 'ตลาดพลู', 'ท่าเรือวัดระฆัง'],
-    description:
-      'ร้านวัสดุก่อสร้าง ใกล้จรัญสนิทวงศ์ ส่งฟรีทุกออเดอร์ อิฐแดง อิฐมอญ ปูนซีเมนต์ ทรายก่อสร้าง คุณภาพเยี่ยม',
-    uniqueContent: 'แนวถนนจรัญสนิทวงศ์มีคอนโดมิเนียมและอาคารพาณิชย์ขึ้นใหม่จำนวนมาก ร้านเราส่งวัสดุได้รวดเร็วผ่านเส้นทางสายนี้ โดยไม่ติดสัญญาณไฟในชั่วโมงเร่งด่วน',
-  },
-  bangkunnon: {
-    name: 'บางขุนนนท์',
-    searchName: 'บางขุนนนท์',
-    fullName: 'เขตบางขุนนนท์',
-    distance: '5 กม.',
-    deliveryTime: '20-35 นาที',
-    landmarks: ['MRT สถานีบางขุนนนท์', 'ตลาดบางขุนนนท์', 'วัดดุสิตาราม'],
-    description: 'ร้านวัสดุก่อสร้าง ใกล้บางขุนนนท์ ส่งฟรีทุกออเดอร์ วัสดุครบครัน ราคาถูก คุณภาพดี',
-    uniqueContent: 'บางขุนนนท์เป็นหนึ่งในพื้นที่ที่ใกล้ร้านที่สุด ส่งได้ภายใน 20 นาที เหมาะสำหรับงานด่วนที่ขาดวัสดุกลางคัน รับออเดอร์ถึง 17:00 น. ส่งทันวันเดียวกัน',
-  },
-  borom: {
-    name: 'บรมราชชนนี',
-    searchName: 'บรมราชชนนี',
-    fullName: 'ถนนบรมราชชนนี',
-    distance: '6 กม.',
-    deliveryTime: '25-40 นาที',
-    landmarks: ['โรงพยาบาลศิริราช ปิยมหาราชการุณย์', 'ห้างบิ๊กซี บรมราชชนนี', 'สวนสาธารณะตากสิน'],
-    description: 'ร้านวัสดุก่อสร้าง ใกล้บรมราชชนนี ส่งฟรีทุกออเดอร์ อิฐ หิน ปูน ทราย เหล็ก ครบครัน',
-    uniqueContent: 'แนวถนนบรมราชชนนีมีบ้านจัดสรรและหมู่บ้านหนาแน่น ร้านเราส่งวัสดุครอบคลุมทั้งสองฝั่งถนน มีรถบรรทุก 4 ล้อและ 6 ล้อพร้อมส่งสำหรับออเดอร์ขนาดใหญ่',
-  },
-  suanphak: {
-    name: 'สวนผัก',
-    searchName: 'สวนผัก',
-    fullName: 'ถนนสวนผัก',
-    distance: '4 กม.',
-    deliveryTime: '15-30 นาที',
-    landmarks: ['วัดสวนผัก', 'โรงเรียนวัดสวนผัก', 'ชุมชนสวนผัก'],
-    description: 'ร้านวัสดุก่อสร้าง ใกล้สวนผัก ส่งฟรีทุกออเดอร์ ใกล้ที่สุด ส่งเร็ว คุณภาพดี',
-    uniqueContent: 'สวนผักอยู่ห่างจากร้านเพียง 4 กม. เป็นระยะทางที่สั้นที่สุดในบรรดาพื้นที่ให้บริการ ทำให้ส่งได้เร็วที่สุดภายใน 15 นาที เหมาะมากสำหรับงานก่อสร้างที่ต้องการวัสดุด่วน',
-  },
-  rama5: {
-    name: 'พระราม 5',
-    searchName: 'พระราม 5',
-    fullName: 'ถนนพระราม 5',
-    distance: '9 กม.',
-    deliveryTime: '35-50 นาที',
-    landmarks: ['สวนจตุจักร', 'โรงพยาบาลราชวิถี', 'ห้างแพลตินั่ม'],
-    description: 'ร้านวัสดุก่อสร้าง ใกล้พระราม 5 ส่งฟรีทุกออเดอร์ วัสดุครบครัน ราคาถูก',
-    uniqueContent: 'ย่านพระราม 5 มีหมู่บ้านจัดสรรและโครงการที่อยู่อาศัยขนาดใหญ่ ร้านเราให้บริการทั้งการซื้อปลีกและส่งเป็นโครงการ มีส่วนลดพิเศษสำหรับออเดอร์จำนวนมาก',
-  },
-  bangkruai: {
-    name: 'บางกรวย',
-    searchName: 'บางกรวย',
-    fullName: 'อำเภอบางกรวย นนทบุรี',
-    distance: '12 กม.',
-    deliveryTime: '45-60 นาที',
-    landmarks: ['ตลาดน้ำบางกรวย', 'วัดชมภูเวก', 'ห้างแมคโครบางกรวย'],
-    description: 'ร้านวัสดุก่อสร้าง ใกล้บางกรวย นนทบุรี ส่งฟรีทุกออเดอร์ ครอบคลุมพื้นที่กว้าง คุณภาพดี',
-    uniqueContent: 'บางกรวยเป็นพื้นที่ในนนทบุรีที่ร้านเราขยายบริการครอบคลุม มีทั้งชุมชนเก่าแก่และโครงการบ้านจัดสรรใหม่ รับออเดอร์ออนไลน์ได้ตลอด 24 ชม. ส่งทุกวันไม่เว้นวันหยุด',
-  },
-  talingchan: {
-    name: 'ตลิ่งชัน',
-    searchName: 'ตลิ่งชัน',
-    fullName: 'เขตตลิ่งชัน',
-    distance: '3 กม.',
-    deliveryTime: '10-25 นาที',
-    landmarks: ['ตลาดน้ำตลิ่งชัน', 'สถานีรถไฟตลิ่งชัน', 'ซอยชักพระ'],
-    description:
-      'ร้านวัสดุก่อสร้าง ใกล้ตลิ่งชัน ส่งฟรีทุกออเดอร์ ใกล้ที่สุด ส่งเร็วที่สุด คุณภาพดี',
-    uniqueContent: 'ร้านจงมีชัยตั้งอยู่ที่ปากซอยชักพระ 6 ในเขตตลิ่งชัน ดังนั้นพื้นที่ตลิ่งชันคือพื้นที่บ้านของเรา ส่งได้เร็วที่สุดภายใน 10 นาที รู้จักทุกซอยในพื้นที่ดี',
-  },
-  bangphlat: {
-    name: 'บางพลัด',
-    searchName: 'บางพลัด',
-    fullName: 'เขตบางพลัด',
-    distance: '6 กม.',
-    deliveryTime: '25-40 นาที',
-    landmarks: ['MRT สถานีบางพลัด', 'ห้างบิ๊กซี บางพลัด', 'วัดบางพลัดนอก'],
-    description: 'ร้านวัสดุก่อสร้าง ใกล้บางพลัด ส่งฟรีทุกออเดอร์ วัสดุครบครัน ราคาถูก',
-    uniqueContent: 'บางพลัดเชื่อมต่อกับตลิ่งชันโดยตรงผ่านถนนบรมราชชนนี ร้านเราส่งครอบคลุมทั้งเขต มีรถส่งออกทุกเช้า 8:00-17:00 น. สำหรับออเดอร์ที่สั่งก่อน 16:00 น.',
-  },
-  thonburi: {
-    name: 'ธนบุรี',
-    searchName: 'ธนบุรี',
-    fullName: 'เขตธนบุรี',
-    distance: '10 กม.',
-    deliveryTime: '40-55 นาที',
-    landmarks: ['วัดอรุณราชวราราม (วัดแจ้ง)', 'สถานีรถไฟธนบุรี', 'ห้างเซ็นทรัล พระราม 2'],
-    description: 'ร้านวัสดุก่อสร้าง ใกล้ธนบุรี ส่งฟรีทุกออเดอร์ ครอบคลุมพื้นที่กว้าง คุณภาพดี',
-    uniqueContent: 'เขตธนบุรีเป็นพื้นที่ประวัติศาสตร์ที่มีงานบูรณะอาคารเก่าและก่อสร้างใหม่อยู่เสมอ ร้านเราเข้าใจความต้องการวัสดุเฉพาะทั้งงานโบราณสถานและงานก่อสร้างสมัยใหม่',
-  },
+import { ServiceMap } from '@/components/home/ServiceMap'
+import StructuredData from '@/components/SEO/StructuredData'
+import { LineIcon } from '@/components/site/icons'
+import { Reveal } from '@/components/site/Reveal'
+import { getServiceArea, nearbyAreas, serviceAreas } from '@/content/areas'
+import { deliveries } from '@/content/deliveries'
+import { fullAddress, site } from '@/content/site'
+import { getServerSideURL } from '@/utilities/getURL'
+
+type Args = { params: Promise<{ area: string }> }
+
+const materials = [
+  'อิฐมอญ · อิฐบล็อก · อิฐมวลเบา',
+  'ปูนซีเมนต์ · ปูนสำเร็จรูป',
+  'ทราย · หิน · หินคลุก',
+  'เหล็กเส้น · เหล็กกล่อง · เหล็กรูปพรรณ',
+  'เสาเข็มคอนกรีต · ท่อคอนกรีต',
+  'ท่อ PVC · อุปกรณ์ประปา',
+  'สายไฟ · อุปกรณ์ไฟฟ้า',
+  'สีทาบ้าน TOA · ผสมสีตามสั่ง',
+  'แผ่นบอร์ด · ยิปซัม · ไม้อัด',
+]
+
+export async function generateStaticParams() {
+  return serviceAreas.map((a) => ({ area: a.slug }))
 }
 
-interface ServiceAreaPageProps {
-  params: {
-    area: string
-  }
-}
+export async function generateMetadata({ params }: Args): Promise<Metadata> {
+  const { area: slug } = await params
+  const area = getServiceArea(slug)
+  if (!area) return { title: 'ไม่พบหน้าที่ค้นหา | จงมีชัยค้าวัสดุ' }
 
-export async function generateMetadata({ params }: ServiceAreaPageProps): Promise<Metadata> {
-  const areaData = serviceAreas[params.area as keyof typeof serviceAreas]
+  const url = `${getServerSideURL()}/service-areas/${area.slug}`
+  const title = `วัสดุก่อสร้าง ${area.name} ส่งถึงหน้างาน | ร้านวัสดุก่อสร้างใกล้${area.name} จงมีชัยค้าวัสดุ`
+  const description = `ร้านวัสดุก่อสร้างใกล้${area.name} อิฐ หิน ปูน ทราย เหล็ก ท่อ สี ส่งถึงหน้างาน${area.fullName} จากร้านจงมีชัยค้าวัสดุ ปากซอยชักพระ 6 ตลิ่งชัน ห่างประมาณ ${area.distanceKm} กม. แอดไลน์ ${site.line.id} โทร ${site.phone.display}`
 
-  if (!areaData) {
-    return generateMeta({
-      doc: {
-        title: 'ไม่พบหน้าที่ค้นหา - จงมีชัยค้าวัสดุ',
-        meta: {
-          title: 'ไม่พบหน้าที่ค้นหา - จงมีชัยค้าวัสดุ',
-          description: 'ไม่พบหน้าที่ค้นหา กรุณาตรวจสอบ URL อีกครั้ง',
-        },
-      },
-      pageType: 'page',
-    })
-  }
-
-  const title = `วัสดุก่อสร้าง ${areaData.name} | ส่งฟรี ${areaData.distance} | จงมีชัยค้าวัสดุ ตลิ่งชัน`
-  const description = `🏆 ${areaData.description} ส่งฟรี ${areaData.distance} ภายใน ${areaData.deliveryTime} โทร 02-434-8319`
-
-  return generateMeta({
-    doc: {
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
       title,
-      slug: `service-areas/${params.area}`,
-      meta: {
-        title,
-        description,
-      },
+      description,
+      url,
+      locale: 'th_TH',
+      type: 'website',
+      images: [{ url: `${getServerSideURL()}${site.seo.ogImage}` }],
     },
-    pageType: 'page',
-  })
+  }
 }
 
-export default async function ServiceArea({ params }: ServiceAreaPageProps) {
-  const areaData = serviceAreas[params.area as keyof typeof serviceAreas]
+export default async function ServiceAreaPage({ params }: Args) {
+  const { area: slug } = await params
+  const area = getServiceArea(slug)
+  if (!area) notFound()
 
-  if (!areaData) {
-    notFound()
-  }
+  const baseURL = getServerSideURL()
+  const nearby = nearbyAreas(area.slug, 4)
+  const photos = deliveries.slice(0, 3)
 
-  const schemaMarkup = generateContactPageSchema()
+  const schema = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'หน้าแรก', item: `${baseURL}/` },
+        { '@type': 'ListItem', position: 2, name: 'พื้นที่จัดส่ง', item: `${baseURL}/#service-area` },
+        { '@type': 'ListItem', position: 3, name: `วัสดุก่อสร้าง ${area.name}`, item: `${baseURL}/service-areas/${area.slug}` },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: `ส่งวัสดุก่อสร้างถึงหน้างาน ${area.fullName}`,
+      serviceType: 'ส่งวัสดุก่อสร้าง',
+      provider: { '@id': `${baseURL}/#hardware-store` },
+      areaServed: { '@type': 'Place', name: area.fullName },
+      url: `${baseURL}/service-areas/${area.slug}`,
+    },
+  ]
 
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(schemaMarkup),
-        }}
-      />
-      {/* Simple Hero Section */}
-      <section className="bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-800 text-white py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              🏆 วัสดุก่อสร้าง {areaData.name} อันดับ 1
+    <main id="main">
+      <StructuredData data={schema} />
+
+      <section className="relative isolate overflow-hidden bg-ink text-paper">
+        <div
+          aria-hidden="true"
+          className="grid-lines absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_80%_70%_at_30%_40%,#000_40%,transparent_100%)]"
+        />
+        <div className="container-x grid gap-12 pb-16 pt-8 lg:grid-cols-12 lg:items-center lg:pb-20 lg:pt-12">
+          <div className="lg:col-span-7">
+            <nav aria-label="breadcrumb" className="fade-in text-sm text-stone-400">
+              <Link href="/" className="hover:text-paper">
+                หน้าแรก
+              </Link>
+              <span className="mx-2 text-stone-600">/</span>
+              <Link href="/#service-area" className="hover:text-paper">
+                พื้นที่จัดส่ง
+              </Link>
+              <span className="mx-2 text-stone-600">/</span>
+              <span className="text-paper">{area.name}</span>
+            </nav>
+
+            <h1 className="mt-8">
+              <span className="mask-line kicker text-stone-400">
+                <span>ส่งถึงหน้างาน{area.fullName} · ห่างร้านประมาณ {area.distanceKm} กม.</span>
+              </span>
+              <span className="mt-4 block text-[clamp(2.6rem,6.6vw,5.5rem)] font-semibold leading-[1.04] tracking-[-0.04em]">
+                <span className="mask-line">
+                  <span style={{ ['--d' as string]: '100ms' }}>ร้านวัสดุก่อสร้าง</span>
+                </span>
+                <span className="mask-line">
+                  <span style={{ ['--d' as string]: '200ms' }}>
+                    ใกล้<span className="text-signal">{area.name}</span>
+                  </span>
+                </span>
+              </span>
             </h1>
-            <p className="text-xl md:text-2xl mb-8 opacity-90">
-              ร้านวัสดุก่อสร้างใกล้{areaData.name} ส่งฟรี {areaData.distance} ภายใน{' '}
-              {areaData.deliveryTime}
+
+            <p className="fade-in mt-7 max-w-xl text-[1.05rem] leading-8 text-stone-300" style={{ ['--d' as string]: '380ms' }}>
+              {area.intro}
             </p>
-            <div className="grid md:grid-cols-2 gap-4 mb-8 text-left max-w-2xl mx-auto">
-              <div className="space-y-2">
-                <p className="flex items-center">
-                  <span className="mr-2">✅</span> อิฐแดง อิฐมอญ คุณภาพเยี่ยม
-                </p>
-                <p className="flex items-center">
-                  <span className="mr-2">✅</span> ปูนซีเมนต์ ปูนก่อ ปูนฉาบ
-                </p>
-                <p className="flex items-center">
-                  <span className="mr-2">✅</span> ทรายก่อสร้าง ทรายหยาบ ทรายละเอียด
-                </p>
-              </div>
-              <div className="space-y-2">
-                <p className="flex items-center">
-                  <span className="mr-2">✅</span> หินคลุก หิน 1 หิน 2 หิน 3
-                </p>
-                <p className="flex items-center">
-                  <span className="mr-2">✅</span> ท่อ PVC ข้อต่อ อุปกรณ์ประปา
-                </p>
-                <p className="flex items-center">
-                  <span className="mr-2">✅</span> ส่งฟรี ราคาโรงงาน
-                </p>
-              </div>
+
+            <div className="fade-in mt-9 flex flex-col gap-3 sm:flex-row" style={{ ['--d' as string]: '480ms' }}>
+              <a href={site.line.addUrl} target="_blank" rel="noopener noreferrer" className="btn btn-line btn-lg">
+                <LineIcon className="h-6 w-6 text-white" />
+                แอดไลน์ ส่งรายการของ
+              </a>
+              <a href={site.phone.href} className="btn btn-ghost-light btn-lg">
+                <Phone className="h-5 w-5" />
+                <span className="font-mono">{site.phone.display}</span>
+              </a>
             </div>
-            <div className="bg-white bg-opacity-20 rounded-xl p-6 inline-block">
-              <p className="text-3xl font-bold mb-2">📞 สั่งเลย: 02-434-8319</p>
-              <p className="text-lg opacity-90">ปรึกษาฟรี คำนวณปริมาณให้</p>
+          </div>
+
+          <div className="lg:col-span-5">
+            <div className="rounded-[2rem] bg-white/[0.03] p-3 ring-1 ring-inset ring-white/10 sm:p-5">
+              <ServiceMap highlight={area.slug} className="aspect-square w-full" />
             </div>
           </div>
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
-          {/* Service Area Info */}
-          <section className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-8 mb-12">
-            <h2 className="text-3xl font-bold text-blue-800 mb-6">
-              🎯 บริการพื้นที่ {areaData.fullName}
+      <section className="bg-paper py-20 sm:py-24">
+        <div className="container-x grid gap-14 lg:grid-cols-12">
+          <Reveal className="lg:col-span-5">
+            <p className="eyebrow text-signal">Materials</p>
+            <h2 className="mt-4 text-[clamp(1.9rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.03em]">
+              ส่งอะไรถึง{area.name}ได้บ้าง
             </h2>
-            {areaData.uniqueContent && (
-              <p className="text-gray-700 text-lg mb-6 leading-relaxed border-l-4 border-blue-400 pl-4">
-                {areaData.uniqueContent}
-              </p>
-            )}
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-3">📍 ข้อมูลการส่ง</h3>
-                <ul className="space-y-2 text-gray-700">
-                  <li>
-                    📏 <strong>ระยะทาง:</strong> {areaData.distance} จากร้าน
-                  </li>
-                  <li>
-                    ⏰ <strong>เวลาส่ง:</strong> {areaData.deliveryTime}
-                  </li>
-                  <li>
-                    🚚 <strong>ค่าส่ง:</strong> ฟรี! (ออเดอร์ขั้นต่ำ 1,000 บาท)
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-3">🗺️ จุดสังเกตใกล้เคียง</h3>
-                <ul className="space-y-2 text-gray-700">
-                  {areaData.landmarks.map((landmark, index) => (
-                    <li key={index}>📌 {landmark}</li>
+            <p className="mt-5 max-w-md text-[0.98rem] leading-7 text-stone-600">
+              วัสดุก่อสร้างครบทั้งงานโครงสร้างและงานตกแต่ง จัดรถให้เหมาะกับของ รถกระบะเข้าซอยได้ รถ 6 ล้อและรถเครนสำหรับของหนัก
+            </p>
+            {area.landmarks.length > 0 && (
+              <div className="mt-8">
+                <p className="text-sm font-medium text-stone-500">จุดสังเกตในพื้นที่</p>
+                <ul className="mt-3 flex flex-wrap gap-2">
+                  {area.landmarks.map((l) => (
+                    <li key={l} className="inline-flex items-center gap-1.5 rounded-full bg-concrete px-3.5 py-1.5 text-sm">
+                      <MapPin className="h-3.5 w-3.5 text-signal" />
+                      {l}
+                    </li>
                   ))}
                 </ul>
               </div>
-            </div>
-          </section>
+            )}
+          </Reveal>
 
-          {/* Products Section */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-bold text-blue-800 mb-6">
-              🏗️ วัสดุก่อสร้าง ส่ง{areaData.name} ครบทุกชนิด
-            </h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              {[
-                { name: 'อิฐ หิน ปูน ทราย', desc: 'คุณภาพดี รับประกัน', icon: '🧱' },
-                { name: 'เหล็ก ประปา ไฟฟ้า', desc: 'ของแท้ ครบครัน', icon: '⚡' },
-                { name: 'ท่อ PVC อุปกรณ์', desc: 'ครบชุด ทุกขนาด', icon: '🔧' },
-                { name: 'สีทาบ้าน', desc: 'คำนวณสีฟรี', icon: '🎨' },
-                { name: 'ปั๊มน้ำ', desc: 'ติดตั้งให้ฟรี', icon: '💧' },
-                { name: 'ช่างรับเหมา', desc: 'มืออาชีพ', icon: '👷' },
-              ].map((product) => (
-                <div
-                  key={product.name}
-                  className="bg-white border border-gray-200 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <div className="text-3xl mb-3 text-center">{product.icon}</div>
-                  <h3 className="font-bold text-lg text-gray-900 mb-2 text-center">
-                    {product.name}
-                  </h3>
-                  <p className="text-gray-600 text-center">{product.desc}</p>
-                </div>
+          <Reveal delay={100} className="lg:col-span-7">
+            <ul className="grid gap-px overflow-hidden rounded-3xl border border-hairline bg-hairline sm:grid-cols-2">
+              {materials.map((m) => (
+                <li key={m} className="bg-white px-6 py-5 text-[1.02rem] font-medium">
+                  {m}
+                </li>
               ))}
-            </div>
-          </section>
-
-          {/* Why Choose Us */}
-          <section className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-8 mb-12">
-            <h2 className="text-3xl font-bold text-green-800 mb-6">
-              ⭐ ทำไมต้องเลือกเรา สำหรับ{areaData.name}
-            </h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              {[
-                {
-                  icon: '🚚',
-                  title: 'ส่งฟรี ส่งเร็ว',
-                  desc: `ส่งฟรีทุกออเดอร์ถึง${areaData.name} ภายใน ${areaData.deliveryTime}`,
-                },
-                {
-                  icon: '💰',
-                  title: 'ราคาถูกที่สุด',
-                  desc: 'ราคาโรงงาน ไม่ผ่านตัวกลาง ประหยัดได้มาก',
-                },
-                { icon: '✅', title: 'คุณภาพดี', desc: 'วัสดุคุณภาพเยี่ยม ผ่านมาตรฐาน มอก.' },
-                { icon: '📞', title: 'บริการดี', desc: 'ปรึกษาฟรี แนะนำ คำนวณปริมาณให้' },
-              ].map((feature, index) => (
-                <div key={index} className="flex items-start space-x-4">
-                  <div className="text-3xl">{feature.icon}</div>
-                  <div>
-                    <h3 className="font-semibold text-gray-800 mb-1">{feature.title}</h3>
-                    <p className="text-gray-600">{feature.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Contact Section */}
-          <section className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl p-8 text-white text-center">
-            <h2 className="text-3xl font-bold mb-4">
-              📞 สั่งวัสดุก่อสร้าง ส่ง{areaData.name} เลย!
-            </h2>
-            <p className="text-xl mb-6 opacity-90">
-              ปรึกษาฟรี คำนวณปริมาณให้ ส่งฟรี {areaData.distance} ภายใน {areaData.deliveryTime}
-            </p>
-            <div className="space-y-2">
-              <p className="text-2xl font-bold">📞 02-434-8319</p>
-              <p className="text-lg">📱 Line: @jmcmaterials</p>
-              <p className="text-sm opacity-80">⏰ เปิดทุกวัน 07:00-18:00 น.</p>
-            </div>
-          </section>
+              <li className="bg-ink px-6 py-5">
+                <Link href="/products" className="flex items-center justify-between font-medium text-paper">
+                  ดูสินค้าทั้งหมด
+                  <ArrowUpRight className="h-5 w-5" />
+                </Link>
+              </li>
+            </ul>
+          </Reveal>
         </div>
-      </div>
-    </>
-  )
-}
+      </section>
 
-export async function generateStaticParams() {
-  return Object.keys(serviceAreas).map((area) => ({
-    area,
-  }))
+      <section className="bg-concrete py-20 sm:py-24">
+        <div className="container-x">
+          <Reveal className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+            <h2 className="text-[clamp(1.9rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.03em]">
+              ส่งจริงจากร้านเรา
+            </h2>
+            <p className="max-w-sm text-[0.95rem] leading-7 text-stone-600">
+              รูปจากงานส่งของจริง ร้านอยู่ {fullAddress}
+            </p>
+          </Reveal>
+          <ul className="mt-10 grid gap-4 sm:grid-cols-3">
+            {photos.map((p, i) => (
+              <Reveal as="li" key={p.src} delay={i * 100} className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-stone-300">
+                <Image src={p.src} alt={p.alt} fill sizes="(min-width: 640px) 33vw, 100vw" className="object-cover" />
+                <span className="absolute bottom-4 left-4 rounded-full bg-black/45 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md">
+                  {p.material}
+                </span>
+              </Reveal>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section className="bg-paper py-20 sm:py-24">
+        <div className="container-x">
+          <Reveal>
+            <h2 className="text-[clamp(1.6rem,3.2vw,2.4rem)] font-semibold tracking-[-0.03em]">พื้นที่ใกล้เคียง</h2>
+          </Reveal>
+          <Reveal as="ul" delay={80} className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {nearby.map((a) => (
+              <li key={a.slug}>
+                <Link
+                  href={`/service-areas/${a.slug}`}
+                  className="group flex h-full items-center justify-between rounded-2xl border border-hairline bg-white px-5 py-5 transition-colors hover:border-ink"
+                >
+                  <span>
+                    <span className="block text-sm text-stone-500">วัสดุก่อสร้าง</span>
+                    <span className="text-lg font-semibold">{a.name}</span>
+                  </span>
+                  <ArrowUpRight className="h-5 w-5 text-stone-400 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-ink" />
+                </Link>
+              </li>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+    </main>
+  )
 }
