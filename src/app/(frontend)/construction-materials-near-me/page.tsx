@@ -1,16 +1,17 @@
 import React from 'react'
 import type { Metadata } from 'next'
-import { draftMode } from 'next/headers'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
-import { homeStatic } from '@/endpoints/seed/home-static'
-import { RenderBlocks } from '@/blocks/RenderBlocks'
-import { RenderHero } from '@/heros/RenderHero'
-import PageClient from '../[slug]/page.client'
+import { BrandWall } from '@/components/home/BrandWall'
+import { CategoryBento } from '@/components/home/CategoryBento'
+import { ContactSection } from '@/components/home/ContactSection'
+import { DeliveryGallery } from '@/components/home/DeliveryGallery'
+import { FinalCta } from '@/components/home/FinalCta'
+import { Hero } from '@/components/home/Hero'
+import { HowItWorks } from '@/components/home/HowItWorks'
+import { ServiceArea } from '@/components/home/ServiceArea'
 import StructuredData from '@/components/SEO/StructuredData'
 import { getServerSideURL } from '@/utilities/getURL'
 
-// หน้า Local SEO: ร้านวัสดุก่อสร้าง ใกล้ฉัน (English URL) — แสดง content จากหน้า home
+// หน้า Local SEO: ร้านวัสดุก่อสร้าง ใกล้ฉัน (English URL) — ใช้ section เดียวกับหน้าแรก (ไม่รวม FAQ เพราะหน้านี้มี FAQPage schema ของตัวเอง)
 export default async function ConstructionMaterialsNearMePage() {
   const baseUrl = getServerSideURL()
   const pageUrl = `${baseUrl}/construction-materials-near-me`
@@ -107,36 +108,19 @@ export default async function ConstructionMaterialsNearMePage() {
     ],
   }
 
-  const { isEnabled: draft } = await draftMode()
-
-  let page: typeof homeStatic = homeStatic
-  try {
-    const payload = await getPayload({ config: configPromise })
-    const result = await payload.find({
-      collection: 'pages',
-      draft,
-      limit: 1,
-      overrideAccess: false,
-      where: { slug: { equals: 'home' } },
-    })
-    if (result.docs?.[0]) {
-      page = result.docs[0] as typeof homeStatic
-    }
-  } catch {
-    // DB unavailable — render with homeStatic fallback
-  }
-  const { hero, layout } = page
-
   return (
-    <>
+    <main id="main">
       <StructuredData data={localSchema} />
       <StructuredData data={faqSchema} />
-      <article className="pb-24">
-        <PageClient />
-        <RenderHero {...hero} />
-        <RenderBlocks blocks={layout as unknown as Array<{ blockType: string } & Record<string, unknown>>} />
-      </article>
-    </>
+      <Hero />
+      <BrandWall />
+      <HowItWorks />
+      <DeliveryGallery />
+      <CategoryBento />
+      <ServiceArea />
+      <ContactSection />
+      <FinalCta />
+    </main>
   )
 }
 

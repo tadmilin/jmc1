@@ -124,6 +124,8 @@ module.exports = {
         line: { DEFAULT: '#06C755', dark: '#05B34C' },
         blue: ink,
         indigo: ink,
+        cyan: ink,
+        sky: ink,
         gray: defaultColors.stone,
         accent: {
           DEFAULT: 'hsl(var(--accent))',

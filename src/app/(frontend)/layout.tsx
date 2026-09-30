@@ -52,7 +52,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: site.seo.description,
       url: baseURL,
       siteName: `${site.name} ปากซอยชักพระ 6`,
-      images: [{ url: ogImageUrl, width: 1050, height: 1400, alt: site.seo.title }],
+      images: [{ url: ogImageUrl, width: 1200, height: 630, alt: site.seo.title }],
       locale: 'th_TH',
       type: 'website',
     },

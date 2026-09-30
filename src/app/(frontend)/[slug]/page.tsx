@@ -33,7 +33,8 @@ export async function generateStaticParams() {
 
     return (
       pages.docs
-        ?.filter((doc) => doc.slug !== 'home')
+        // home and contact are code-owned routes
+        ?.filter((doc) => doc.slug !== 'home' && doc.slug !== 'contact')
         .map(({ slug }) => ({ slug })) ?? []
     )
   } catch {
