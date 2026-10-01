@@ -41,7 +41,7 @@ export async function CategoryBento() {
             >
               <Link
                 href={`/categories/${c.slug}`}
-                className="group relative flex h-full flex-col justify-between overflow-hidden rounded-3xl border border-hairline bg-white p-5 transition-[border-color,box-shadow,transform] duration-500 hover:-translate-y-1 hover:border-stone-300 hover:shadow-[0_24px_50px_-28px_rgba(11,13,16,0.4)]"
+                className="group relative flex h-full flex-col justify-between overflow-hidden rounded-3xl border border-hairline bg-white p-5 transition-[border-color,box-shadow,transform] duration-500 hover:-translate-y-1 hover:border-stone-300 hover:shadow-[0_24px_50px_-28px_rgba(15,25,56,0.4)]"
               >
                 <div className="flex items-start justify-between gap-3">
                   <h3 className={cn('font-semibold leading-snug tracking-tight', i === 0 ? 'text-2xl sm:text-3xl' : 'line-clamp-2 text-[1rem] sm:text-lg')}>

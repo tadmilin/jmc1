@@ -21,26 +21,26 @@ export function LineIcon({ letterColor = '#06C755', ...props }: IconProps & { le
 }
 
 /**
- * Shop mark: a roof line over brick courses, one brick in signal orange.
+ * Shop mark: a roof line over brick courses, one brick in navy on the blue tile.
  * Drawn to echo the house-and-bricks mark the shop uses on its posters.
  */
 export function BrandMark({ className, ...props }: IconProps) {
   return (
     <svg viewBox="0 0 40 40" aria-hidden="true" className={className} {...props}>
-      <rect width="40" height="40" rx="11" fill="#0B0D10" />
+      <rect width="40" height="40" rx="11" fill="#2A54DF" />
       <path
         d="M8.5 18.5 20 9l11.5 9.5"
         fill="none"
-        stroke="#F7F6F2"
+        stroke="#FFFFFF"
         strokeWidth="2.6"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <rect x="11" y="21" width="8" height="4" rx="1" fill="#F7F6F2" />
-      <rect x="21" y="21" width="8" height="4" rx="1" fill="#FF5A1F" />
-      <rect x="11" y="27" width="3" height="4" rx="1" fill="#F7F6F2" />
-      <rect x="16" y="27" width="8" height="4" rx="1" fill="#F7F6F2" />
-      <rect x="26" y="27" width="3" height="4" rx="1" fill="#F7F6F2" />
+      <rect x="11" y="21" width="8" height="4" rx="1" fill="#FFFFFF" />
+      <rect x="21" y="21" width="8" height="4" rx="1" fill="#0F1938" />
+      <rect x="11" y="27" width="3" height="4" rx="1" fill="#FFFFFF" />
+      <rect x="16" y="27" width="8" height="4" rx="1" fill="#FFFFFF" />
+      <rect x="26" y="27" width="3" height="4" rx="1" fill="#FFFFFF" />
     </svg>
   )
 }

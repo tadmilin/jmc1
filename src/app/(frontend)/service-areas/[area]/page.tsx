@@ -119,7 +119,7 @@ export default async function ServiceAreaPage({ params }: Args) {
                 </span>
                 <span className="mask-line">
                   <span style={{ ['--d' as string]: '200ms' }}>
-                    ใกล้<span className="text-signal">{area.name}</span>
+                    ใกล้<span className="text-signal-300">{area.name}</span>
                   </span>
                 </span>
               </span>

@@ -33,9 +33,9 @@ Marketing claims in old copy that the owner has **not** confirmed: "ส่งฟ
 
 The owner asked for: ล้ำๆ (cutting-edge), clean, modern-2026, beautiful animation, **not AI slop**.
 
-**Concept — "site-ready":** an engineered, confident look built from the shop's real world — concrete, steel, safety orange, and real delivery photos.
+**Concept — "site-ready":** an engineered, confident look built from the shop's real world — concrete, steel, the TOA Color World blue on the shop sign, and real delivery photos.
 
-- **Palette:** ink `#0B0D10`, concrete `#ECEAE4`, paper `#F7F6F2`, hairline `#D6D3CA`, accent safety-orange `#FF5A1F`. LINE green `#06C755` appears only on LINE actions. Tokens live as CSS variables in `globals.css`; components use the tokens.
+- **Palette (blue/white, owner request 2026-10-01):** ink (navy) `#0F1938`, concrete `#EBF1FA`, paper `#F9FBFD`, hairline `#D1DBEB`, accent blue `signal` `#2A54DF` — a lighter take on the TOA blue sampled from the shop sign (~`#001078`). `signal-500` is 6.1:1 on white; on navy surfaces use `signal-300` (`#8BA4F9`, 7.2:1) for text and icons. `stone`/`gray` utilities are remapped to Tailwind `slate` so greys stay cool. LINE green `#06C755` appears only on LINE actions. Tokens live in `tailwind.config.cjs` and as CSS variables in `globals.css`; components use the tokens. The token names (`ink`, `signal`, `concrete`) are historical — keep them, change values.
 - **Type:** Anuphan (Thai + Latin, loopless, via `next/font/google`) for everything; Geist Mono for numbers, coordinates, and small uppercase labels. Large, tight headlines; generous whitespace.
 - **Imagery:** real delivery photos in `public/images/deliveries/` (WebP, ≤1600px). Photos with stickers on them are cropped or left out. Brand logos sit in a uniform tile treatment.
 - **Motion:** purposeful and restrained — headline mask-reveal on load, scroll-triggered reveals, count-up stats, an animated service-radius map (pulsing store pin, rings, area labels), a brand marquee, step lines that draw on scroll. All motion respects `prefers-reduced-motion`. CSS + a small IntersectionObserver hook; no animation library.
@@ -48,11 +48,15 @@ The owner asked for: ล้ำๆ (cutting-edge), clean, modern-2026, beautiful 
 **Mobile action bar:** fixed bottom bar with โทร / แอดไลน์ / ให้โทรกลับ, replacing the three floating circles. Desktop keeps one floating LINE button.
 
 **Home (`src/app/(frontend)/page.tsx`, code-owned, zero CMS reads except category tiles):**
-1. Hero — H1 keeps the local keywords (วัสดุก่อสร้าง ตลิ่งชัน ชักพระ 6 ส่งถึงหน้างาน), primary LINE CTA, call CTA, live open/closed status from hours, real hero photo.
-2. Proof strip — count-up facts (35+ ปี, 10+ กม., 7 วัน/สัปดาห์) + brand marquee.
-3. How ordering works — 01 แอดไลน์/โทร → 02 ส่งรายการหรือรูปแบบงาน → 03 รับใบเสนอราคา → 04 ส่งถึงหน้างาน.
-4. Real deliveries — horizontally scrolling gallery of delivery photos with material captions.
+1. Hero — H1 keeps the local keywords (วัสดุก่อสร้าง ตลิ่งชัน ชักพระ 6 ส่งถึงหน้างาน), primary LINE CTA, call CTA, live open/closed status from hours, real hero photo, count-up facts.
+2. Real deliveries ("ส่งจริง ทุกวัน") — horizontally scrolling gallery of delivery photos with material captions, on a white surface so it separates from the navy hero.
+3. Promo posters ("สินค้าพร้อมส่ง") — the shop's square Facebook ad creatives as a full-bleed row (1/2/3 per view at phone/tablet/desktop), each opening a prefilled LINE chat. Text is baked into the posters, so they are never cropped.
+4. Brand wall — logos in full colour, no hover state needed.
 5. Categories — bento tiles from CMS categories (links to existing category pages).
+
+The "how ordering works" steps section was removed from home on owner request (2026-10-01); `HowItWorks` is still used on `/construction-materials-near-me`.
+
+`DeliveryGallery` and `PromoBanner` take their items as props from the page, so a different source (e.g. a Facebook Page loader) can replace the static files without touching the components.
 6. Service area — animated radius map + list linking to `/service-areas/[area]` + Google Maps embed + NAP + hours.
 7. Callback form + LINE QR card.
 8. FAQ — accordion, emitted as `FAQPage` JSON-LD.
@@ -89,6 +93,7 @@ Phase 2 and 3 start only after the owner confirms who edits content and how ofte
 
 - [x] Branch `redesign-2026` created; agent docs written
 - [x] Phase 1 (2026-10-01): tokens + Anuphan font, `src/content/*`, `SiteHeader`, `ContactDock` (mobile bar + desktop LINE pill), code-owned home (`src/components/home/*`), `SiteFooter`, code-owned `/contact`, rebuilt `/service-areas/[area]` (12 areas incl. new บางกอกน้อย, ทวีวัฒนา), JSON-LD from content files, product card "สอบถามราคา" for zero prices, legacy blue/indigo/gray utilities remapped to the ink/stone palette in `tailwind.config.cjs`. `pnpm build` passes; checked at 390px and 1440px.
+- [x] Follow-up (2026-10-01): blue/white retheme, steps section off home, delivery gallery moved under the hero, promo poster row, full-colour brand logos. Build passes; checked at 390px and 1440px.
 - [ ] Phase 2: export script + JSON adapters
 - [ ] Phase 3: remove Payload
 
@@ -100,6 +105,7 @@ Phase 2 and 3 start only after the owner confirms who edits content and how ofte
 | Service areas (+ map coordinates) | `src/content/areas.ts` |
 | Brand wall list | `src/content/brands.ts` + logos in `public/brands/` |
 | Delivery photos + alt text | `src/content/deliveries.ts` + `public/images/deliveries/` |
+| Promo posters (1:1 ad creatives) | `src/content/promos.ts` + `public/images/promos/` |
 | FAQ (also FAQPage JSON-LD) | `src/content/faq.ts` |
 | Category tiles (Payload adapter) | `src/data/categories.ts` |
 | Motion primitives | `src/components/site/Reveal.tsx`, `CountUp.tsx`, keyframes in `globals.css` |

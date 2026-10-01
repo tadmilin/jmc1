@@ -30,7 +30,7 @@ const anuphan = Anuphan({
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#F7F6F2',
+  themeColor: '#F9FBFD',
 }
 
 export async function generateMetadata(): Promise<Metadata> {

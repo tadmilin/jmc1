@@ -9,6 +9,7 @@ import { Hero } from '@/components/home/Hero'
 import { HowItWorks } from '@/components/home/HowItWorks'
 import { ServiceArea } from '@/components/home/ServiceArea'
 import StructuredData from '@/components/SEO/StructuredData'
+import { deliveries } from '@/content/deliveries'
 import { getServerSideURL } from '@/utilities/getURL'
 
 // หน้า Local SEO: ร้านวัสดุก่อสร้าง ใกล้ฉัน (English URL) — ใช้ section เดียวกับหน้าแรก (ไม่รวม FAQ เพราะหน้านี้มี FAQPage schema ของตัวเอง)
@@ -115,7 +116,7 @@ export default async function ConstructionMaterialsNearMePage() {
       <Hero />
       <BrandWall />
       <HowItWorks />
-      <DeliveryGallery />
+      <DeliveryGallery items={deliveries} />
       <CategoryBento />
       <ServiceArea />
       <ContactSection />

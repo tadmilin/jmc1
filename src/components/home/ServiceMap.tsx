@@ -45,15 +45,15 @@ export function ServiceMap({ highlight, className }: { highlight?: string; class
       >
         <defs>
           <radialGradient id="map-glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="scale(190)">
-            <stop offset="0" stopColor="#FF5A1F" stopOpacity="0.18" />
-            <stop offset="1" stopColor="#FF5A1F" stopOpacity="0" />
+            <stop offset="0" stopColor="#7B97F7" stopOpacity="0.18" />
+            <stop offset="1" stopColor="#7B97F7" stopOpacity="0" />
           </radialGradient>
         </defs>
 
         <circle r={R + 20} fill="url(#map-glow)" />
 
         {/* compass cross-hair */}
-        <g stroke="#F7F6F2" strokeOpacity="0.08">
+        <g stroke="#F9FBFD" strokeOpacity="0.08">
           <line x1={-R - 30} x2={R + 30} y1="0" y2="0" />
           <line y1={-R - 30} y2={R + 30} x1="0" x2="0" />
         </g>
@@ -65,11 +65,11 @@ export function ServiceMap({ highlight, className }: { highlight?: string; class
               <circle
                 r={r}
                 fill="none"
-                stroke="#F7F6F2"
+                stroke="#F9FBFD"
                 strokeOpacity={km === MAX_KM ? 0.28 : 0.12}
                 strokeDasharray={km === MAX_KM ? '0' : '2 5'}
               />
-              <text x={r * 0.707 + 4} y={-r * 0.707 - 4} fill="#F7F6F2" fillOpacity="0.4" fontSize="9" className="font-mono">
+              <text x={r * 0.707 + 4} y={-r * 0.707 - 4} fill="#F9FBFD" fillOpacity="0.4" fontSize="9" className="font-mono">
                 {km} กม.
               </text>
             </g>
@@ -81,7 +81,7 @@ export function ServiceMap({ highlight, className }: { highlight?: string; class
             key={d}
             r={R + 20}
             fill="none"
-            stroke="#FF5A1F"
+            stroke="#7B97F7"
             strokeWidth="1.5"
             className="map-pulse"
             style={{ ['--d' as string]: `${d}ms` }}
@@ -95,7 +95,7 @@ export function ServiceMap({ highlight, className }: { highlight?: string; class
             <path
               key={`route-${area.slug}`}
               d={`M0 0 L${x.toFixed(1)} ${y.toFixed(1)}`}
-              stroke={active ? '#FF5A1F' : '#F7F6F2'}
+              stroke={active ? '#7B97F7' : '#F9FBFD'}
               strokeOpacity={active ? 0.9 : 0.22}
               strokeWidth={active ? 1.6 : 1}
               className="map-route"
@@ -116,8 +116,8 @@ export function ServiceMap({ highlight, className }: { highlight?: string; class
                   cx={x}
                   cy={y}
                   r={active ? 5.5 : 4}
-                  fill={active ? '#FF5A1F' : '#F7F6F2'}
-                  className="transition-[fill] duration-300 group-hover:fill-[#FF5A1F]"
+                  fill={active ? '#7B97F7' : '#F9FBFD'}
+                  className="transition-[fill] duration-300 group-hover:fill-[#7B97F7]"
                 />
                 <text
                   x={x + (n.dx ?? 8)}
@@ -125,7 +125,7 @@ export function ServiceMap({ highlight, className }: { highlight?: string; class
                   textAnchor={anchor}
                   fontSize="11.5"
                   fontWeight={active ? 700 : 500}
-                  fill={active ? '#FF5A1F' : '#F7F6F2'}
+                  fill={active ? '#7B97F7' : '#F9FBFD'}
                   fillOpacity={active ? 1 : 0.82}
                   className="transition-[fill-opacity] duration-300 group-hover:fill-opacity-100"
                 >
@@ -137,9 +137,9 @@ export function ServiceMap({ highlight, className }: { highlight?: string; class
         })}
 
         {/* the shop */}
-        <circle r="18" fill="#FF5A1F" fillOpacity="0.18" className="map-pulse" style={{ ['--d' as string]: '400ms' }} />
-        <circle r="7.5" fill="#FF5A1F" stroke="#0B0D10" strokeWidth="3" />
-        <text y="-16" textAnchor="middle" fontSize="11" fontWeight="700" fill="#FF5A1F">
+        <circle r="18" fill="#7B97F7" fillOpacity="0.18" className="map-pulse" style={{ ['--d' as string]: '400ms' }} />
+        <circle r="7.5" fill="#7B97F7" stroke="#0F1938" strokeWidth="3" />
+        <text y="-16" textAnchor="middle" fontSize="11" fontWeight="700" fill="#7B97F7">
           จงมีชัย · ชักพระ 6
         </text>
       </svg>

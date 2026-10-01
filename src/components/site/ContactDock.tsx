@@ -63,7 +63,7 @@ export function ContactDock() {
           visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-4 opacity-0',
         )}
       >
-        <div className="pointer-events-none absolute bottom-full right-0 mb-3 w-60 translate-y-2 rounded-3xl border border-hairline bg-white p-4 opacity-0 shadow-[0_24px_60px_-20px_rgba(11,13,16,0.35)] transition-all duration-300 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100">
+        <div className="pointer-events-none absolute bottom-full right-0 mb-3 w-60 translate-y-2 rounded-3xl border border-hairline bg-white p-4 opacity-0 shadow-[0_24px_60px_-20px_rgba(15,25,56,0.35)] transition-all duration-300 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100">
           <Image src={site.line.qrSrc} alt={`QR แอดไลน์ ${site.line.id}`} width={200} height={200} className="h-auto w-full" />
           <p className="mt-3 text-center text-sm text-stone-600">
             สแกนแอดไลน์ <span className="font-mono text-ink">{site.line.id}</span>

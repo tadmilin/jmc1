@@ -28,15 +28,15 @@ export function SiteFooter() {
 
             <ul className="mt-8 space-y-4 text-[0.95rem]">
               <li className="flex gap-3">
-                <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-signal" />
+                <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-signal-300" />
                 <address className="not-italic leading-7 text-stone-300">{fullAddress}</address>
               </li>
               <li className="flex gap-3">
-                <Clock className="mt-0.5 h-5 w-5 shrink-0 text-signal" />
+                <Clock className="mt-0.5 h-5 w-5 shrink-0 text-signal-300" />
                 <span className="text-stone-300">{site.hours.label}</span>
               </li>
               <li className="flex gap-3">
-                <Phone className="mt-0.5 h-5 w-5 shrink-0 text-signal" />
+                <Phone className="mt-0.5 h-5 w-5 shrink-0 text-signal-300" />
                 <a href={site.phone.href} className="link-underline font-mono text-paper">
                   {site.phone.display}
                 </a>

@@ -2,35 +2,37 @@ const tailwindcssAnimate = require('tailwindcss-animate')
 const typography = require('@tailwindcss/typography')
 const defaultColors = require('tailwindcss/colors')
 
-// Warm ink scale. Legacy components use blue/indigo utility classes; mapping those
+// Navy ink scale. Legacy components use blue/indigo utility classes; mapping those
 // scales here re-skins them to the redesign palette without touching each file.
 const ink = {
-  50: '#F5F4F0',
-  100: '#ECEAE4',
-  200: '#DAD7CE',
-  300: '#BDB9AE',
-  400: '#8F8B81',
-  500: '#3A3D42',
-  600: '#16191D',
-  700: '#0B0D10',
-  800: '#07080A',
-  900: '#050607',
-  950: '#030304',
-  DEFAULT: '#0B0D10',
+  50: '#F4F6FB',
+  100: '#E8EDF7',
+  200: '#CDD7EA',
+  300: '#A2B0CD',
+  400: '#6C7C9D',
+  500: '#35466E',
+  600: '#1A274D',
+  700: '#0F1938',
+  800: '#0A1129',
+  900: '#070C1D',
+  950: '#040711',
+  DEFAULT: '#0F1938',
 }
 
+// Accent blue: the TOA Color World blue (sampled ~#001078 from the shop's signage), lifted lighter.
+// 500 passes 4.5:1 on white; on navy (bg-ink) use 300 for text.
 const signal = {
-  50: '#FFF3EE',
-  100: '#FFE3D6',
-  200: '#FFC4A8',
-  300: '#FF9E73',
-  400: '#FF7A45',
-  500: '#FF5A1F',
-  600: '#E8440C',
-  700: '#BF3408',
-  800: '#972A0B',
-  900: '#7A250D',
-  DEFAULT: '#FF5A1F',
+  50: '#F0F3FF',
+  100: '#DCE4FE',
+  200: '#BACAFC',
+  300: '#8BA4F9',
+  400: '#557AF1',
+  500: '#2A54DF',
+  600: '#1F45C1',
+  700: '#1A3AA2',
+  800: '#173082',
+  900: '#132563',
+  DEFAULT: '#2A54DF',
 }
 
 /** @type {import('tailwindcss').Config} */
@@ -118,15 +120,17 @@ module.exports = {
       colors: {
         ink,
         signal,
-        paper: '#F7F6F2',
-        concrete: '#ECEAE4',
-        hairline: '#DAD7CE',
+        paper: '#F9FBFD',
+        concrete: '#EBF1FA',
+        hairline: '#D1DBEB',
         line: { DEFAULT: '#06C755', dark: '#05B34C' },
         blue: ink,
         indigo: ink,
         cyan: ink,
         sky: ink,
-        gray: defaultColors.stone,
+        gray: defaultColors.slate,
+        // cool greys to sit with the navy palette; components still say "stone"
+        stone: defaultColors.slate,
         accent: {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
@@ -182,10 +186,10 @@ module.exports = {
         DEFAULT: {
           css: [
             {
-              '--tw-prose-body': '#44403C',
-              '--tw-prose-headings': '#0B0D10',
-              '--tw-prose-links': '#0B0D10',
-              '--tw-prose-bold': '#0B0D10',
+              '--tw-prose-body': '#334155',
+              '--tw-prose-headings': '#0F1938',
+              '--tw-prose-links': '#0F1938',
+              '--tw-prose-bold': '#0F1938',
               h1: {
                 fontWeight: '600',
                 letterSpacing: '-0.03em',

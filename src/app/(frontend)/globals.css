@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 /*
- * Design tokens — "site-ready" palette (see docs/redesign-2026.md).
- * ink #0B0D10 · paper #F7F6F2 · concrete #ECEAE4 · hairline #DAD7CE · signal #FF5A1F · LINE #06C755
+ * Design tokens — blue/white palette (see docs/redesign-2026.md).
+ * ink (navy) #0F1938 · paper #F9FBFD · concrete #EBF1FA · hairline #D1DBEB · signal (blue) #2A54DF · LINE #06C755
  * shadcn variable names are kept so existing components pick up the new palette.
  */
 @layer base {
@@ -21,33 +21,33 @@
   :root,
   [data-theme='light'],
   [data-theme='dark'] {
-    --background: 48 24% 96%;
-    --foreground: 216 19% 5%;
+    --background: 210 60% 98.5%;
+    --foreground: 226 58% 14%;
 
     --card: 0 0% 100%;
-    --card-foreground: 216 19% 5%;
+    --card-foreground: 226 58% 14%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 216 19% 5%;
+    --popover-foreground: 226 58% 14%;
 
-    --primary: 216 19% 5%;
-    --primary-foreground: 48 24% 96%;
+    --primary: 226 58% 14%;
+    --primary-foreground: 210 60% 98.5%;
 
-    --secondary: 45 17% 91%;
-    --secondary-foreground: 216 19% 5%;
+    --secondary: 216 63% 95%;
+    --secondary-foreground: 226 58% 14%;
 
-    --muted: 45 17% 91%;
-    --muted-foreground: 36 5% 38%;
+    --muted: 216 63% 95%;
+    --muted-foreground: 215 19% 35%;
 
-    --accent: 45 17% 91%;
-    --accent-foreground: 216 19% 5%;
+    --accent: 216 63% 95%;
+    --accent-foreground: 226 58% 14%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 45 14% 83%;
-    --input: 45 14% 83%;
-    --ring: 16 100% 56%;
+    --border: 217 42% 87%;
+    --input: 217 42% 87%;
+    --ring: 226 74% 52%;
 
     --radius: 0.875rem;
 
@@ -78,12 +78,12 @@
   }
 
   ::selection {
-    background: #ff5a1f;
+    background: #2a54df;
     color: #fff;
   }
 
   :focus-visible {
-    outline: 2px solid #ff5a1f;
+    outline: 2px solid #2a54df;
     outline-offset: 3px;
   }
 }
@@ -124,10 +124,10 @@ html[data-theme='light'] {
     @apply bg-line text-white shadow-[0_8px_24px_-8px_rgba(6,199,85,0.55)] hover:bg-[#05b34c];
   }
   .btn-ink {
-    @apply bg-ink text-paper hover:bg-[#1c2026];
+    @apply bg-ink text-paper hover:bg-ink-600;
   }
   .btn-signal {
-    @apply bg-signal text-white shadow-[0_8px_24px_-10px_rgba(255,90,31,0.7)] hover:bg-signal-600;
+    @apply bg-signal text-white shadow-[0_8px_24px_-10px_rgba(42,84,223,0.6)] hover:bg-signal-600;
   }
   .btn-ghost-light {
     @apply bg-white/[0.06] text-paper ring-1 ring-inset ring-white/15 hover:bg-white/[0.12];
@@ -158,14 +158,14 @@ html[data-theme='light'] {
 
   .grid-lines {
     background-image:
-      linear-gradient(to right, rgba(247, 246, 242, 0.06) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(247, 246, 242, 0.06) 1px, transparent 1px);
+      linear-gradient(to right, rgba(249, 251, 253, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(249, 251, 253, 0.06) 1px, transparent 1px);
     background-size: 72px 72px;
   }
   .grid-lines-dark {
     background-image:
-      linear-gradient(to right, rgba(11, 13, 16, 0.06) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(11, 13, 16, 0.06) 1px, transparent 1px);
+      linear-gradient(to right, rgba(15, 25, 56, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(15, 25, 56, 0.06) 1px, transparent 1px);
     background-size: 72px 72px;
   }
 

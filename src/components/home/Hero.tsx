@@ -34,7 +34,7 @@ export function Hero() {
               </span>
               <span className="mask-line">
                 <span style={{ ['--d' as string]: '240ms' }}>
-                  ส่งถึง<span className="text-signal">หน้างาน</span>
+                  ส่งถึง<span className="text-signal-300">หน้างาน</span>
                 </span>
               </span>
             </span>

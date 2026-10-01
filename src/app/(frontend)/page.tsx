@@ -8,8 +8,10 @@ import { DeliveryGallery } from '@/components/home/DeliveryGallery'
 import { Faq } from '@/components/home/Faq'
 import { FinalCta } from '@/components/home/FinalCta'
 import { Hero } from '@/components/home/Hero'
-import { HowItWorks } from '@/components/home/HowItWorks'
+import { PromoBanner } from '@/components/home/PromoBanner'
 import { ServiceArea } from '@/components/home/ServiceArea'
+import { deliveries } from '@/content/deliveries'
+import { promos } from '@/content/promos'
 import { site } from '@/content/site'
 import { getServerSideURL } from '@/utilities/getURL'
 
@@ -32,9 +34,9 @@ export default function HomePage() {
   return (
     <main id="main">
       <Hero />
+      <DeliveryGallery items={deliveries} />
+      <PromoBanner items={promos} />
       <BrandWall />
-      <HowItWorks />
-      <DeliveryGallery />
       <CategoryBento />
       <ServiceArea />
       <ContactSection />

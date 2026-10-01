@@ -40,7 +40,7 @@ export function SiteHeader() {
       className={cn(
         'sticky top-0 z-50 w-full transition-[background-color,box-shadow,backdrop-filter] duration-300',
         scrolled || open
-          ? 'bg-paper/85 shadow-[0_1px_0_0_#DAD7CE] backdrop-blur-xl backdrop-saturate-150'
+          ? 'bg-paper/85 shadow-[0_1px_0_0_#D1DBEB] backdrop-blur-xl backdrop-saturate-150'
           : 'bg-paper',
       )}
     >

@@ -9,7 +9,7 @@ function BrandTile({ brand, duplicate }: { brand: Brand; duplicate?: boolean }) 
     <li
       aria-hidden={duplicate || undefined}
       data-dup={duplicate ? '' : undefined}
-      className="group mr-3 flex h-24 w-44 shrink-0 items-center justify-center rounded-2xl border border-hairline bg-white px-6 transition-[border-color,box-shadow] duration-300 hover:border-stone-300 hover:shadow-[0_12px_30px_-18px_rgba(11,13,16,0.35)] sm:mr-4 sm:h-28 sm:w-52"
+      className="mr-3 flex h-24 w-44 shrink-0 items-center justify-center rounded-2xl border border-hairline bg-white px-6 shadow-[0_10px_28px_-20px_rgba(15,25,56,0.45)] sm:mr-4 sm:h-28 sm:w-52"
     >
       {brand.logo ? (
         <Image
@@ -17,11 +17,11 @@ function BrandTile({ brand, duplicate }: { brand: Brand; duplicate?: boolean }) 
           alt={brand.name}
           width={160}
           height={64}
-          className="h-10 w-auto max-w-full object-contain opacity-80 grayscale transition-[filter,opacity] duration-300 group-hover:opacity-100 group-hover:grayscale-0 sm:h-12"
+          className="h-12 w-auto max-w-full object-contain sm:h-14"
         />
       ) : (
         <span className="flex flex-col items-center text-center">
-          <span className="text-xl font-bold tracking-tight text-ink sm:text-[1.35rem]">{brand.name}</span>
+          <span className="text-xl font-bold tracking-tight text-signal-700 sm:text-[1.4rem]">{brand.name}</span>
           {brand.note && <span className="mt-1 text-[0.72rem] text-stone-500">{brand.note}</span>}
         </span>
       )}
