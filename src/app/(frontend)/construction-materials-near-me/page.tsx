@@ -9,11 +9,15 @@ import { Hero } from '@/components/home/Hero'
 import { HowItWorks } from '@/components/home/HowItWorks'
 import { ServiceArea } from '@/components/home/ServiceArea'
 import StructuredData from '@/components/SEO/StructuredData'
-import { deliveries } from '@/content/deliveries'
+import { getShowcase } from '@/data/facebook'
 import { getServerSideURL } from '@/utilities/getURL'
 
 // หน้า Local SEO: ร้านวัสดุก่อสร้าง ใกล้ฉัน (English URL) — ใช้ section เดียวกับหน้าแรก (ไม่รวม FAQ เพราะหน้านี้มี FAQPage schema ของตัวเอง)
+// delivery photos come from the Facebook Page (src/data/facebook.ts)
+export const revalidate = 300
+
 export default async function ConstructionMaterialsNearMePage() {
+  const { deliveries } = await getShowcase()
   const baseUrl = getServerSideURL()
   const pageUrl = `${baseUrl}/construction-materials-near-me`
 

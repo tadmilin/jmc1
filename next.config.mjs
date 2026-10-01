@@ -16,7 +16,8 @@ const nextConfig = {
   serverExternalPackages: ['payload', 'mongodb', 'sharp'],
   // การ optimize สำหรับ production
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    // keep console.error so failures (e.g. an expired Facebook token) still reach the Railway logs
+    removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error'] } : false,
   },
   // Images configuration for PayloadCMS v3 + Vercel Blob Storage
   images: {
@@ -54,6 +55,12 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'blob.vercel-storage.com',
+        pathname: '/**',
+      },
+      // Facebook Page photos (src/data/facebook.ts)
+      {
+        protocol: 'https',
+        hostname: '**.fbcdn.net',
         pathname: '/**',
       },
       // Cloudflare R2 — รูปจาก import script

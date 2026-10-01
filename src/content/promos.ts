@@ -2,6 +2,7 @@
  * Promo posters (the shop's Facebook ad creatives, 1:1). Files live in /public/images/promos.
  * The text is baked into the images, so they are always shown whole (never cropped) and the
  * alt text repeats the poster copy. Each tile opens a LINE chat prefilled with `lineText`.
+ * Page posts tagged #พร้อมส่ง replace this list when there are any (src/data/facebook.ts).
  */
 export type Promo = {
   src: string

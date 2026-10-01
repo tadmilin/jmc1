@@ -10,16 +10,17 @@ import { FinalCta } from '@/components/home/FinalCta'
 import { Hero } from '@/components/home/Hero'
 import { PromoBanner } from '@/components/home/PromoBanner'
 import { ServiceArea } from '@/components/home/ServiceArea'
-import { deliveries } from '@/content/deliveries'
-import { promos } from '@/content/promos'
 import { site } from '@/content/site'
+import { getShowcase } from '@/data/facebook'
 import { getServerSideURL } from '@/utilities/getURL'
 
 /**
  * Home is code-owned (docs/redesign-2026.md). The CMS "home" page document is no longer rendered;
- * only the category tiles read Payload, through src/data/categories.ts.
+ * only the category tiles read Payload, through src/data/categories.ts. Delivery and promo photos
+ * come from the Facebook Page when it is configured (src/data/facebook.ts), so the page refreshes
+ * every 5 minutes and on the Page webhook.
  */
-export const revalidate = 3600
+export const revalidate = 300
 
 export async function generateMetadata(): Promise<Metadata> {
   const baseURL = getServerSideURL()
@@ -30,7 +31,8 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const { deliveries, promos } = await getShowcase()
   return (
     <main id="main">
       <Hero />

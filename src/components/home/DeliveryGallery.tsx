@@ -97,7 +97,7 @@ export function DeliveryGallery({ items: deliveries }: { items: Delivery[] }) {
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 via-ink/30 to-transparent p-5 pt-16 text-paper">
                 <p className="font-mono text-[0.7rem] text-stone-300">{String(i + 1).padStart(2, '0')} / {String(deliveries.length).padStart(2, '0')}</p>
                 <p className="mt-1 text-lg font-semibold leading-snug">{d.material}</p>
-                <p className="mt-0.5 text-sm text-stone-300">{d.vehicle}</p>
+                {d.vehicle && <p className="mt-0.5 text-sm text-stone-300">{d.vehicle}</p>}
               </div>
             </li>
           ))}

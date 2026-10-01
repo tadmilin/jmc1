@@ -1,12 +1,13 @@
 /**
  * Real delivery photos from the shop (Facebook page, 2026). Files live in /public/images/deliveries.
  * Alt text names the material and the area so image search picks up the local context.
+ * Page posts tagged #ส่งจริง are shown before these (src/data/facebook.ts).
  */
 export type Delivery = {
   src: string
   alt: string
   material: string
-  vehicle: string
+  vehicle?: string
 }
 
 export const deliveries: Delivery[] = [

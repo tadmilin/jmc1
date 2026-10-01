@@ -79,6 +79,29 @@ Target the same zone as the shop's Google Maps pin: ตลิ่งชัน and
 - Keep existing metadata titles/descriptions from `layout.tsx` and `page.tsx` as the baseline; move the site-level strings into `src/content/site.ts` so they no longer need the CMS.
 - Photo alt text names the material and the area (e.g. "ส่งเสาเข็มคอนกรีตถึงหน้างาน ย่านตลิ่งชัน").
 
+## Facebook photos
+
+Owner decision (2026-10-01): the Facebook Page https://www.facebook.com/jmc1990lekmor is the uploader for the home page photos — no CMS, no repo commit needed to add a photo.
+
+- **How the owner uses it:** post photos on the Page and put a hashtag in the caption. `#ส่งจริง` puts the photos in the "ส่งจริง ทุกวัน" gallery (newest first, before the static photos, max 16). `#พร้อมส่ง` puts them in the "สินค้าพร้อมส่ง" poster row; when any such post exists, they replace the static posters (max 9). Tags match as whole words, so `#ส่งจริงทุกวัน` does not count. Only photo posts and photo albums are used; videos, links and shares are skipped. The first caption line becomes the card title; hashtags and links are stripped from captions and alt text.
+- **How it works:** `src/data/facebook.ts` reads `GET /{page-id}/posts` from the Graph API (v26.0) with a Page token in the `Authorization` header, then one batched `?ids=…&fields=images` call for larger photo sizes (≤1600px; attachment images are only ~720px). Responses are cached for 5 minutes under the tag `facebook-posts`; home and `/construction-materials-near-me` use `revalidate = 300`. Image URLs are `*.fbcdn.net` (allowed in `next.config.mjs`); they are signed and expire, which the 5-minute refresh and next/image's cache cover.
+- **Instant updates:** `/api/facebook/webhook` receives the Page `feed` webhook, checks `X-Hub-Signature-256` against `FB_APP_SECRET`, and calls `revalidateTag('facebook-posts')`; the next page view renders fresh (verified locally: MISS then HIT). Comments and reactions are acknowledged but ignored. Cloudflare does not cache HTML here (`cf-cache-status: DYNAMIC`), so nothing else needs purging.
+- **Fallback:** with no env vars, a Graph error, or a timeout (8 s), the pages show the static files in `src/content/deliveries.ts` / `promos.ts` and log `[facebook] …` with `console.error` (kept in production builds).
+- **Env (Railway service variables, runtime is enough — the Dockerfile does not need them; the build renders the fallback and the first revalidate picks Facebook up):** `FB_PAGE_ID` (numeric id from `/me/accounts`, not the username), `FB_PAGE_ACCESS_TOKEN`, `FB_APP_SECRET`, `FB_WEBHOOK_VERIFY_TOKEN`, optional `FB_GRAPH_VERSION`. See `.env.example`.
+
+### Setup (owner, once)
+
+Permission names below are from Meta's docs (Graph API v26.0, read 2026-10-01): reading Page posts needs a **Page access token** with `pages_read_engagement` and `pages_read_user_content`; Page feed webhooks need `pages_manage_metadata` and `pages_show_list`. Not confirmed from the docs read: whether an app in Development mode receives Page webhooks and whether app review is needed for your own Page — check in the Meta dashboard. If webhooks never arrive, the 5-minute refresh still works.
+
+1. developers.facebook.com → create an app (type Business) with the Facebook account that admins the Page.
+2. Graph API Explorer → select the app → User token with `pages_show_list`, `pages_read_engagement`, `pages_read_user_content`, `pages_manage_metadata` → generate, approve for the Page.
+3. Make it long-lived: exchange the user token at `/oauth/access_token?grant_type=fb_exchange_token`, then `GET /me/accounts` with the long-lived user token. Take the Page's `id` (→ `FB_PAGE_ID`) and `access_token` (→ `FB_PAGE_ACCESS_TOKEN`; a Page token from a long-lived user token does not expire). Check it in the Access Token Debugger.
+4. App settings → Basic → App secret (→ `FB_APP_SECRET`). Pick any random string for `FB_WEBHOOK_VERIFY_TOKEN`.
+5. Railway → service variables → add the four values → redeploy.
+6. Meta app → Webhooks → object **Page** → callback `https://jongmeechai.com/api/facebook/webhook`, verify token = `FB_WEBHOOK_VERIFY_TOKEN` → subscribe to the `feed` field. If verification fails, check Cloudflare security/bot rules for that path.
+7. Subscribe the app to the Page: `POST /{page-id}/subscribed_apps?subscribed_fields=feed` with the Page token (Graph API Explorer works).
+8. Test: post a photo on the Page with `#ส่งจริง`, reload the home page.
+
 ## Removing Payload CMS — phased
 
 The owner wants to drop the CMS if it is not needed. Content will live in the repo (typed TS/JSON), images in Cloudflare R2, deploy on Railway. Phases keep production working at every step:
@@ -94,6 +117,7 @@ Phase 2 and 3 start only after the owner confirms who edits content and how ofte
 - [x] Branch `redesign-2026` created; agent docs written
 - [x] Phase 1 (2026-10-01): tokens + Anuphan font, `src/content/*`, `SiteHeader`, `ContactDock` (mobile bar + desktop LINE pill), code-owned home (`src/components/home/*`), `SiteFooter`, code-owned `/contact`, rebuilt `/service-areas/[area]` (12 areas incl. new บางกอกน้อย, ทวีวัฒนา), JSON-LD from content files, product card "สอบถามราคา" for zero prices, legacy blue/indigo/gray utilities remapped to the ink/stone palette in `tailwind.config.cjs`. `pnpm build` passes; checked at 390px and 1440px.
 - [x] Follow-up (2026-10-01): blue/white retheme, steps section off home, delivery gallery moved under the hero, promo poster row, full-colour brand logos. Build passes; checked at 390px and 1440px.
+- [x] Facebook photos (2026-10-01): loader + webhook, static fallback. Parser checked against fixture posts; build with dummy env keeps `/` and near-me as 5-minute ISR; webhook verify/signature/revalidate checked locally. Waiting on the owner's Meta app + Railway env (see "Facebook photos → Setup").
 - [ ] Phase 2: export script + JSON adapters
 - [ ] Phase 3: remove Payload
 
@@ -106,6 +130,7 @@ Phase 2 and 3 start only after the owner confirms who edits content and how ofte
 | Brand wall list | `src/content/brands.ts` + logos in `public/brands/` |
 | Delivery photos + alt text | `src/content/deliveries.ts` + `public/images/deliveries/` |
 | Promo posters (1:1 ad creatives) | `src/content/promos.ts` + `public/images/promos/` |
+| Facebook Page photos (loader + webhook) | `src/data/facebook.ts`, `src/app/api/facebook/webhook/route.ts` |
 | FAQ (also FAQPage JSON-LD) | `src/content/faq.ts` |
 | Category tiles (Payload adapter) | `src/data/categories.ts` |
 | Motion primitives | `src/components/site/Reveal.tsx`, `CountUp.tsx`, keyframes in `globals.css` |
